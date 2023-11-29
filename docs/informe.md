@@ -1,6 +1,6 @@
 # Informe de Indicadores Clave de Desempeño (KPIs)
 
-## Introducción 
+## Introducción
 
 Este documento ha sido elaborado con el objetivo de ofrecer una comprensión integral de los Indicadores Clave de
 Desempeño (KPIs) asociados a nuestro proyecto. Esta recopilación de KPIs busca servir como una herramienta esencial
@@ -12,22 +12,22 @@ para una visión panorámica y detallada del proyecto.
 
 1. [Ventas Totales sin IVA MM](#ventas-totales-sin-iva-mm)
 2. [Transacciones Monitoreadas MM](#transacciones-monitoreadas-mm)
-3. [% de las Ventas de los Clientes Leales](#-de-las-ventas-de-los-clientes-leales)
-4. [Clientes Monitoreados MM](#clientes-monitoreados-mm)
-5. [Tasa de Retención](#tasa-de-retención)
-6. [Clientes Leales](#clientes-leales)
-7. [SOV (Share Of Voice)](#sov-share-of-voice)
-8. [SOI (Share Of Investment)](#soi-share-of-investment)
-9. [TOM (Top of Mind)](#tom-top-of-mind)
-10. [Porcentaje de Contactabilidad](#-contactabilidad)
-11. [BPD (Brand Purchase Decision)](#bpd-brand-purchase-decision)
-12. [Engagement Rate en Redes Sociales (Social Media)](#engagement-rate-en-redes-sociales-social-media)
-13. [CLV (Customer Life Time Value)](#clv-customer-life-time-value)
-14. [Market Share (Nielsen)](#market-share-nielsen)
-15. [INS (Índice de Satisfacción)](#ins-índice-de-satisfacción)
-16. [Valor de la Marca (BEA)](#valor-de-la-marca-bea)
-17. [TOH (Top of Heart)](#toh-top-of-heart)
-18. [NPS (Net Promoter Score)](#nps-net-promoter-score)
+3. [Clientes Monitoreados MM](#clientes-monitoreados-mm)
+4. [Tasa de Retención](#tasa-de-retención)
+5. [Clientes Leales](#clientes-leales)
+6. [Porcentaje de las Ventas de los Clientes Leales](#porcentaje-de-las-ventas-de-los-clientes-leales)
+7. [Porcentaje de Contactabilidad](#porcentaje-de-contactabilidad)
+8. [SOV (Share Of Voice)](#sov-(share-of-voice))
+9. [SOI (Share Of Investment)](#soi-(share-of-investment))
+10. [TOM (Top of Mind)](#tom-(top-of-mind))
+11. [BPD (Brand Purchase Decision)](#bpd-(brand-purchase-decision))
+12. [Engagement Rate en Redes Sociales (Social Media)](#engagement-rate-en-redes-sociales-(social-media))
+13. [CLV (Customer Life Time Value)](#clv-(customer-life-time-value))
+14. [Market Share (Nielsen)](#market-share-(nielsen))
+15. [INS (Índice de Satisfacción)](#ins-(índice-de-satisfacción))
+16. [Valor de la Marca (BEA)](#valor-de-la-marca-(bea))
+17. [TOH (Top of Heart)](#toh-(top-of-heart))
+18. [NPS (Net Promoter Score)](#nps-(net-promoter-score))
 19. [INS Omnicanal](#ins-omnicanal)
 
 ## Ventas Totales sin IVA MM
@@ -35,14 +35,23 @@ para una visión panorámica y detallada del proyecto.
 ### Descripción
 
 Este indicador calcula las ventas totales sin IVA, expresadas en miles de millones (MM), por cadena de tiendas a lo
-largo del año actual hasta la fecha. El indicador se actualiza diariamente y proporciona una visión acumulativa de las
-ventas, reiniciándose al comienzo de cada nuevo año fiscal.
+largo del año actual hasta la fecha.
 
 ### Observaciones
 
 - Solo se tienen en cuenta las cadenas 'E', 'C', 'A', 'S', 'M' para el cálculo de este indicador.
 - La consulta se adaptará para reflejar un rango de fechas dinámico una vez que se implemente en el entorno de
   producción. Actualmente, se usa un rango de fechas fijo para propósitos de prueba.
+- Solo se tienen en cuenta las transacciones válidas.
+
+### Temporalidad
+
+- El indicador se actualiza diariamente y proporciona una visión acumulativa de las ventas, reiniciándose al comienzo
+  de cada nuevo año fiscal.
+
+### Entidades implicadas
+
+- ventaLineaConClientes
 
 ### Consulta
 
@@ -76,17 +85,23 @@ GROUP BY Fecha, CadenaCD;
 
 Este KPI mide el número de transacciones realizadas donde los clientes han registrado su documento al momento de la
 compra, lo que nos permite monitorear la actividad de compra y la lealtad del cliente a lo largo del año. Este indicador
-excluye transacciones sin identificación del cliente y se reinicia cada año, proporcionando un análisis acumulativo
-desde el comienzo del año en curso hasta la fecha actual.
+excluye transacciones sin identificación del cliente.
 
 ### Observaciones
 
-- Se calcula diario. Para el cálculo acumulado del mes y año solo se deben sumar los días correspondientes al rango.
 - La consulta se actualizará para reflejar un rango dinámico de fechas cuando se implemente completamente.
   Actualmente, se utiliza un rango fijo para fines de prueba.
 - Cuando un cliente no pasa el documento de identidad el PartyId es nulo, pero se puede dar el caso de que el PartyId
   sea cero. Estos últimos también se descartan.
-- Tablas fuente: VentaLineaConClientes.
+
+### Temporalidad
+
+- Se calcula diario. Para el cálculo acumulado del mes y año solo se deben sumar los días correspondientes al rango.
+- se reinicia cada año, proporcionando un análisis acumulativo desde el comienzo del año en curso hasta la fecha actual.
+
+### Entidades implicadas
+
+- VentaLineaConClientes
 
 ### Consulta
 
@@ -126,13 +141,18 @@ detallado y permite una comparación directa de la retención entre periodos esp
 
 ### Observaciones
 
-- Se calculan los acumulados mes a mes y el año.
-- Para el acumulado anual se hace el cálculo del año corrido comparado con el año anterior. Es decir, si hoy es 22 de
-  noviembre de 2023, se compara desde el 1 de enero de 2023 hasta el 22 de nov de 2023 con todo el año 2022.
 - El acumulado mensual consiste comparar el mes corrido con el mes anterior.
 - Las consultas proporcionadas utilizan rangos de fechas fijos para las pruebas preliminares, pero se ajustarán
   para calcular dinámicamente el rango actual a medida que el KPI se implemente completamente.
-- Tablas fuente: VentaLineaConClientes.
+
+### Temporalidad
+
+- Se calculan los acumulados mes a mes y el año. No es necesario calcular el indicador diariamente.
+- Se reinicia cada año, proporcionando un análisis acumulativo desde el comienzo del año en curso hasta la fecha actual.
+
+### Entidades implicadas
+
+- VentaLineaConClientes
 
 ### Consulta SQL para el KPI Anual
 
@@ -239,14 +259,21 @@ estrategias de retención y se actualiza diariamente.
 
 ### Observaciones
 
-- Dada la naturaleza del indicador, se calculan los acumulados diarios, mensuales y anuales por separado.
 - Solo se tienen en cuenta las transacciones válidas.
 - Solo se tienen en cuenta las cadenas 'E', 'C', 'A', 'S', 'M'.
 - Cuando un cliente no pasa el documento de identidad el PartyId es nulo, pero se puede dar el caso de que el PartyId
   sea cero. En ambos casos se descarta la transacción.
 - Las consultas proporcionadas utilizan un rango de fechas fijo para pruebas preliminares, pero se ajustarán
   para calcular dinámicamente desde el inicio del año hasta la fecha actual en la implementación final.
-- Tablas fuente: VentaLineaConClientes.
+
+### Temporalidad
+
+- Dada la naturaleza del indicador, se calculan los acumulados diarios, mensuales y anuales por separado para evitar
+  contar clientes duplicados.
+
+### Entidades implicadas
+
+- VentaLineaConClientes
 
 ### Consulta SQL para el KPI Diario
 
@@ -341,12 +368,21 @@ fidelidad y compromiso con la marca.
 ### Observaciones
 
 - El cálculo solo se hace para la cadena 'E'.
-- Solo se tiene en cuenta el modelo 26 de segmentación.
+- Solo se tiene en cuenta el modelo 26 de segmentación y los deciles 8, 9 y 10.
 - Solo se tienen en cuenta las transacciones vivas y los PartyId válidos.
-- Se hace el cálculos de los acumulados diarios, mensuales y anuales dada la naturaleza del indicador.
 - Las consultas proporcionadas utilizan un rango de fechas fijo para pruebas preliminares, pero se ajustarán
   para calcular dinámicamente el rango actual a medida que el KPI se implemente completamente.
-- Tablas fuente: VentaLineaConClientes, Segmentacion, ModeloSegmento.
+
+### Temporalidad
+
+- Dada la naturaleza del indicador, se calculan los acumulados diarios, mensuales y anuales por separado para evitar
+  contar clientes duplicados.
+
+### Entidades implicadas
+
+- VentaLineaConClientes
+- Segmentacion
+- ModeloSegmento
 
 ### Consulta SQL para el KPI Diario
 
@@ -500,7 +536,7 @@ GROUP BY
     AnoId;
 ```
 
-## % de las Ventas de los Clientes Leales
+## Porcentaje de las Ventas de los Clientes Leales
 
 ### Descripción
 
@@ -511,13 +547,20 @@ año. Este indicador es crucial para entender el impacto de los clientes más va
 ### Observaciones
 
 - Cálculo del indicador solo para la cadena 'E'.
-- Solo se calcula el diario. Los acumulados del mes y del año se pueden calcular sumando los diarios en el rango
-  específico.
-- Se cálcula el año corrido y se reinicia cada año.
 - Tal como el indicador anterior, solo se tiene en cuenta el modelo de segmentación 26 y los deciles 8, 9 y 10.
+
+### Temporalidad
+
 - Esta consulta calcula el porcentaje de ventas diarias a clientes leales. Las consultas para el cálculo mensual
   y anual aún están pendientes de desarrollo y se ajustarán para reflejar dinámicamente el rango actual de fechas.
-- Tablas fuente: VentaLineaConClientes, Segmentacion, ModeloSegmento.
+- Se reinicia cada año, proporcionando un análisis acumulativo desde el comienzo del año en curso hasta la fecha actual.
+
+
+### Entidades implicadas
+
+- VentaLineaConClientes
+- Segmentacion
+- ModeloSegmento
 
 ### Consulta SQL para el KPI Diario
 
@@ -605,7 +648,7 @@ JOIN VentasTotalesClientesLeales vtcl
 
 ```
 
-## % Contactabilidad
+## Porcentaje de Contactabilidad
 
 ### Descripción
 
@@ -614,16 +657,23 @@ activos que tienen al menos un canal de comunicación registrado (email o celula
 
 ### Observaciones
 
-- Integración manual.
 - Al tratar con datos sensibles, desde la integración se ocultan los datos sensibles email y teléfono, si cuenta con
   email se reemplaza el dato por 1, si no, con 0. De la misma manera con el teléfono.
 - Solo se tienen en cuenta las cadenas 'E', 'C', 'A', 'S', 'M'.
-- Agrupación diaria, mensual y anual.
+
+### Temporalidad
+
+- Agrupación diaria.
 - Se calcula el año inmediatamente anterior (365 días).
+
+### Entidades implicadas
+
+- Contactabilidad
 
 ### Consulta SQL para el KPI Diario
 
 ```sql
+-- Preguntar la forma del cálculo anual, si es un acumulado hasta el día o el conteo diario
 WITH 
     ClientesActivos AS (
         SELECT 
@@ -661,87 +711,6 @@ GROUP BY
     cac.Fecha;
 ```
 
-### Consulta SQL para el KPI Mensual
-
-```sql
-WITH 
-    ClientesActivos AS (
-        SELECT 
-            DISTINCT PartyId,
-            Fecha
-        FROM `indicadores.ventaLineaConClientes`
-        WHERE 
-            Fecha BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 365 DAY) AND CURRENT_DATE
-            AND PartyId IS NOT NULL 
-            AND PartyId != 0 
-            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505) 
-            AND DireccionCD IN (10, 20, 30, 40, 50)
-            AND TipoNegociacion NOT IN (2) 
-            AND CadenaCD IN ('E', 'C', 'A', 'S', 'M')
-    ),
-    ClientesActivosContactables AS (
-        SELECT 
-            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(ca.Fecha, MONTH)) AS FechaMes,
-            ca.PartyID
-        FROM ClientesActivos ca
-        JOIN `indicadores.Contactabilidad` c ON ca.PartyId = c.PartyID
-        WHERE
-            indicadorcel = 1 OR indicadoremail = 1
-    )
-
-SELECT
-    cac.FechaMes,
-    ROUND(COUNT(cac.PartyId) / (
-        SELECT COUNT(PartyID) 
-        FROM ClientesActivos ca 
-        WHERE 
-            CAST(FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(ca.Fecha, MONTH)) AS DATE) = CAST(cac.FechaMes AS DATE)
-    ) * 100, 2) AS PorcentajeContactabilidad
-FROM ClientesActivosContactables cac
-GROUP BY
-    cac.FechaMes;
-```
-
-### Consulta SQL para el KPI Anual
-
-```sql
-WITH 
-    ClientesActivos AS (
-        SELECT 
-            DISTINCT PartyId,
-            Fecha
-        FROM `indicadores.ventaLineaConClientes`
-        WHERE 
-            Fecha BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 365 DAY) AND CURRENT_DATE
-            AND PartyId IS NOT NULL 
-            AND PartyId != 0 
-            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505) 
-            AND DireccionCD IN (10, 20, 30, 40, 50)
-            AND TipoNegociacion NOT IN (2) 
-            AND CadenaCD IN ('E', 'C', 'A', 'S', 'M')
-    ),
-    ClientesActivosContactables AS (
-        SELECT 
-            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(ca.Fecha, YEAR)) AS AnoId,
-            ca.PartyID
-        FROM ClientesActivos ca
-        JOIN `indicadores.Contactabilidad` c ON ca.PartyId = c.PartyID
-        WHERE
-            indicadorcel = 1 OR indicadoremail = 1
-    )
-SELECT
-    cac.AnoId,
-    ROUND(COUNT(cac.PartyId) / (
-        SELECT COUNT(PartyID) 
-        FROM ClientesActivos ca 
-        WHERE 
-            CAST(FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(ca.Fecha, YEAR)) AS DATE) = CAST(cac.AnoId AS DATE)
-    ) * 100, 2) AS PorcentajeContactabilidad
-FROM ClientesActivosContactables cac
-GROUP BY
-    cac.AnoId;
-```
-
 ## SOV (Share Of Voice)
 
 ### Descripción
@@ -753,9 +722,17 @@ visibilidad frente a sus competidores.
 ### Observaciones
 
 - La información proviene de IBOPE.
-- Se actualiza mensualmente, sin acumulación anual.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax y Superinter.
+
+### Temporalidad
+
+- Se actualiza mensualmente, sin acumulación anual.
 - Actualización mensual y probablemente diaria.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## SOI (Share Of Investment)
 
@@ -768,10 +745,17 @@ del mercado.
 ### Observaciones
 
 - La información proviene de IBOPE.
-- Se actualiza mensualmente, sin acumulación anual.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax y Superinter.
+
+### Temporalidad
+
+- Se actualiza mensualmente, sin acumulación anual.
 - Actualización mensual y probablemente diaria.
+
+### Entidades implicadas
+
 - Integración manual.
+- Externas.
 
 ## TOM (Top of Mind)
 
@@ -783,9 +767,16 @@ Este indicador es un termómetro clave de la notoriedad y el posicionamiento de 
 ### Observaciones
 
 - El indicador proviene de INVAMER.
-- Integración manual.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
+
+### Temporalidad
+
 - Acumulado mensual, el anual es un promedio de los meses corridos del año.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## BPD (Brand Purchase Decision)
 
@@ -798,9 +789,16 @@ preferencia del cliente hacia la marca.
 ### Observaciones
 
 - El indicador proviene de INVAMER.
-- Integración manual.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
+
+### Temporalidad
+
 - Acumulado mensual, el anual es un promedio de los meses corridos del año.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## Valor de la Marca (BEA)
 
@@ -812,9 +810,16 @@ el conocimiento de la marca, el uso, el posicionamiento y la conexión emocional
 ### Observaciones
 
 - El indicador proviene de INVAMER.
-- Integración manual.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
+
+### Temporalidad
+
 - Acumulado mensual, el anual es un promedio de los meses corridos del año.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## TOH (Top of Heart)
 
@@ -826,9 +831,16 @@ importante de la lealtad y el compromiso del cliente con la marca.
 ### Observaciones
 
 - El indicador proviene de INVAMER.
-- Integración manual.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
+
+### Temporalidad
+
 - Acumulado mensual, el anual es un promedio de los meses corridos del año.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## Engagement Rate en Redes Sociales (Social Media)
 
@@ -839,9 +851,17 @@ redes sociales, proporcionando una medida de qué tan efectivamente la marca inv
 
 ### Observaciones
 
-- Solo va el Engagement Rate (Impresiones totales) de cada mes, sin considerar un acumulado.
+- Solo va el Engagement Rate (Impresiones totales).
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax y Superinter.
+
+### Temporalidad
+
+- Cálculo mensual.
+
+### Entidades implicadas
+
 - Integración manual.
+- Externas.
 
 ## CLV (Customer Life Time Value)
 
@@ -854,8 +874,15 @@ ayuda a entender el valor a largo plazo de mantener relaciones positivas con los
 
 - Se centra en el % Future CLV.
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax y Superinter.
+
+### Temporalidad
+
 - Se actualiza mensualmente sin un acumulado anual.
+
+### Entidades implicadas
+
 - Integración manual.
+- Externas.
 
 ## Market Share (Nielsen)
 
@@ -868,10 +895,18 @@ posición de la marca dentro de este.
 ### Observaciones
 
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
-- Se actualiza mensualmente reflejando el comportamiento del mercado del mes anterior. El acumulado anual es el
-  promedio de los meses corridos.
 - Los datos provienen de Nielsen.
 - Integración manual.
+
+### Temporalidad
+
+- Se actualiza mensualmente reflejando el comportamiento del mercado del mes anterior. El acumulado anual es el
+  promedio de los meses corridos.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## INS (Índice de Satisfacción)
 
@@ -884,10 +919,17 @@ indicador es vital para entender la percepción y la aceptación de la marca ent
 
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
 - Los datos provienen de Qualtrics.
-- Se actualiza mensualmente, reflejando el comportamiento acumulado del año.
 - No se tiene en cuenta INS Canales, solo INS.
-- Integración manual.
+
+### Temporalidad
+
+- Se actualiza mensualmente, reflejando el comportamiento acumulado del año.
 - La comparación interanual se realiza mes a mes.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## NPS (Net Promoter Score)
 
@@ -900,10 +942,17 @@ lealtad del cliente. Un NPS alto indica una base de clientes leales y satisfecho
 
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
 - Los datos provienen de Qualtrics.
-- Se actualiza mensualmente, reflejando el comportamiento acumulado del año.
 - No se tiene en cuenta NPS Canales, solo NPS.
-- Integración manual.
+
+### Temporalidad
+
+- Se actualiza mensualmente, reflejando el comportamiento acumulado del año.
 - La comparación interanual se realiza mes a mes.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
 
 ## INS Omnicanal
 
@@ -915,7 +964,14 @@ clientes. Este indicador global proporciona una visión integral de la experienc
 ### Observaciones
 
 - Solo se tienen en cuenta las cadenas Éxito, Carulla, Surtimax, Superinter y Surtimayorista.
-- Se actualiza mensualmente, reflejando el comportamiento acumulado del año.
-- Integración manual.
 - Los datos provienen de Qualtrics.
+
+### Temporalidad
+
+- Se actualiza mensualmente, reflejando el comportamiento acumulado del año.
 - La comparación interanual se realiza mes a mes.
+
+### Entidades implicadas
+
+- Integración manual.
+- Externas.
