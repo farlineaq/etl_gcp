@@ -65,6 +65,7 @@ WITH VentasClientes AS (
     WHERE 
         Fecha >= DATE_FORMAT(CURRENT_DATE, '%Y-01-01')
         AND Fecha <= CURRENT_DATE
+        -- Consulta financiera
         AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
         AND DireccionCD IN (10, 20, 30, 40, 50)
         AND TipoNegociacion NOT IN (2)
@@ -112,6 +113,7 @@ WITH VentasClientes AS (
         Fecha
     FROM `indicadores.ventaLineaConClientes`
     WHERE 
+        -- Hay PartyId de 2 dígitos y es normal
         PartyId IS NOT NULL
         AND PartyId != 0
         AND Fecha >= DATE_FORMAT(CURRENT_DATE, '%Y-01-01')
@@ -360,15 +362,18 @@ GROUP BY
 
 ### Descripción
 
-Este KPI identifica a los clientes leales a través de su actividad de compra en la cadena. Se centra en los clientes de
-los deciles superiores (8, 9, 10) y mide su actividad de compra durante diferentes periodos. Los clientes leales se
-definen como aquellos que han realizado compras en más de un mes durante el último año, lo que indica un alto grado de
-fidelidad y compromiso con la marca.
+Este KPI identifica a los clientes leales a través de su actividad de compra en la cadena en el caso de la cadena Éxito,
+e identifica la segmentación de los clientes en caso de Carulla, Surtimax y Superinter.
 
 ### Observaciones
 
-- El cálculo solo se hace para la cadena 'E'.
-- Solo se tiene en cuenta el modelo 26 de segmentación y los deciles 8, 9 y 10.
+- Para la cadena 'E' Los clientes leales se definen como aquellos en los deciles superiores (8, 9, 10)  del modelo de
+  segmentación 26 y que han realizado compras en más de un mes durante el año.
+- Para las cadenas 'C', 'A' y 'S' se calcula el porcentaje de clientes totales atribuibles a cada segmento en función
+  del total de clientes.
+- Para la cadena 'C' se tiene el modelo de segmentación 3 con los segmentos BLACK, VERDE Y DIAMANTE.
+- Para la cadena 'A' se tiene el modelo de segmentación 24 con los segmentos AAA Y AA.
+- Para la cadena 'S' se tiene el modelo de segmentación 25 con los segmentos AAA y AA.
 - Solo se tienen en cuenta las transacciones vivas y los PartyId válidos.
 - Las consultas proporcionadas utilizan un rango de fechas fijo para pruebas preliminares, pero se ajustarán
   para calcular dinámicamente el rango actual a medida que el KPI se implemente completamente.
@@ -384,176 +389,654 @@ fidelidad y compromiso con la marca.
 - Segmentacion
 - ModeloSegmento
 
-### Consulta SQL para el KPI Diario
+### Cadena
+
+#### Éxito
+
+##### Consulta SQL para el KPI Diario
 
 ```sql
-WITH 
+WITH
     ClientesTop AS (
-        SELECT 
+        SELECT
             vc.PartyId
-        FROM 
+        FROM
             `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
-        WHERE 
+        WHERE
             vc.PartyId IS NOT NULL
             AND vc.PartyId != 0
-            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2022-01-01'
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
             AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
             AND vc.DireccionCD IN (10, 20, 30, 40, 50)
             AND vc.TipoNegociacion NOT IN (2)
-            AND CadenaCD IN ('E')
-        GROUP BY 
+            AND CadenaCD = 'E'
+        GROUP BY
             vc.PartyId
-        HAVING 
+        HAVING
             COUNT(DISTINCT EXTRACT(MONTH FROM vc.Fecha)) > 1
     ),
     ClientesLeales AS (
-        SELECT 
-            ct.PartyId
-        FROM 
+        SELECT
+            ct.PartyId,
+            CASE 
+                WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+                ELSE 'ClienteNoLeal'
+            END AS Segmento
+        FROM
             ClientesTop ct
             JOIN `indicadores.Segmentacion` s ON ct.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
-        WHERE 
+        WHERE
             ms.Modelid = 26
-            AND ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10')
     ),
-    TransaccionesClientesLeales AS (
-        SELECT 
-            vc.PartyId,
-            vc.Fecha
+    TransanccionesTotales AS (
+        SELECT
+            vc.Fecha,
+            COUNT(DISTINCT vc.PartyId) AS ConteoClientes,
+            cl.Segmento
         FROM 
-            `indicadores.ventaLineaConClientes` vc
-            JOIN ClientesLeales cl ON vc.PartyId = cl.PartyId
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        JOIN ClientesLeales cl
+            ON vc.PartyId = cl.PartyId
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND vc.Fecha BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND vc.CadenaCD = 'E'
+        GROUP BY
+            vc.Fecha,
+            cl.Segmento
+    ),
+    DistribucionClientes AS (
+        SELECT
+            Fecha,
+            ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajeClientesLeales,
+            Segmento
+        FROM
+            TransanccionesTotales
     )
-
-SELECT 
+SELECT
     Fecha,
-    COUNT(DISTINCT PartyId) AS NumeroClientesLeales
-FROM 
-    TransaccionesClientesLeales
-GROUP BY 
-    Fecha;
+    PorcentajeClientesLeales
+FROM
+    DistribucionClientes
+WHERE
+    Segmento = 'ClienteLeal';
 ```
 
-### Consulta SQL para el KPI Mensual
+##### Consulta SQL para el KPI Mensual
 
 ```sql
-WITH 
+WITH
     ClientesTop AS (
-        SELECT 
+        SELECT
             vc.PartyId
-        FROM 
+        FROM
             `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
-        WHERE 
+        WHERE
             vc.PartyId IS NOT NULL
             AND vc.PartyId != 0
-            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2022-01-01'
+            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
             AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
             AND vc.DireccionCD IN (10, 20, 30, 40, 50)
             AND vc.TipoNegociacion NOT IN (2)
-            AND CadenaCD IN ('E')
-        GROUP BY 
+            AND CadenaCD = 'E'
+        GROUP BY
             vc.PartyId
-        HAVING 
+        HAVING
             COUNT(DISTINCT EXTRACT(MONTH FROM vc.Fecha)) > 1
     ),
     ClientesLeales AS (
-        SELECT 
-            ct.PartyId
-        FROM 
+        SELECT
+            ct.PartyId,
+            CASE 
+                WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+                ELSE 'ClienteNoLeal'
+            END AS Segmento
+        FROM
             ClientesTop ct
             JOIN `indicadores.Segmentacion` s ON ct.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
-        WHERE 
+        WHERE
             ms.Modelid = 26
-            AND ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10')
     ),
-    TransaccionesClientesLeales AS (
-        SELECT 
-            vc.PartyId,
-            vc.Fecha
-        FROM 
-            `indicadores.ventaLineaConClientes` vc
-            JOIN ClientesLeales cl ON vc.PartyId = cl.PartyId
-    )
-
-SELECT 
-    FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(Fecha, MONTH)) AS FechaMes,
-    COUNT(DISTINCT PartyId) AS NumeroClientesUnicos
-FROM 
-    TransaccionesClientesLeales
-GROUP BY 
-    FechaMes;
-```
-
-### Consulta SQL para el KPI Anual
-
-```sql
-WITH 
-    ClientesTop AS (
-        SELECT 
-            vc.PartyId
+    TransanccionesTotales AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(Fecha, MONTH)) AS FechaMes,
+            COUNT(DISTINCT vc.PartyId) AS ConteoClientes,
+            cl.Segmento
         FROM 
             `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
-        WHERE 
+        JOIN ClientesLeales cl
+            ON vc.PartyId = cl.PartyId
+        WHERE
             vc.PartyId IS NOT NULL
             AND vc.PartyId != 0
-            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2022-01-01'
+            AND vc.Fecha BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
             AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
             AND vc.DireccionCD IN (10, 20, 30, 40, 50)
             AND vc.TipoNegociacion NOT IN (2)
-            AND CadenaCD IN ('E')
-        GROUP BY 
+            AND vc.CadenaCD = 'E'
+        GROUP BY
+            FechaMes,
+            cl.Segmento
+    ),
+    DistribucionClientes AS (
+        SELECT
+            FechaMes,
+            ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY FechaMes)) * 100, 2) AS PorcentajeClientesLeales,
+            Segmento
+        FROM
+            TransanccionesTotales
+    )
+SELECT
+    FechaMes,
+    PorcentajeClientesLeales
+FROM
+    DistribucionClientes
+WHERE
+    Segmento = 'ClienteLeal';
+
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesTop AS (
+        SELECT
             vc.PartyId
-        HAVING 
+        FROM
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD = 'E'
+        GROUP BY
+            vc.PartyId
+        HAVING
             COUNT(DISTINCT EXTRACT(MONTH FROM vc.Fecha)) > 1
     ),
     ClientesLeales AS (
-        SELECT 
-            ct.PartyId
-        FROM 
+        SELECT
+            ct.PartyId,
+            CASE 
+                WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+                ELSE 'ClienteNoLeal'
+            END AS Segmento
+        FROM
             ClientesTop ct
             JOIN `indicadores.Segmentacion` s ON ct.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
-        WHERE 
+        WHERE
             ms.Modelid = 26
-            AND ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10')
     ),
-    TransaccionesClientesLeales AS (
-        SELECT 
-            vc.PartyId,
-            vc.Fecha
+    TransanccionesTotales AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(Fecha, YEAR)) AS AnoId,
+            COUNT(DISTINCT vc.PartyId) AS ConteoClientes,
+            cl.Segmento
         FROM 
-            `indicadores.ventaLineaConClientes` vc
-            JOIN ClientesLeales cl ON vc.PartyId = cl.PartyId
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        JOIN ClientesLeales cl
+            ON vc.PartyId = cl.PartyId
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND vc.Fecha BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND vc.CadenaCD = 'E'
+        GROUP BY
+            AnoId,
+            cl.Segmento
+    ),
+    DistribucionClientes AS (
+        SELECT
+            AnoId,
+            ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY AnoId)) * 100, 2) AS PorcentajeClientesLeales,
+            Segmento
+        FROM
+            TransanccionesTotales
     )
+SELECT
+    AnoId,
+    PorcentajeClientesLeales
+FROM
+    DistribucionClientes
+WHERE
+    Segmento = 'ClienteLeal';
+```
 
-SELECT 
-    FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(Fecha, YEAR)) AS AnoId,
-    COUNT(DISTINCT PartyId) AS NumeroClientesUnicos
-FROM TransaccionesClientesLeales
-GROUP BY 
-    AnoId;
+#### Carulla
+
+##### Consulta SQL para el KPI Diario
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('C')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            cv.Fecha,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 3
+            AND ms.ModelSegmentoDesc IN ('VERDE', 'DIAMANTE', 'BLACK')
+        GROUP BY
+            cv.Fecha,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    Fecha,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Mensual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('C')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(cv.Fecha, MONTH)) AS FechaMes,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 3
+            AND ms.ModelSegmentoDesc IN ('VERDE', 'DIAMANTE', 'BLACK')
+        GROUP BY
+            FechaMes,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    FechaMes,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY FechaMes)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('C')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(Fecha, YEAR)) AS AnoId,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 3
+            AND ms.ModelSegmentoDesc IN ('VERDE', 'DIAMANTE', 'BLACK')
+        GROUP BY
+            AnoId,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    AnoId,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY AnoId)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+```
+
+#### Surtimax
+
+##### Consulta SQL para el KPI Diario
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('S')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            cv.Fecha,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 24
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            cv.Fecha,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    Fecha,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+  
+```
+
+##### Consulta SQL para el KPI Mensual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('S')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(cv.Fecha, MONTH)) AS FechaMes,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 24
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            FechaMes,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    FechaMes,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY FechaMes)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('S')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(Fecha, YEAR)) AS AnoId,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 24
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            AnoId,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    AnoId,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY AnoId)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+
+```
+
+#### Superinter
+
+##### Consulta SQL para el KPI Diario
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('A')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            cv.Fecha,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 25
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            cv.Fecha,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    Fecha,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Mensual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('A')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(cv.Fecha, MONTH)) AS FechaMes,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 25
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            FechaMes,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    FechaMes,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY FechaMes)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            vc.Fecha,
+            vc.PartyId
+        FROM
+            `indicadores.ventaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('A')
+    ),
+    SegmentosClientes AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(Fecha, YEAR)) AS AnoId,
+            COUNT(DISTINCT cv.PartyId) AS ConteoClientes,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 25
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            AnoId,
+            ms.ModelSegmentoDesc
+    )
+SELECT
+    AnoId,
+    ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY AnoId)) * 100, 2) AS PorcentajePorSegmento,
+    ModelSegmentoDesc
+FROM
+    SegmentosClientes;
 ```
 
 ## Porcentaje de las Ventas de los Clientes Leales
 
 ### Descripción
 
-Este KPI calcula el porcentaje de ventas totales atribuibles a clientes leales en la cadena Éxito. Los clientes leales
-se definen como aquellos en los deciles superiores (8, 9, 10) y que han realizado compras en más de un mes durante el
-año. Este indicador es crucial para entender el impacto de los clientes más valiosos en las ventas totales.
+Este KPI calcula el porcentaje de ventas totales atribuibles a clientes leales en el caso de la cadena Éxito, y a ventas
+por segmento en el caso de Carulla, Surtimax y Superinter.
+
 
 ### Observaciones
 
-- Cálculo del indicador solo para la cadena 'E'.
-- Tal como el indicador anterior, solo se tiene en cuenta el modelo de segmentación 26 y los deciles 8, 9 y 10.
+- Para la cadena 'E' Los clientes leales se definen como aquellos en los deciles superiores (8, 9, 10)  del modelo de
+  segmentación 26 y que han realizado compras en más de un mes durante el año.
+- Para las cadenas 'C', 'A' y 'S' se calcula el porcentaje de ventas totales atribuibles a cada segmento en función del
+  total de ventas.
+- Para la cadena 'C' se tiene el modelo de segmentación 3 con los segmentos BLACK, VERDE Y DIAMANTE.
+- Para la cadena 'A' se tiene el modelo de segmentación 24 con los segmentos AAA Y AA.
+- Para la cadena 'S' se tiene el modelo de segmentación 25 con los segmentos AAA y AA.
+- Solo se tienen en cuenta las transacciones vivas y los PartyId válidos.
+- Las consultas proporcionadas utilizan un rango de fechas fijo para pruebas preliminares, pero se ajustarán
+  para calcular dinámicamente el rango actual a medida que el KPI se implemente completamente.
 
 ### Temporalidad
 
-- Esta consulta calcula el porcentaje de ventas diarias a clientes leales. Las consultas para el cálculo mensual
-  y anual aún están pendientes de desarrollo y se ajustarán para reflejar dinámicamente el rango actual de fechas.
-- Se reinicia cada año, proporcionando un análisis acumulativo desde el comienzo del año en curso hasta la fecha actual.
+- Esta consulta calcula el porcentaje de ventas diarias, mensuales y anuales.
+- Se reinicia cada año.
 
 
 ### Entidades implicadas
@@ -562,90 +1045,659 @@ año. Este indicador es crucial para entender el impacto de los clientes más va
 - Segmentacion
 - ModeloSegmento
 
-### Consulta SQL para el KPI Diario
+### Cadena
+
+#### Éxito
+
+##### Consulta SQL para el KPI Diario
 
 ```sql
 WITH
-    -- Clientes top
     ClientesTop AS (
-        SELECT 
+        SELECT
             vc.PartyId
-        FROM `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
-        WHERE 
+        FROM
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        WHERE
             vc.PartyId IS NOT NULL
             AND vc.PartyId != 0
-            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2022-01-01'
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD = 'E'
+        GROUP BY
+            vc.PartyId
+        HAVING
+            COUNT(DISTINCT EXTRACT(MONTH FROM vc.Fecha)) > 1
+    ),
+    ClientesLeales AS (
+        SELECT
+            ct.PartyId,
+            CASE 
+                WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+                ELSE 'ClienteNoLeal'
+            END AS Segmento
+        FROM
+            ClientesTop ct
+            JOIN `indicadores.Segmentacion` s ON ct.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 26
+    ),
+    TransanccionesTotales AS (
+        SELECT
+            vc.Fecha,
+            SUM(vc.VentaSinImpuesto) AS Ventas,
+            cl.Segmento
+        FROM 
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        JOIN ClientesLeales cl
+            ON vc.PartyId = cl.PartyId
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND vc.Fecha BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
             AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
             AND vc.DireccionCD IN (10, 20, 30, 40, 50)
             AND vc.TipoNegociacion NOT IN (2)
             AND vc.CadenaCD = 'E'
-        GROUP BY 
+        GROUP BY
+            vc.Fecha,
+            cl.Segmento
+    ),
+    DistribucionClientes AS (
+        SELECT
+            Fecha,
+            ROUND((Ventas / SUM(Ventas) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajeClientesLeales,
+            Segmento
+        FROM
+            TransanccionesTotales
+    )
+SELECT
+    Fecha,
+    PorcentajeClientesLeales
+FROM
+    DistribucionClientes
+WHERE
+    Segmento = 'ClienteLeal'
+```
+
+##### Consulta SQL para el KPI Mensual
+
+```sql
+WITH
+    ClientesTop AS (
+        SELECT
             vc.PartyId
-        HAVING 
+        FROM
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD = 'E'
+        GROUP BY
+            vc.PartyId
+        HAVING
             COUNT(DISTINCT EXTRACT(MONTH FROM vc.Fecha)) > 1
     ),
-
-    -- Clientes leales
     ClientesLeales AS (
-        SELECT 
-            ct.PartyId
-        FROM ClientesTop ct
-        JOIN `indicadores.Segmentacion` s 
-            ON ct.PartyId = s.PartyID
-        JOIN `indicadores.ModeloSegmento` ms 
-            ON s.ModeloSegmentoid = ms.ModeloSegmentoid
-        WHERE 
+        SELECT
+            ct.PartyId,
+            CASE 
+                WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+                ELSE 'ClienteNoLeal'
+            END AS Segmento
+        FROM
+            ClientesTop ct
+            JOIN `indicadores.Segmentacion` s ON ct.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
             ms.Modelid = 26
-            AND ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10')
     ),
+    TransanccionesTotales AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(vc.Fecha, MONTH)) AS FechaMes,
+            SUM(vc.VentaSinImpuesto) AS Ventas,
+            cl.Segmento
+        FROM 
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        JOIN ClientesLeales cl
+            ON vc.PartyId = cl.PartyId
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND vc.Fecha BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND vc.CadenaCD = 'E'
+        GROUP BY
+            FechaMes,
+            cl.Segmento
+    ),
+    DistribucionClientes AS (
+        SELECT
+            FechaMes,
+            ROUND((Ventas / SUM(Ventas) OVER(PARTITION BY FechaMes)) * 100, 2) AS PorcentajeClientesLeales,
+            Segmento
+        FROM
+            TransanccionesTotales
+    )
+SELECT
+    FechaMes,
+    PorcentajeClientesLeales
+FROM
+    DistribucionClientes
+WHERE
+    Segmento = 'ClienteLeal';
+```
 
-    -- Ventas totales
-    VentasTotales AS (
-        SELECT 
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesTop AS (
+        SELECT
+            vc.PartyId
+        FROM
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND DATE(vc.Fecha) BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND CadenaCD = 'E'
+        GROUP BY
+            vc.PartyId
+        HAVING
+            COUNT(DISTINCT EXTRACT(MONTH FROM vc.Fecha)) > 1
+    ),
+    ClientesLeales AS (
+        SELECT
+            ct.PartyId,
+            CASE 
+                WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+                ELSE 'ClienteNoLeal'
+            END AS Segmento
+        FROM
+            ClientesTop ct
+            JOIN `indicadores.Segmentacion` s ON ct.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 26
+    ),
+    TransanccionesTotales AS (
+        SELECT
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(vc.Fecha, YEAR)) AS AnoId,
+            SUM(vc.VentaSinImpuesto) AS Ventas,
+            cl.Segmento
+        FROM 
+            `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes` vc
+        JOIN ClientesLeales cl
+            ON vc.PartyId = cl.PartyId
+        WHERE
+            vc.PartyId IS NOT NULL
+            AND vc.PartyId != 0
+            AND vc.Fecha BETWEEN DATE '2020-01-01' AND DATE '2023-01-01'
+            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
+            AND vc.TipoNegociacion NOT IN (2)
+            AND vc.CadenaCD = 'E'
+        GROUP BY
+            AnoId,
+            cl.Segmento
+    ),
+    DistribucionClientes AS (
+        SELECT
+            AnoId,
+            ROUND((Ventas / SUM(Ventas) OVER(PARTITION BY AnoId)) * 100, 2) AS PorcentajeClientesLeales,
+            Segmento
+        FROM
+            TransanccionesTotales
+    )
+SELECT
+    AnoId,
+    PorcentajeClientesLeales
+FROM
+    DistribucionClientes
+WHERE
+    Segmento = 'ClienteLeal';
+```
+
+#### Carulla
+
+##### Consulta SQL para el KPI Diario
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
             Fecha,
-            SUM(VentaSinImpuesto) AS VentaTotal
-        FROM `indicadores.ventaLineaConClientes`
-        WHERE 
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
             PartyId IS NOT NULL
             AND PartyId != 0
-            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2022-01-01'
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
             AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
             AND DireccionCD IN (10, 20, 30, 40, 50)
             AND TipoNegociacion NOT IN (2)
-            AND CadenaCD = 'E'
-        GROUP BY 
-            Fecha
+            AND CadenaCD IN ('C')
     ),
 
-    -- Ventas totales clientes leales
-    VentasTotalesClientesLeales AS (
-        SELECT 
-            vc.Fecha,
-            SUM(vc.VentaSinImpuesto) AS VentaTotal
-        FROM `indicadores.ventaLineaConClientes` vc
-        JOIN ClientesLeales cl 
-            ON vc.PartyId = cl.PartyId
-        WHERE 
-            vc.PartyId IS NOT NULL
-            AND vc.PartyId != 0
-            AND DATE(vc.Fecha) BETWEEN DATE '2021-01-01' AND DATE '2022-01-01'
-            AND vc.SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
-            AND vc.DireccionCD IN (10, 20, 30, 40, 50)
-            AND vc.TipoNegociacion NOT IN (2)
-            AND vc.CadenaCD = 'E'
-        GROUP BY 
-            vc.Fecha
+    SegmentosClientes AS (
+        SELECT
+            cv.Fecha,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 3
+            AND ms.ModelSegmentoDesc IN ('VERDE', 'DIAMANTE', 'BLACK')
+        GROUP BY
+            cv.Fecha,
+            ms.ModelSegmentoDesc
     )
 
--- % ventas clientes leales
-SELECT 
-    vt.Fecha,
-    ROUND(vtcl.VentaTotal / vt.VentaTotal * 100, 2) AS PorcentajeVentaLeales
-FROM VentasTotales vt
-JOIN VentasTotalesClientesLeales vtcl 
-    ON vt.Fecha = vtcl.Fecha
+SELECT
+    Fecha,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY Fecha)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
 
+##### Consulta SQL para el KPI Mensual
 
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('C')
+    ),
+
+    SegmentosClientes AS (
+        SELECT            
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(cv.Fecha, MONTH)) AS FechaMes,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 3
+            AND ms.ModelSegmentoDesc IN ('VERDE', 'DIAMANTE', 'BLACK')
+        GROUP BY
+            FechaMes,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    FechaMes,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY FechaMes)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('C')
+    ),
+
+    SegmentosClientes AS (
+        SELECT            
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(cv.Fecha, YEAR)) AS AnoId,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 3
+            AND ms.ModelSegmentoDesc IN ('VERDE', 'DIAMANTE', 'BLACK')
+        GROUP BY
+            AnoId,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    AnoId,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY AnoId)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+#### Surtimax
+
+##### Consulta SQL para el KPI Diario
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('S')
+    ),
+
+    SegmentosClientes AS (
+        SELECT
+            cv.Fecha,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 24
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            cv.Fecha,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    Fecha,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY Fecha)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Mensual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('S')
+    ),
+
+    SegmentosClientes AS (
+        SELECT            
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(cv.Fecha, MONTH)) AS FechaMes,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 24
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            FechaMes,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    FechaMes,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY FechaMes)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('S')
+    ),
+
+    SegmentosClientes AS (
+        SELECT            
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(cv.Fecha, YEAR)) AS AnoId,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 24
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            AnoId,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    AnoId,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY AnoId)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+#### Superinter
+
+##### Consulta SQL para el KPI Diario
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('A')
+    ),
+
+    SegmentosClientes AS (
+        SELECT
+            cv.Fecha,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 25
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            cv.Fecha,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    Fecha,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY Fecha)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Mensual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('A')
+    ),
+
+    SegmentosClientes AS (
+        SELECT            
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(cv.Fecha, MONTH)) AS FechaMes,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 25
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            FechaMes,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    FechaMes,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY FechaMes)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
+```
+
+##### Consulta SQL para el KPI Anual
+
+```sql
+WITH
+    ClientesValidos AS (
+        SELECT
+            Fecha,
+            PartyId,
+            VentaSinImpuesto
+        FROM
+            `indicadores.ventaLineaConClientes`
+        WHERE
+            PartyId IS NOT NULL
+            AND PartyId != 0
+            AND DATE(Fecha) BETWEEN DATE '2021-01-01' AND DATE '2023-01-01'
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505)
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2)
+            AND CadenaCD IN ('A')
+    ),
+
+    SegmentosClientes AS (
+        SELECT            
+            FORMAT_TIMESTAMP('%Y-01-01', TIMESTAMP_TRUNC(cv.Fecha, YEAR)) AS AnoId,
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
+            ms.ModelSegmentoDesc
+        FROM
+            ClientesValidos cv
+            JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
+            JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
+        WHERE
+            ms.Modelid = 25
+            AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
+        GROUP BY
+            AnoId,
+            ms.ModelSegmentoDesc
+    )
+
+SELECT
+    AnoId,
+    ModelSegmentoDesc,
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY AnoId)) * 100, 2) AS VentasPorSegmento
+    
+FROM
+    SegmentosClientes;
 ```
 
 ## Porcentaje de Contactabilidad
@@ -663,52 +1715,66 @@ activos que tienen al menos un canal de comunicación registrado (email o celula
 
 ### Temporalidad
 
-- Agrupación diaria.
-- Se calcula el año inmediatamente anterior (365 días).
+- Agrupación mensual.
+- Los clientes activos son aquellos que compraron al menos una vez en los últimos 365 días.
+- El indicador es acumulado al cierre del mes durante el año calendario, es decir, cada cálculo mensual refleja el
+  porcentaje de contactabilidad acumulado hasta el mes en curso.
 
 ### Entidades implicadas
 
 - Contactabilidad
+- ventaLineaConClientes
 
-### Consulta SQL para el KPI Diario
+### Consulta SQL para el KPI mensual
 
 ```sql
--- Preguntar la forma del cálculo anual, si es un acumulado hasta el día o el conteo diario
 WITH 
     ClientesActivos AS (
         SELECT 
             DISTINCT PartyId,
             Fecha
-        FROM `indicadores.ventaLineaConClientes`
+        FROM `co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes`
         WHERE 
-          Fecha BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 365 DAY) AND CURRENT_DATE
-          AND PartyId IS NOT NULL 
-          AND PartyId != 0 
-          AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505) 
-          AND DireccionCD IN (10, 20, 30, 40, 50)
-          AND TipoNegociacion NOT IN (2) 
-          AND CadenaCD IN ('E', 'C', 'A', 'S', 'M')
+            -- Fecha BETWEEN DATE_SUB(CURRENT_DATE, INTERVAL 365 DAY) AND CURRENT_DATE
+            Fecha BETWEEN DATE_SUB(DATE '2022-03-31', INTERVAL 365 DAY) AND DATE '2022-03-31'
+            AND PartyId IS NOT NULL 
+            AND PartyId != 0 
+            AND SublineaCD NOT IN (1, 2, 3, 4, 5, 6, 99, 505) 
+            AND DireccionCD IN (10, 20, 30, 40, 50)
+            AND TipoNegociacion NOT IN (2) 
+            AND CadenaCD IN ('E', 'C', 'A', 'S', 'M')
     ),
     ClientesActivosContactables AS (
         SELECT 
-            ca.Fecha,
+            FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(ca.Fecha, MONTH)) AS FechaMes,
             ca.PartyID
         FROM ClientesActivos ca
         JOIN `indicadores.Contactabilidad` c ON ca.PartyId = c.PartyID
         WHERE
-            indicadorcel = 1 OR indicadoremail = 1
+            (indicadorcel = 1 OR indicadoremail = 1)
+            -- AND ca.Fecha >= DATE_TRUNC(CURRENT_DATE, YEAR)
+            AND ca.Fecha BETWEEN '2021-09-29' AND '2022-03-31'
+    ),
+    AcumuladoHastaMes AS (
+        SELECT
+            a.FechaMes,
+            COUNT(DISTINCT b.PartyID) AS AcumuladoContactables
+        FROM ClientesActivosContactables a
+        JOIN ClientesActivosContactables b ON a.FechaMes >= b.FechaMes
+        GROUP BY a.FechaMes
     )
 
-SELECT 
-    cac.Fecha, 
-    ROUND(COUNT(cac.PartyId) / (
-        SELECT COUNT(PartyID) 
-        FROM ClientesActivos ca 
-        WHERE ca.Fecha = cac.Fecha
+SELECT
+    ahm.FechaMes,
+    ROUND(ahm.AcumuladoContactables / (
+        SELECT COUNT(DISTINCT PartyID) 
+        FROM ClientesActivos
+        WHERE 
+          -- Fecha >= DATE_TRUNC(CURRENT_DATE, YEAR)
+          Fecha BETWEEN '2021-09-29' AND '2022-03-31'
+          AND CAST(FORMAT_TIMESTAMP('%Y-%m-01', TIMESTAMP_TRUNC(Fecha, MONTH)) AS DATE) <= CAST(ahm.FechaMes AS DATE)
     ) * 100, 2) AS PorcentajeContactabilidad
-FROM ClientesActivosContactables cac
-GROUP BY
-    cac.Fecha;
+FROM AcumuladoHastaMes ahm;
 ```
 
 ## SOV (Share Of Voice)
@@ -727,11 +1793,11 @@ visibilidad frente a sus competidores.
 ### Temporalidad
 
 - Se actualiza mensualmente, sin acumulación anual.
-- Actualización mensual y probablemente diaria.
+- Actualización mensual y probablemente diaria. **nota: Hágamos la estructura diaria, pero la montamos mensual**
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## SOI (Share Of Investment)
@@ -750,11 +1816,11 @@ del mercado.
 ### Temporalidad
 
 - Se actualiza mensualmente, sin acumulación anual.
-- Actualización mensual y probablemente diaria.
+- Actualización mensual y probablemente diaria. **nota: Hágamos la estructura diaria, pero la montamos mensual**
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## TOM (Top of Mind)
@@ -775,7 +1841,7 @@ Este indicador es un termómetro clave de la notoriedad y el posicionamiento de 
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## BPD (Brand Purchase Decision)
@@ -797,7 +1863,7 @@ preferencia del cliente hacia la marca.
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## Valor de la Marca (BEA)
@@ -818,7 +1884,7 @@ el conocimiento de la marca, el uso, el posicionamiento y la conexión emocional
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## TOH (Top of Heart)
@@ -839,7 +1905,7 @@ importante de la lealtad y el compromiso del cliente con la marca.
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## Engagement Rate en Redes Sociales (Social Media)
@@ -860,7 +1926,7 @@ redes sociales, proporcionando una medida de qué tan efectivamente la marca inv
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## CLV (Customer Life Time Value)
@@ -881,7 +1947,7 @@ ayuda a entender el valor a largo plazo de mantener relaciones positivas con los
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## Market Share (Nielsen)
@@ -905,7 +1971,7 @@ posición de la marca dentro de este.
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## INS (Índice de Satisfacción)
@@ -928,7 +1994,7 @@ indicador es vital para entender la percepción y la aceptación de la marca ent
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## NPS (Net Promoter Score)
@@ -951,7 +2017,7 @@ lealtad del cliente. Un NPS alto indica una base de clientes leales y satisfecho
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
 
 ## INS Omnicanal
@@ -973,5 +2039,5 @@ clientes. Este indicador global proporciona una visión integral de la experienc
 
 ### Entidades implicadas
 
-- Integración manual.
+- Integración manual en aras de implementar una integración automática.
 - Externas.
