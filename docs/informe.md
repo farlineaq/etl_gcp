@@ -372,8 +372,8 @@ e identifica la segmentación de los clientes en caso de Carulla, Surtimax y Sup
 - Para las cadenas 'C', 'A' y 'S' se calcula el porcentaje de clientes totales atribuibles a cada segmento en función
   del total de clientes.
 - Para la cadena 'C' se tiene el modelo de segmentación 3 con los segmentos BLACK, VERDE Y DIAMANTE.
-- Para la cadena 'A' se tiene el modelo de segmentación 24 con los segmentos AAA Y AA.
-- Para la cadena 'S' se tiene el modelo de segmentación 25 con los segmentos AAA y AA.
+- Para la cadena 'A' se tiene el modelo de segmentación 25 con los segmentos AAA Y AA.
+- Para la cadena 'S' se tiene el modelo de segmentación 24 con los segmentos AAA y AA.
 - Solo se tienen en cuenta las transacciones vivas y los PartyId válidos.
 - Las consultas proporcionadas utilizan un rango de fechas fijo para pruebas preliminares, pero se ajustarán
   para calcular dinámicamente el rango actual a medida que el KPI se implemente completamente.
@@ -778,7 +778,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 24
+            ms.Modelid = 25
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             cv.Fecha,
@@ -822,7 +822,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 24
+            ms.Modelid = 25
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             FechaMes,
@@ -866,7 +866,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 24
+            ms.Modelid = 25
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             AnoId,
@@ -912,7 +912,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 25
+            ms.Modelid = 24
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             cv.Fecha,
@@ -955,7 +955,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 25
+            ms.Modelid = 24
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             FechaMes,
@@ -998,7 +998,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 25
+            ms.Modelid = 24
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             AnoId,
@@ -1027,8 +1027,8 @@ por segmento en el caso de Carulla, Surtimax y Superinter.
 - Para las cadenas 'C', 'A' y 'S' se calcula el porcentaje de ventas totales atribuibles a cada segmento en función del
   total de ventas.
 - Para la cadena 'C' se tiene el modelo de segmentación 3 con los segmentos BLACK, VERDE Y DIAMANTE.
-- Para la cadena 'A' se tiene el modelo de segmentación 24 con los segmentos AAA Y AA.
-- Para la cadena 'S' se tiene el modelo de segmentación 25 con los segmentos AAA y AA.
+- Para la cadena 'A' se tiene el modelo de segmentación 25 con los segmentos AAA Y AA.
+- Para la cadena 'S' se tiene el modelo de segmentación 24 con los segmentos AAA y AA.
 - Solo se tienen en cuenta las transacciones vivas y los PartyId válidos.
 - Las consultas proporcionadas utilizan un rango de fechas fijo para pruebas preliminares, pero se ajustarán
   para calcular dinámicamente el rango actual a medida que el KPI se implemente completamente.
@@ -1447,7 +1447,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 24
+            ms.Modelid = 25
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             cv.Fecha,
@@ -1494,7 +1494,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 24
+            ms.Modelid = 25
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             FechaMes,
@@ -1541,7 +1541,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 24
+            ms.Modelid = 25
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             AnoId,
@@ -1590,7 +1590,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 25
+            ms.Modelid = 24
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             cv.Fecha,
@@ -1637,7 +1637,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 25
+            ms.Modelid = 24
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             FechaMes,
@@ -1684,7 +1684,7 @@ WITH
             JOIN `indicadores.Segmentacion` s ON cv.PartyId = s.PartyID
             JOIN `indicadores.ModeloSegmento` ms ON s.ModeloSegmentoid = ms.ModeloSegmentoid
         WHERE
-            ms.Modelid = 25
+            ms.Modelid = 24
             AND ms.ModelSegmentoDesc IN ('AAA', 'AA')
         GROUP BY
             AnoId,
