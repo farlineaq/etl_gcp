@@ -1,0 +1,12 @@
+resources:
+  repositories:
+  - repository: templates
+    name: GCIT/arquitectura-documentacion
+    type: git
+
+extends:
+  template: pipeline/main.yml@templates
+  parameters:
+      language: documentation
+      typerelease: backstage-tech-docs
+

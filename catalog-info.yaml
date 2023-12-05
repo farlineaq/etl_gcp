@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: Datos_GCP_Funnel
+  description: Documentacion de Datos_GCP_Funnel
+    Descripcion de Datos_GCP_Funnel.
+  annotations:
+    backstage.io/techdocs-ref: dir:./documentacion
+spec:
+  type: service
+  owner: grupo.exito
+  lifecycle: Desarrollo
