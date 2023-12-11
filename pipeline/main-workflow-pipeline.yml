@@ -1,0 +1,15 @@
+trigger: none
+
+resources:
+  repositories:
+  - repository: templates
+    name: GCIT-Agile/infra-gcloud
+    type: git
+
+variables:
+  - template: variables/vars-azure-pipeline.yml
+
+extends:
+  template: pipeline/main.yml@templates
+  parameters:
+      dataStage: Force workflow
