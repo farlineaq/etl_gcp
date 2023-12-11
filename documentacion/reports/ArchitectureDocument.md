@@ -50,7 +50,7 @@ toma de decisiones.
 En un mundo cada vez más impulsado por los datos, la arquitectura de datos es crucial para garantizar la confiabilidad,
 la seguridad y la disponibilidad de la información. Además, proporciona la flexibilidad necesaria para adaptarse a las
 cambiantes demandas del negocio y las tecnologías emergentes. A continuación, nos adentraremos en las etapas
-fundamentales para la definición de la arquitectura de datos del Data Lake de Flypass.
+fundamentales para la definición de la arquitectura de datos.
 
 ### Drivers de arquitectura
 
@@ -387,8 +387,6 @@ para la ejecución de los pipelines de datos.
 
 Los datos arribarán al bucket **`co-grupo-exito-funnel-mercd-app-data-[ambiente]`** y dependiendo del recurso se
 dispondrán en el bucket siguiendo la estructura definida.
-
-Para los activos de datos de AWS Glue se debe seguir la siguiente estructura:
 
 `[NOMBRE PROYECTO]/[CATEGORIA]/[ARCHIVOS]`
 
