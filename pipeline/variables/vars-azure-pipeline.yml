@@ -1,12 +1,8 @@
 variables:
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/master') }}:
-    - group: pdn-Datos_GCP_Funnel
-
     - name: serviceAccountJson
-      value: sa-gcp-pdn.json
+      value: gcp-pdn.json
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/feature/deploy') }}:
-    - group: dev-Datos_GCP_Funnel
-
-    - name: serviceAccountJson
-      value: sa-gcp-dev.json
+     - name: serviceAccountJson
+      value: gcp-dev.json
