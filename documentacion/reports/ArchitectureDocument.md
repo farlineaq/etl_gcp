@@ -149,7 +149,7 @@ internas y externas.
 1. **Escalabilidad en GCP**: Aprovechar la escalabilidad de GCP para manejar el aumento de datos y usuarios.
 2. **Seguridad en la nube**: Implementar autenticación y autorización en GCP para proteger los datos y cumplir con las
    normativas.
-3. **Costos de GCP**: Usar servicios eficientes en costos como BigQuery y Dataflow, y aplicar estrategias de gestión de
+3. **Costos de GCP**: Usar servicios eficientes en costos como BigQuery y Dataproc, y aplicar estrategias de gestión de
    costos.
 4. **Latencia**: Optimizar la latencia en GCP para mejorar el rendimiento de consultas y análisis de datos.
 
@@ -247,8 +247,8 @@ A continuación, se esquematiza y detalla la arquitectura de datos implementada 
 | Componente                  | Funcionalidad                                     | Ubicación en GCP                   | Conectividad                                          | Consumidores                           |
 |-----------------------------|---------------------------------------------------|------------------------------------|-------------------------------------------------------|----------------------------------------|
 | Infraestructura como Código | Automatización del despliegue de infraestructura. | Azure DevOps (integración externa) | Interactúa con GCP para desplegar recursos.           | Operaciones/DevOps                     |
-| Fuente de Datos             | Almacenamiento de datos iniciales.                | Cloud Storage                      | Fuente para procesos ETL.                             | DataProc, Dataflow                     |
-| Ingesta                     | Ingreso de datos en el sistema.                   | Dataflow, BigQuery (manual)        | Recibe datos de fuentes externas.                     | Data Lakehouse                         |
+| Fuente de Datos             | Almacenamiento de datos iniciales.                | Cloud Storage                      | Fuente para procesos ETL.                             | DataProc, Dataproc                     |
+| Ingesta                     | Ingreso de datos en el sistema.                   | Dataproc, BigQuery (manual)        | Recibe datos de fuentes externas.                     | Data Lakehouse                         |
 | Orquestación                | Programación de ETLs y flujos de trabajo.         | Cloud Scheduler                    | Ejecuta trabajos programados.                         | Procesamiento, Trazabilidad            |
 | Procesamiento               | Transformación de datos (ETL).                    | Dataproc, BigQuery                 | Procesa datos para almacenamiento y análisis.         | Data Lakehouse, Área de Presentación   |
 | Almacenamiento              | Repositorio de datos procesados.                  | Cloud Storage, BigQuery            | Almacena los datos procesados.                        | Motor de Consumo, Analítica de Negocio |
