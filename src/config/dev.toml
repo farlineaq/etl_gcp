@@ -1,0 +1,98 @@
+[dev]
+
+[dev.variables]
+
+raw_bucket_name = "co-grupo-exito-funnel-mercd-raw-data-dev"
+trusted_bucket_name = "co-grupo-exito-funnel-mercd-trusted-data-dev"
+project = "co-grupoexito-funnel-mercd-dev"
+error_folder = "co-grupo-exito-error-data"
+data_folder = "co-grupo-exito-raw-data"
+
+[dev.paths.entity_names]
+
+# dim_cadena = "DIM_CADENA"
+# dim_date = "DIM_DATE"
+# dim_kpi = "DIM_KPI"
+contactabilidad = "CONTACTABILIDAD"
+dim_modelo_segmento = "DIM_MODELO_SEGMENTO"
+fact_days = "FACT_DAYS"
+fact_months = "FACT_MONTHS"
+fact_years = "FACT_YEARS"
+fact_target_days = "FACT_TARGET_DAYS"
+fact_target_months = "FACT_TARGET_MONTHS"
+fact_target_years = "FACT_TARGET_YEARS"
+
+[dev.paths.prefixes]
+
+trusted = "@format gs://{this.variables.trusted_bucket_name}"
+raw = "@format gs://{this.variables.raw_bucket_name}"
+
+[dev.paths.raw_path_prefix.teradata]
+
+data_folder = "@format {this.paths.prefixes.raw}/{this.variables.data_folder}/{this.origin.teradata}/{this.business_domain}"
+error_folder = "@format {this.paths.prefixes.raw}/{this.variables.error_folder}/{this.origin.teradata}/{this.business_domain}"
+
+[dev.paths.raw_path_prefix.excel]
+
+data_folder = "@format {this.paths.prefixes.raw}/{this.variables.data_folder}/{this.origin.excel}/{this.business_domain}"
+error_folder = "@format {this.paths.prefixes.raw}/{this.variables.data_folder}/{this.origin.excel}/{this.business_domain}"
+
+[dev.paths.trusted_path_prefix.teradata]
+
+data_folder = "@format {this.paths.prefixes.trusted}/{this.origin.teradata}/{this.business_domain}"
+
+[dev.paths.trusted_path_prefix.excel]
+
+data_folder = "@format {this.paths.prefixes.trusted}/{this.origin.excel}/{this.business_domain}"
+
+[dev.paths.contactabilidad]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.contactabilidad}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad}"
+
+[dev.paths.dim_modelo_segmento]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.dim_modelo_segmento}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento}"
+
+[dev.paths.fact_days]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_days}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_days}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_days}"
+
+[dev.paths.fact_months]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_months}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_months}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_months}"
+
+[dev.paths.fact_years]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_years}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_years}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_years}"
+
+[dev.paths.fact_target_days]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_days}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_days}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_days}"
+
+[dev.paths.fact_target_months]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_months}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_months}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_months}"
+
+[dev.paths.fact_target_years]
+
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_years}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_years}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_years}"
+
+
+
+

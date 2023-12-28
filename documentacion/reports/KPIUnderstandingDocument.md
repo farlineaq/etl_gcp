@@ -1019,7 +1019,6 @@ FROM
 Este KPI calcula el porcentaje de ventas totales atribuibles a clientes leales en el caso de la cadena Éxito, y a ventas
 por segmento en el caso de Carulla, Surtimax y Superinter.
 
-
 ### Observaciones
 
 - Para la cadena 'E' Los clientes leales se definen como aquellos en los deciles superiores (8, 9, 10)  del modelo de
