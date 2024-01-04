@@ -8,6 +8,8 @@ from bubbaloo.utils.functions import get_metrics_from_delta_table
 
 class TransformStage(Transform):
 
+    # TODO Acá va overwrite completo, no merge
+
     def dedup_batch_query(self):
         self.spark.sql("""
             CREATE OR REPLACE GLOBAL TEMPORARY VIEW deduplicated_batch AS
@@ -17,9 +19,9 @@ class TransformStage(Transform):
                     FROM_UTC_TIMESTAMP(
                         FROM_UNIXTIME(
                             UNIX_TIMESTAMP(CURRENT_TIMESTAMP(), 'yyyy-MM-dd HH:mm:ss.SSSSSS')
-                        ), 
+                        ),
                         'America/Bogota'
-                    ), 
+                    ),
                     'yyyy-MM-dd HH:mm:ss'
                 ) AS FechaActualizacion
             FROM global_temp.batch
@@ -27,14 +29,14 @@ class TransformStage(Transform):
 
     def overwrite_table(self):
         self.spark.sql(f"""
-            INSERT OVERWRITE TABLE default.{self.conf.paths.entity_names.dim_modelo_segmento}
+            INSERT OVERWRITE TABLE default.{self.conf.paths.entity_names.model_run}
             SELECT * FROM global_temp.deduplicated_batch
         """)
 
     def optimize_query(self):
-        self.spark.sql(f"OPTIMIZE default.{self.conf.paths.entity_names.dim_modelo_segmento}")
+        self.spark.sql(f"OPTIMIZE default.{self.conf.paths.entity_names.model_run}")
         self.spark.sql(f"""
-            VACUUM default.{self.conf.paths.entity_names.dim_modelo_segmento} 
+            VACUUM default.{self.conf.paths.entity_names.model_run} 
             RETAIN {self.conf.table_history_retention_time} HOURS
         """)
 
@@ -42,7 +44,7 @@ class TransformStage(Transform):
         self.context.count.update(
             get_metrics_from_delta_table(
                 self.spark,
-                self.conf.paths.dim_modelo_segmento.trusted_data_path
+                self.conf.paths.model_run.trusted_data_path
             )
         )
         self.context.batch_id = batch_id

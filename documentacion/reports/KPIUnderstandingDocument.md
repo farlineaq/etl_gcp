@@ -1792,7 +1792,7 @@ visibilidad frente a sus competidores.
 ### Temporalidad
 
 - Se actualiza mensualmente, sin acumulación anual.
-- Actualización mensual y probablemente diaria. **nota: Hágamos la estructura diaria, pero la montamos mensual**
+- Actualización mensual y probablemente diaria.
 
 ### Entidades implicadas
 

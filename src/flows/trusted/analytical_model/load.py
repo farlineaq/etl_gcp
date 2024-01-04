@@ -11,15 +11,14 @@ class LoadStage(Load):
 
     def create_delta_table(self):
         return self.spark.sql(f"""
-            CREATE TABLE IF NOT EXISTS {self.conf.paths.entity_names.fact_days} (
-                Fecha DATE,
-                CadenaId STRING,
-                IndicadorId INT,
-                Valor DOUBLE,
+            CREATE TABLE IF NOT EXISTS {self.conf.paths.entity_names.analytical_model} (
+                modelid INTEGER,
+                ModelDdesc STRING,
+                IndicadorAgregada STRING,
                 FechaActualizacion TIMESTAMP
             )
             USING DELTA
-            LOCATION '{self.conf.paths.fact_days.trusted_data_path}'
+            LOCATION '{self.conf.paths.analytical_model.trusted_data_path}'
         """)
 
     def execute(self, dataframe: DataFrame, transform: Callable[..., None]) -> DataStreamWriter:
@@ -28,7 +27,7 @@ class LoadStage(Load):
             dataframe
             .writeStream
             .format("delta")
-            .option("checkpointLocation", f"{self.conf.paths.fact_days.trusted_data_path}/_checkpoint")
+            .option("checkpointLocation", f"{self.conf.paths.analytical_model.trusted_data_path}/_checkpoint")
             .trigger(once=True)
             .foreachBatch(transform)
         )

@@ -23,9 +23,9 @@ class TransformStage(Transform):
                     FROM_UTC_TIMESTAMP(
                         FROM_UNIXTIME(
                             UNIX_TIMESTAMP(CURRENT_TIMESTAMP(), 'yyyy-MM-dd HH:mm:ss.SSSSSS')
-                        ), 
+                        ),
                         'America/Bogota'
-                    ), 
+                    ),
                     'yyyy-MM-dd HH:mm:ss'
                 ) AS FechaActualizacion
             FROM (
