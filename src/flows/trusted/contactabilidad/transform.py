@@ -8,8 +8,6 @@ from bubbaloo.utils.functions import get_metrics_from_delta_table
 
 class TransformStage(Transform):
 
-    # TODO Verificar estas transformaciones
-
     def dedup_batch_query(self):
         self.spark.sql("""
             CREATE OR REPLACE GLOBAL TEMPORARY VIEW deduplicated_batch AS

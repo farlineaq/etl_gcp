@@ -8,8 +8,6 @@ from bubbaloo.utils.functions import get_metrics_from_delta_table
 
 class TransformStage(Transform):
 
-    # TODO Acá va overwrite completo, no merge
-
     def dedup_batch_query(self):
         self.spark.sql("""
             CREATE OR REPLACE GLOBAL TEMPORARY VIEW deduplicated_batch AS
@@ -27,15 +25,10 @@ class TransformStage(Transform):
             FROM global_temp.batch
         """)
 
-    def merge_query(self):
+    def overwrite_query(self):
         self.spark.sql(f"""
-            MERGE INTO default.{self.conf.paths.entity_names.analytical_model} AS target
-            USING global_temp.deduplicated_batch AS source
-            ON target.modelid = source.modelid
-            WHEN MATCHED THEN
-                UPDATE SET *
-            WHEN NOT MATCHED THEN
-                INSERT *
+            INSERT OVERWRITE TABLE default.{self.conf.paths.entity_names.analytical_model}
+            SELECT * FROM global_temp.deduplicated_batch
         """)
 
     def optimize_query(self):
@@ -58,7 +51,7 @@ class TransformStage(Transform):
         def batch_func(dataframe: DataFrame, batch_id: int):
             dataframe.createOrReplaceGlobalTempView("batch")
             self.dedup_batch_query()
-            self.merge_query()
+            self.overwrite_query()
             self.optimize_query()
             self.register_metrics(batch_id)
 

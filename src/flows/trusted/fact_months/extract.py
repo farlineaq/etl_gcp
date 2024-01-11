@@ -20,13 +20,13 @@ class ExtractStage(Extract):
     def spark_schema():
         return StructType(
             [
+                StructField('Actualizacion', StringType(), True),
                 StructField('Fecha', DateType(), True),
                 StructField('Cadena', StringType(), True),
                 StructField('CadenaId', StringType(), True),
                 StructField('Indicador', StringType(), True),
                 StructField('IndicadorId', IntegerType(), True),
-                StructField('Valor', DoubleType(), True),
-                StructField('Actualizacion', StringType(), True)
+                StructField('Valor', DoubleType(), True)
             ]
         )
 
@@ -36,13 +36,13 @@ class ExtractStage(Extract):
 
         return pa.schema(
             [
+                ('Actualizacion', pa.string()),
                 ('Fecha', pa.date32()),
                 ('Cadena', pa.string()),
                 ('CadenaId', pa.string()),
                 ('Indicador', pa.string()),
                 ('IndicadorId', pa.int32()),
-                ('Valor', pa.float64()),
-                ('Actualizacion', pa.string())
+                ('Valor', pa.float64())
             ]
         )
 

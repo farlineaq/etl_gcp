@@ -1,11 +1,12 @@
+ENV ?= qa
 REGION ?= us-central1
 SUBNET ?= default
-BUCKET_NAME ?= co-grupo-exito-funnel-mercd-app-data-dev
+BUCKET_NAME ?= co-grupo-exito-funnel-mercd-app-data-$(ENV)
 
 TARGET ?= app_files
-TEMPLATE_NAME ?= trusted_workflow
+TEMPLATE_NAME ?= dp-funnel-mercd-workflow-$(ENV)
 
-all: clean build workflow init
+all: clean build workflow
 
 clean:
 	@rm -rf ./dist

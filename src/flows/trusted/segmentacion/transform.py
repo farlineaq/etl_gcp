@@ -25,7 +25,7 @@ class TransformStage(Transform):
             FROM global_temp.batch
         """)
 
-    def overwrite_table(self):
+    def overwrite_query(self):
         self.spark.sql(f"""
             INSERT OVERWRITE TABLE default.{self.conf.paths.entity_names.segmentacion}
             SELECT * FROM global_temp.deduplicated_batch
@@ -51,7 +51,7 @@ class TransformStage(Transform):
         def batch_func(dataframe: DataFrame, batch_id: int):
             dataframe.createOrReplaceGlobalTempView("batch")
             self.dedup_batch_query()
-            self.overwrite_table()
+            self.overwrite_query()
             self.optimize_query()
             self.register_metrics(batch_id)
 
