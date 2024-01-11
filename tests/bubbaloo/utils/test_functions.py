@@ -19,6 +19,7 @@ class TestPipelineOrchestrationHelper:
 
     This class tests various utility functions used in pipeline orchestration, such as error extraction from exceptions.
     """
+
     def test_get_error_with_json_exception(self):
         """
         Test the extraction of error information from a JSON formatted exception.

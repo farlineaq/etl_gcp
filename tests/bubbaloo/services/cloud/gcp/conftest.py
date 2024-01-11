@@ -133,23 +133,3 @@ def cloud_storage_manager(project, storage_client_mock):
     manager = CloudStorageManager(project)
     manager._client = storage_client_mock
     return manager
-
-
-class MockedIterator:
-    """
-    A mock class to simulate an iterator for paginated results.
-
-    This class is designed to mock the behavior of paginated results in APIs, such as those returned by Google Cloud
-    Storage client methods.
-
-    Attributes:
-        pages (list): A list representing the pages of results.
-    """
-    def __init__(self, blobs):
-        """
-        Initializes a MockedIterator instance with a list of blobs.
-
-        Args:
-            blobs (list): A list of blobs to be used as the paginated results.
-        """
-        self.pages = [blobs]

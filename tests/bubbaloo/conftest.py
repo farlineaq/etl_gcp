@@ -140,7 +140,7 @@ def trusted_temp_dir(tmp_path_factory):
     shutil.rmtree(temp_dir)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def raw_data_parquet(spark, config):
     """
     A pytest fixture that creates a DataFrame with test data and writes it to a parquet file in the raw data path.

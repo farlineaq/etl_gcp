@@ -2,7 +2,27 @@ import pytest
 from unittest.mock import MagicMock
 from google.cloud.storage import Bucket, Blob
 from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
-from tests.bubbaloo.services.cloud.gcp.conftest import MockedIterator
+
+
+class MockedIterator:
+    """
+    A mock class to simulate an iterator for paginated results.
+
+    This class is designed to mock the behavior of paginated results in APIs, such as those returned by Google Cloud
+    Storage client methods.
+
+    Attributes:
+        pages (list): A list representing the pages of results.
+    """
+
+    def __init__(self, blobs):
+        """
+        Initializes a MockedIterator instance with a list of blobs.
+
+        Args:
+            blobs (list): A list of blobs to be used as the paginated results.
+        """
+        self.pages = [blobs]
 
 
 class TestCloudStorageManager:
@@ -12,6 +32,7 @@ class TestCloudStorageManager:
     This class tests various operations of CloudStorageManager such as singleton behavior, listing objects in storage,
     handling invalid sources, bucket and object retrieval, copying, deleting, moving, and filtering blobs.
     """
+
     @pytest.fixture
     def storage_manager(self, project, storage_client_mock):
         """
