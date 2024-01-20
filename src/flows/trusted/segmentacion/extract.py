@@ -1,9 +1,9 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType
+from pyspark.sql.types import StructType, StructField, IntegerType
 
 from bubbaloo.pipeline.stages import Extract
 from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
-from bubbaloo.services.validation.parquet import Parquet
+from bubbaloo.services.validation import Parquet
 from bubbaloo.utils.functions import get_blobs_days_ago
 
 
