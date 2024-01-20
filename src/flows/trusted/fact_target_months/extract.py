@@ -3,6 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType, 
 
 from bubbaloo.pipeline.stages import Extract
 from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
+from bubbaloo.services.validation import CSV
 from bubbaloo.utils.functions import get_blobs_days_ago
 
 
@@ -31,23 +32,25 @@ class ExtractStage(Extract):
         )
 
     @staticmethod
-    def pa_schema():
-        import pyarrow as pa
-
-        return pa.schema(
-            [
-                ('Actualizacion', pa.string()),
-                ('Fecha', pa.date32()),
-                ('Cadena', pa.string()),
-                ('CadenaId', pa.string()),
-                ('Indicador', pa.string()),
-                ('IndicadorId', pa.int32()),
-                ('Valor', pa.float64())
-            ]
-        )
+    def read_options():
+        return {
+            'header': True,
+            'sep': ','
+        }
 
     def execute(self) -> DataFrame:
-        validator = ...
+        validator = CSV(
+            objects_to_validate=self.filtered_blobs(),
+            read_options=self.read_options(),
+            spark_schema=self.spark_schema(),
+            spark=self.spark,
+            logger=self.logger,
+            storage_client=self.client(),
+            context=self.context,
+            error_path=self.conf.paths.fact_months.error_data_path
+        )
+
+        validator.execute()
 
         return (
             self.spark

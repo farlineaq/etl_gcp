@@ -55,6 +55,7 @@ def get_metrics_from_delta_table(spark: SparkSession, path: str) -> Dict[str, in
     filtered_history = history.where(col("operation") == last_operation)
 
     if last_operation == "MERGE":
+
         return {
             "numRowsUpdated": _get_stats(filtered_history, "numTargetRowsUpdated"),
             "numRowsInserted": _get_stats(filtered_history, "numTargetRowsInserted"),
