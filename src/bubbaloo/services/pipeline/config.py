@@ -70,7 +70,7 @@ class Config:
         """
         Determines the configuration file path if not explicitly provided.
 
-        Defaults to '*.toml' files in the parent directory of the parent directory of the current file.
+        Defaults to '*.toml' files in the working directory.
 
         Returns:
             str: The determined or provided file path for the configuration files.
