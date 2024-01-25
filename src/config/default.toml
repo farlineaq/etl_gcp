@@ -4,4 +4,4 @@ log_level = "INFO"
 business_domain = "FUNNEL"
 origin = { teradata = "TERADATA", excel = "EXCEL" }
 table_history_retention_time = 0
-timedelta = 5
+timedelta = 30

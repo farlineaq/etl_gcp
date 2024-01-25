@@ -1,12 +1,13 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType, DoubleType
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 from bubbaloo.pipeline.stages import Extract
 from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
-from bubbaloo.services.validation import CSV
+from bubbaloo.services.validation import Parquet
 from bubbaloo.utils.functions import get_blobs_days_ago
 
 
+# noinspection SqlNoDataSourceInspection
 class ExtractStage(Extract):
 
     def client(self):
@@ -14,40 +15,39 @@ class ExtractStage(Extract):
 
     def filtered_blobs(self):
         client = self.client()
-        blobs = client.list(self.conf.paths.fact_target_years.raw_data_path)
+        blobs = client.list(self.conf.paths.analytical_model.raw_data_path)
         return client.filter(blobs, lambda blob: get_blobs_days_ago(blob, self.conf.timedelta))
 
     @staticmethod
     def spark_schema():
         return StructType(
             [
-                StructField('Actualizacion', StringType(), True),
-                StructField('Fecha', DateType(), True),
-                StructField('Cadena', StringType(), True),
-                StructField('CadenaId', StringType(), True),
-                StructField('Indicador', StringType(), True),
-                StructField('IndicadorId', IntegerType(), True),
-                StructField('Valor', DoubleType(), True)
+                StructField('modelid', IntegerType(), True),
+                StructField('ModelDdesc', StringType(), True),
+                StructField('IndicadorAgregada', StringType(), True)
             ]
         )
 
     @staticmethod
-    def read_options():
-        return {
-            'header': True,
-            'sep': ','
-        }
+    def pa_schema():
+        import pyarrow as pa
+
+        return pa.schema([
+            ('modelid', pa.int32()),
+            ('ModelDdesc', pa.string()),
+            ('IndicadorAgregada', pa.string())
+        ])
 
     def execute(self) -> DataFrame:
-        validator = CSV(
+        validator = Parquet(
             objects_to_validate=self.filtered_blobs(),
-            read_options=self.read_options(),
             spark_schema=self.spark_schema(),
+            pyarrow_schema=self.pa_schema(),
             spark=self.spark,
             logger=self.logger,
             storage_client=self.client(),
             context=self.context,
-            error_path=self.conf.paths.fact_target_years.error_data_path
+            error_path=self.conf.paths.analytical_model.error_data_path,
         )
 
         validator.execute()
@@ -56,5 +56,5 @@ class ExtractStage(Extract):
             self.spark
             .readStream
             .schema(self.spark_schema())
-            .csv(self.conf.paths.fact_target_years.raw_data_path, header=True, sep=',')
+            .parquet(self.conf.paths.analytical_model.raw_data_path)
         )

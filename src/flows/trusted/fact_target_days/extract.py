@@ -47,7 +47,7 @@ class ExtractStage(Extract):
             logger=self.logger,
             storage_client=self.client(),
             context=self.context,
-            error_path=self.conf.paths.fact_months.error_data_path
+            error_path=self.conf.paths.fact_target_days.error_data_path
         )
 
         validator.execute()

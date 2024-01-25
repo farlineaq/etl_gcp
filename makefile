@@ -1,4 +1,4 @@
-ENV ?= qa
+ENV ?= dev
 REGION ?= us-central1
 SUBNET ?= default
 BUCKET_NAME ?= co-grupo-exito-funnel-mercd-app-data-$(ENV)

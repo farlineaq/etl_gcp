@@ -11,15 +11,20 @@ data_folder = "co-grupo-exito-raw-data"
 [qa.paths.entity_names]
 
 analytical_model = "ANALYTICAL_MODEL"
+analytical_model_backup = "ANALYTICAL_MODEL_BACKUP"
 contactabilidad = "CONTACTABILIDAD"
+contactabilidad_backup = "CONTACTABILIDAD_BACKUP"
 dim_modelo_segmento = "DIM_MODELO_SEGMENTO"
+dim_modelo_segmento_backup = "DIM_MODELO_SEGMENTO_BACKUP"
 fact_days = "FACT_DAYS"
 fact_months = "FACT_MONTHS"
 fact_target_days = "FACT_TARGET_DAYS"
 fact_target_months = "FACT_TARGET_MONTHS"
 fact_target_years = "FACT_TARGET_YEARS"
 model_run = "MODEL_RUN"
+model_run_backup = "MODEL_RUN_BACKUP"
 segmentacion = "SEGMENTACION"
+segmentacion_backup = "SEGMENTACION_BACKUP"
 
 # -------------------------------- PREFIXES --------------------------------------------------
 
@@ -52,7 +57,7 @@ data_folder = """\
 error_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
-    {this.variables.data_folder}/\
+    {this.variables.error_folder}/\
     {this.origin.excel}/\
     {this.business_domain}\
 """
@@ -72,44 +77,52 @@ raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this
 error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.analytical_model}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model}"
 
-[qa.paths.contactabilidad]
+[qa.paths.analytical_model_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.analytical_model_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model_backup}"
 
+[qa.paths.contactabilidad]
 raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad}"
 error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.contactabilidad}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad}"
 
-[qa.paths.dim_modelo_segmento]
+[qa.paths.contactabilidad_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.contactabilidad_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad_backup}"
 
+[qa.paths.dim_modelo_segmento]
 raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento}"
 error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.dim_modelo_segmento}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento}"
 
-[qa.paths.fact_days]
+[qa.paths.dim_modelo_segmento_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.dim_modelo_segmento_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento_backup}"
 
+[qa.paths.fact_days]
 raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_days}"
 error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_days}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_days}"
 
 [qa.paths.fact_months]
-
 raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_months}"
 error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_months}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_months}"
 
 [qa.paths.fact_target_days]
-
 raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_days}"
 error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_days}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_days}"
 
 [qa.paths.fact_target_months]
-
 raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_months}"
 error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_months}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_months}"
 
 [qa.paths.fact_target_years]
-
 raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_years}"
 error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_years}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_years}"
@@ -119,11 +132,20 @@ raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this
 error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.model_run}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run}"
 
+[qa.paths.model_run_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.model_run_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run_backup}"
+
 [qa.paths.segmentacion]
 raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion}"
 error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.segmentacion}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion}"
 
+[qa.paths.segmentacion_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.segmentacion_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion_backup}"
 
 
 
