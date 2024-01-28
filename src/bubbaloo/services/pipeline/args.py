@@ -43,12 +43,6 @@ class ArgumentParser:
         and types. Some arguments are optional, while others are required.
         """
         self._parser.add_argument(
-            "-p", "--phase",
-            required=False,
-            help="Specify the phase of the architecture. This is an optional argument.",
-            type=str
-        )
-        self._parser.add_argument(
             "-e", "--entity",
             required=False,
             help="Provide a comma-separated list of entities. Each entity is a value to be passed as input to the job.",
@@ -65,6 +59,20 @@ class ArgumentParser:
             required=False,
             help="Provide a comma-separated list of configuration paths. This is an optional argument.",
             type=lambda path: list(path.split(',')),
+            default=None
+        )
+        self._parser.add_argument(
+            "-s", "--step",
+            required=False,
+            help="...",
+            type=str,
+            default=None
+        )
+        self._parser.add_argument(
+            "-g", "--granularity",
+            required=False,
+            help="...",
+            type=str,
             default=None
         )
 

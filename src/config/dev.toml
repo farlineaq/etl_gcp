@@ -26,7 +26,9 @@ model_run_backup = "MODEL_RUN_BACKUP"
 segmentacion = "SEGMENTACION"
 segmentacion_backup = "SEGMENTACION_BACKUP"
 
-# -------------------------------- PREFIXES --------------------------------------------------
+# ================================================================================
+# Path Prefixes
+# ================================================================================
 
 [dev.paths.raw_path_prefix.teradata]
 
@@ -70,7 +72,9 @@ data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.origin.te
 
 data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.origin.excel}/{this.business_domain}"
 
-# ---------------------------------- PATHS -------------------------------------------------
+# ================================================================================
+# Flows Paths
+# ================================================================================
 
 [dev.paths.analytical_model]
 raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model}"
@@ -156,6 +160,297 @@ raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this
 error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.segmentacion_backup}"
 trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion_backup}"
 
+# ================================================================================
+# Variables scripts BigQuery
+# ================================================================================
 
+[dev.bigquery.variables]
 
+procedures_dataset = "procedures"
+granularity = ["DAY", "MONTH", "YEAR"]
+excluded_sublineaCD = [1, 2, 3, 4, 5, 6, 99, 505]
+included_direccionCD = [10, 20, 30, 40, 50]
+excluded_tipoNegociacion = [2]
+included_CadenaCD = ['E', 'C', 'A', 'S']
+sales_table = "'co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes'"
+segmentacion_table = "'co-grupoexito-funnel-mercd-dev.external.segmentacion'"
+modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento'"
+segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.external.segmentacion_backup'"
+modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento_backup'"
+fact_table.DAY = "'co-grupoexito-funnel-mercd-dev.refined.fact_days'"
+fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.refined.fact_months'"
+fact_table.YEAR = "'co-grupoexito-funnel-mercd-dev.refined.fact_years'"
+target_table.DAY = "'co-grupoexito-funnel-mercd-dev.refined.fact_target_days'"
+target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.refined.fact_target_months'"
+target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.refined.fact_target_years'"
 
+[dev.bigquery.script_names.clientes_leales]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_clientes_leales = "sp_carga_inicial_clientes_leales"
+sp_delta_clientes_leales = "sp_delta_clientes_leales"
+sp_general_clientes_leales = "sp_general_clientes_leales"
+sp_general_clientes_leales_con_exito = "sp_general_clientes_leales_con_exito"
+sp_general_clientes_leales_sin_exito = "sp_general_clientes_leales_sin_exito"
+
+[dev.bigquery.script_names.clientes_monitoreados]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_clientes_monitoreados = "sp_carga_inicial_clientes_monitoreados"
+sp_delta_clientes_monitoreados = "sp_delta_clientes_monitoreados"
+sp_general_clientes_monitoreados = "sp_general_clientes_monitoreados"
+
+[dev.bigquery.script_names.porcentaje_contactabilidad]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_porcentaje_contactabilidad = "sp_carga_inicial_porcentaje_contactabilidad"
+sp_delta_porcentaje_contactabilidad = "sp_delta_porcentaje_contactabilidad"
+sp_general_porcentaje_contactabilidad = "sp_general_porcentaje_contactabilidad"
+
+[dev.bigquery.script_names.tasa_retencion]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_tasa_retencion = "sp_carga_inicial_tasa_retencion"
+sp_delta_tasa_retencion = "sp_delta_tasa_retencion"
+sp_general_tasa_retencion = "sp_general_tasa_retencion"
+
+[dev.bigquery.script_names.transacciones_monitoreadas]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_transacciones_monitoreadas = "sp_carga_inicial_transacciones_monitoreadas"
+sp_delta_transacciones_monitoreadas = "sp_delta_transacciones_monitoreadas"
+sp_general_transacciones_monitoreadas = "sp_general_transacciones_monitoreadas"
+
+[dev.bigquery.script_names.ventas_clientes_leales]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_ventas_clientes_leales = "sp_carga_inicial_ventas_clientes_leales"
+sp_delta_ventas_clientes_leales = "sp_delta_ventas_clientes_leales"
+sp_general_ventas_clientes_leales = "sp_general_ventas_clientes_leales"
+
+[dev.bigquery.script_names.ventas_totales]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_ventas_totales = "sp_carga_inicial_ventas_totales"
+sp_delta_ventas_totales = "sp_delta_ventas_totales"
+sp_general_ventas_totales = "sp_general_ventas_totales"
+
+# ================================================================================
+# Procedimiento: Clientes leales
+# ================================================================================
+
+[dev.bigquery.indicadores.clientes_leales.sp_carga_inicial_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_carga_inicial_clientes_leales}"
+sp_general_clientes_leales = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales.sp_name}"
+
+[dev.bigquery.indicadores.clientes_leales.sp_general_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_general_clientes_leales}"
+sp_clientes_leales_con_exito = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_con_exito.sp_name}"
+sp_clientes_leales_sin_exito = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_sin_exito.sp_name}"
+
+[dev.bigquery.indicadores.clientes_leales.sp_delta_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_delta_clientes_leales}"
+sp_general_clientes_leales = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales.sp_name}"
+
+[dev.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_con_exito]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_general_clientes_leales_con_exito}"
+
+[dev.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_sin_exito]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_general_clientes_leales_sin_exito}"
+
+[dev.bigquery.indicadores.clientes_leales.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.clientes_leales.sp_carga_inicial_clientes_leales.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.clientes_leales.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.clientes_leales.sp_delta_clientes_leales.sp_name}"
+date_to_calculate = "CURRENT_DATE()"
+
+# ================================================================================
+# Procedimiento: Clientes monitoreados
+# ================================================================================
+
+[dev.bigquery.indicadores.clientes_monitoreados.sp_carga_inicial_clientes_monitoreados]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_monitoreados.sp_carga_inicial_clientes_monitoreados}"
+sp_general_clientes_monitoreados = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_general_clientes_monitoreados.sp_name}"
+
+[dev.bigquery.indicadores.clientes_monitoreados.sp_general_clientes_monitoreados]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_monitoreados.sp_general_clientes_monitoreados}"
+
+[dev.bigquery.indicadores.clientes_monitoreados.sp_delta_clientes_monitoreados]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_monitoreados.sp_delta_clientes_monitoreados}"
+sp_general_clientes_monitoreados = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_general_clientes_monitoreados.sp_name}"
+
+[dev.bigquery.indicadores.clientes_monitoreados.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_carga_inicial_clientes_monitoreados.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.clientes_monitoreados.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_delta_clientes_monitoreados.sp_name}"
+date_to_calculate = "CURRENT_DATE()"
+
+# ================================================================================
+# Procedimiento: Porcentaje Contactabilidad
+# ================================================================================
+
+[dev.bigquery.indicadores.porcentaje_contactabilidad.sp_carga_inicial_porcentaje_contactabilidad]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.porcentaje_contactabilidad.sp_carga_inicial_porcentaje_contactabilidad}"
+sp_general_porcentaje_contactabilidad = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad.sp_name}"
+
+[dev.bigquery.indicadores.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad}"
+
+[dev.bigquery.indicadores.porcentaje_contactabilidad.sp_delta_porcentaje_contactabilidad]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.porcentaje_contactabilidad.sp_delta_porcentaje_contactabilidad}"
+sp_general_porcentaje_contactabilidad = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad.sp_name}"
+
+[dev.bigquery.indicadores.porcentaje_contactabilidad.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_carga_inicial_porcentaje_contactabilidad.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.porcentaje_contactabilidad.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_delta_porcentaje_contactabilidad.sp_name}"
+date_to_calculate = "CURRENT_DATE()"
+
+# ================================================================================
+# Procedimiento: Tasa Retencion
+# ================================================================================
+
+[dev.bigquery.indicadores.tasa_retencion.sp_carga_inicial_tasa_retencion]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.tasa_retencion.sp_carga_inicial_tasa_retencion}"
+sp_general_tasa_retencion = "@format {this.bigquery.indicadores.tasa_retencion.sp_general_tasa_retencion.sp_name}"
+
+[dev.bigquery.indicadores.tasa_retencion.sp_general_tasa_retencion]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.tasa_retencion.sp_general_tasa_retencion}"
+
+[dev.bigquery.indicadores.tasa_retencion.sp_delta_tasa_retencion]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.tasa_retencion.sp_delta_tasa_retencion}"
+sp_general_tasa_retencion = "@format {this.bigquery.indicadores.tasa_retencion.sp_general_tasa_retencion.sp_name}"
+
+[dev.bigquery.indicadores.tasa_retencion.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.tasa_retencion.sp_carga_inicial_tasa_retencion.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.tasa_retencion.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.tasa_retencion.sp_delta_tasa_retencion.sp_name}"
+date_to_calculate = "CURRENT_DATE()"
+
+# ================================================================================
+# Procedimiento: Transacciones Monitoreadas
+# ================================================================================
+
+[dev.bigquery.indicadores.transacciones_monitoreadas.sp_carga_inicial_transacciones_monitoreadas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.transacciones_monitoreadas.sp_carga_inicial_transacciones_monitoreadas}"
+sp_general_transacciones_monitoreadas = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_general_transacciones_monitoreadas.sp_name}"
+
+[dev.bigquery.indicadores.transacciones_monitoreadas.sp_general_transacciones_monitoreadas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.transacciones_monitoreadas.sp_general_transacciones_monitoreadas}"
+
+[dev.bigquery.indicadores.transacciones_monitoreadas.sp_delta_transacciones_monitoreadas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.transacciones_monitoreadas.sp_delta_transacciones_monitoreadas}"
+sp_general_transacciones_monitoreadas = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_general_transacciones_monitoreadas.sp_name}"
+
+[dev.bigquery.indicadores.transacciones_monitoreadas.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_carga_inicial_transacciones_monitoreadas.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.transacciones_monitoreadas.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_delta_transacciones_monitoreadas.sp_name}"
+date_to_calculate = "CURRENT_DATE()"
+
+# ================================================================================
+# Procedimiento: Ventas Clientes Leales
+# ================================================================================
+
+[dev.bigquery.indicadores.ventas_clientes_leales.sp_carga_inicial_ventas_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_carga_inicial_ventas_clientes_leales}"
+sp_general_ventas_clientes_leales = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales.sp_name}"
+
+[dev.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_general_ventas_clientes_leales}"
+
+[dev.bigquery.indicadores.ventas_clientes_leales.sp_delta_ventas_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_delta_ventas_clientes_leales}"
+sp_general_ventas_clientes_leales = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales.sp_name}"
+
+[dev.bigquery.indicadores.ventas_clientes_leales.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_carga_inicial_ventas_clientes_leales.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.ventas_clientes_leales.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_delta_ventas_clientes_leales.sp_name}"
+date_to_calculate = "CURRENT_DATE()"
+
+# ================================================================================
+# Procedimiento: Ventas Totales
+# ================================================================================
+
+[dev.bigquery.indicadores.ventas_totales.sp_carga_inicial_ventas_totales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_totales.sp_carga_inicial_ventas_totales}"
+sp_general_ventas_totales = "@format {this.bigquery.indicadores.ventas_totales.sp_general_ventas_totales.sp_name}"
+
+[dev.bigquery.indicadores.ventas_totales.sp_general_ventas_totales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_totales.sp_general_ventas_totales}"
+
+[dev.bigquery.indicadores.ventas_totales.sp_delta_ventas_totales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_totales.sp_delta_ventas_totales}"
+sp_general_ventas_totales = "@format {this.bigquery.indicadores.ventas_totales.sp_general_ventas_totales.sp_name}"
+
+[dev.bigquery.indicadores.ventas_totales.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.ventas_totales.sp_carga_inicial_ventas_totales.sp_name}"
+start_date = "DATE '2021-01-01'"
+end_date = "DATE '2023-01-31'"
+
+[dev.bigquery.indicadores.ventas_totales.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.ventas_totales.sp_delta_ventas_totales.sp_name}"
+date_to_calculate = "CURRENT_DATE()"

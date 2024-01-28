@@ -1,6 +1,4 @@
--- Clientes leales sin E
-
-CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralClientesLealesSinE`(
+CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLealesSinE`(
     start_date DATE,
     end_date DATE,
     granularity STRING,
@@ -48,8 +46,8 @@ BEGIN
     WITH ClientesValidos AS (
         SELECT
             Fecha,
-            CadenaCD,
-            PartyId
+            PartyId,
+            VentaSinImpuesto
         FROM
             `%s`
         WHERE
@@ -65,7 +63,7 @@ BEGIN
         SELECT
             %s AS Fecha0,
             ms.ModeloSegmentoid,
-            COUNT(DISTINCT cv.PartyId) AS ConteoClientes
+            sum(cv.VentaSinImpuesto) as VentasSegmentadas,
         FROM
             ClientesValidos cv
             JOIN `%s` s ON cv.PartyId = s.PartyID
@@ -81,7 +79,7 @@ BEGIN
         sc.Fecha0 as Fecha,
         ? AS CadenaCD,
         sc.ModeloSegmentoid,
-        ROUND((sc.ConteoClientes / SUM(sc.ConteoClientes) OVER(PARTITION BY sc.Fecha0)) * 100, 2) AS Valor
+    ROUND((VentasSegmentadas / SUM(VentasSegmentadas) OVER(PARTITION BY Fecha0)) * 100, 2) AS Valor
     FROM
         SegmentosClientes sc
     """, temp_table, sales_table, formatted_date_expr, segment_table, model_segment_table);
@@ -89,9 +87,9 @@ BEGIN
   EXECUTE IMMEDIATE query USING start_date, end_date, excluded_sublineaCD, included_direccionCD, excluded_tipoNegociacion, included_CadenaCD, model_id_condition, model_segment_desc_condition, included_CadenaCD;
 END;
 
--- Clientes leales con E
+-- Ventas Clientes leales con E
 
-CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPClientesLealesE`(
+CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLealesConE`(
     start_date DATE,
     end_date DATE,
     granularity STRING,
@@ -154,7 +152,7 @@ BEGIN
     TransanccionesTotales AS (
         SELECT
             %s AS Fecha,
-            COUNT(DISTINCT vc.PartyId) AS ConteoClientes,
+            SUM(vc.VentaSinImpuesto) AS Ventas,
             cl.Segmento
         FROM
             `%s` vc
@@ -177,7 +175,7 @@ BEGIN
             Fecha,
             'E' AS CadenaCD,
             0 AS ModeloSegmentoid,
-            ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajeClientesLeales,
+            ROUND((Ventas / SUM(Ventas) OVER(PARTITION BY Fecha)) * 100, 2) AS PorcentajeClientesLeales,
             Segmento
         FROM
             TransanccionesTotales
@@ -196,9 +194,9 @@ BEGIN
   EXECUTE IMMEDIATE query USING start_date, end_date, excluded_sublineaCD, included_direccionCD, excluded_tipoNegociacion, start_date, end_date, excluded_sublineaCD, included_direccionCD, excluded_tipoNegociacion, formatted_date_expr;
 END;
 
--- Clientes leales general
+-- Ventas Clientes leales general
 
-CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralClientesLeales`(
+CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLeales`(
     start_date DATE,
     end_date DATE,
     granularity STRING,
@@ -219,7 +217,7 @@ BEGIN
     SET cadena = included_CadenaCD[OFFSET(idx)];
 
     IF cadena = 'E' THEN
-      CALL `co-grupoexito-funnel-mercd-dev.procedures.SPClientesLealesE`(
+      CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLealesConE`(
           start_date,
           end_date,
           granularity,
@@ -232,7 +230,7 @@ BEGIN
           temp_table
       );
     ELSE
-      CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralClientesLealesSinE`(
+      CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLealesSinE`(
           start_date,
           end_date,
           granularity,
@@ -253,7 +251,7 @@ END;
 
 -- Cálculo individual
 
-CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPIndividualClientesLeales`(
+CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPIndividualVentasClientesLeales`(
     date_to_calculate DATE,
     granularity STRING,
     excluded_sublineaCD ARRAY<INT64>,
@@ -296,7 +294,7 @@ BEGIN
         Valor FLOAT64
     );
 
-    CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralClientesLeales`(
+    CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLeales`(
         start_date, end_date, granularity, excluded_sublineaCD,
         included_direccionCD, excluded_tipoNegociacion,
         included_CadenaCD, sales_table, segment_table,
@@ -304,7 +302,7 @@ BEGIN
     );
 
     IF granularity = 'DAY' THEN
-        CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralClientesLeales`(
+        CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLeales`(
             temp_start_date, temp_end_date, granularity, excluded_sublineaCD,
             included_direccionCD, excluded_tipoNegociacion,
             included_CadenaCD, sales_table, segment_table_backup,
@@ -315,14 +313,14 @@ BEGIN
     EXECUTE IMMEDIATE FORMAT("""
         MERGE INTO `%s` AS final
         USING temp_table AS temp
-        ON final.Fecha = temp.Fecha AND final.CadenaCD = temp.CadenaCD AND final.IndicadorKey = 5
+        ON final.Fecha = temp.Fecha AND final.CadenaCD = temp.CadenaCD AND final.IndicadorKey = 6
         WHEN MATCHED THEN
             UPDATE SET
                 final.Valor = temp.Valor,
                 final.FechaActualizacion = CURRENT_TIMESTAMP()
         WHEN NOT MATCHED THEN
             INSERT (Fecha, CadenaCD, ModeloSegmentoid, IndicadorKey, Valor, FechaActualizacion)
-            VALUES (temp.Fecha, temp.CadenaCD, temp.ModeloSegmentoid, 5, temp.Valor, CURRENT_TIMESTAMP());
+            VALUES (temp.Fecha, temp.CadenaCD, temp.ModeloSegmentoid, 6, temp.Valor, CURRENT_TIMESTAMP());
     """, final_table);
 
     DROP TABLE IF EXISTS temp_table;
@@ -330,7 +328,7 @@ END;
 
 -- Carga inicial
 
-CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPCargaInicialClientesLeales`(
+CREATE OR REPLACE PROCEDURE `co-grupoexito-funnel-mercd-dev.procedures.SPCargaInicialVentasClientesLeales`(
     start_date DATE,
     end_date DATE,
     granularity STRING,
@@ -351,7 +349,7 @@ BEGIN
     Valor FLOAT64
   );
 
-  CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralClientesLeales`(
+  CALL `co-grupoexito-funnel-mercd-dev.procedures.SPGeneralVentasClientesLeales`(
     start_date, end_date, granularity, excluded_sublineaCD,
     included_direccionCD, excluded_tipoNegociacion,
     included_CadenaCD, sales_table, segment_table,
@@ -364,7 +362,7 @@ BEGIN
       Fecha,
       CadenaCD,
       ModeloSegmentoid,
-      5 AS IndicadorKey,
+      6 AS IndicadorKey,
       Valor,
       CURRENT_TIMESTAMP() AS FechaActualizacion
     FROM temp_table;
@@ -374,10 +372,10 @@ BEGIN
 
 END;
 
-CALL `co-grupoexito-funnel-mercd-dev.procedures.SPCargaInicialClientesLeales`(
+CALL `co-grupoexito-funnel-mercd-dev.procedures.SPCargaInicialVentasClientesLeales`(
     DATE '2021-01-01',
     DATE '2023-01-01',
-    'MONTH',
+    'YEAR',
     [1, 2, 3, 4, 5, 6, 99, 505],
     [10, 20, 30, 40, 50],
     [2],
@@ -385,11 +383,11 @@ CALL `co-grupoexito-funnel-mercd-dev.procedures.SPCargaInicialClientesLeales`(
     'co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes',
     'co-grupoexito-funnel-mercd-dev.external.segmentacion',
     'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento',
-    'co-grupoexito-funnel-mercd-dev.refined.fact_target_months'
+    'co-grupoexito-funnel-mercd-dev.refined.fact_target_years'
 );
 
-CALL `co-grupoexito-funnel-mercd-dev.procedures.SPIndividualClientesLeales`(
-    DATE '2021-12-01',
+CALL `co-grupoexito-funnel-mercd-dev.procedures.SPIndividualVentasClientesLeales`(
+    DATE '2021-12-02',
     'DAY',
     [1, 2, 3, 4, 5, 6, 99, 505],
     [10, 20, 30, 40, 50],
@@ -402,3 +400,4 @@ CALL `co-grupoexito-funnel-mercd-dev.procedures.SPIndividualClientesLeales`(
     'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento_backup',
     'co-grupoexito-funnel-mercd-dev.refined.fact_target_days'
 );
+

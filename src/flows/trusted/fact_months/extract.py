@@ -2,7 +2,7 @@ from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType, DoubleType
 
 from bubbaloo.pipeline.stages import Extract
-from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
+from bubbaloo.services.cloud.google.storage.storage import CloudStorageManager
 from bubbaloo.services.validation import CSV
 from bubbaloo.utils.functions import get_blobs_days_ago
 

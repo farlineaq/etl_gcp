@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from google.cloud.storage import Client, Bucket, Blob
-from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
+from bubbaloo.services.cloud.google.storage.storage import CloudStorageManager
 
 
 @pytest.fixture

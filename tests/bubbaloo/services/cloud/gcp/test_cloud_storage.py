@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from google.cloud.storage import Bucket, Blob
-from bubbaloo.services.cloud.gcp.storage import CloudStorageManager
+from bubbaloo.services.cloud.google.storage.storage import CloudStorageManager
 
 
 class MockedIterator:
