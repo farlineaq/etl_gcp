@@ -45,8 +45,8 @@ class BigQueryStage(IBigQueryStage):
             script.content,
             query_parameters={
                 "sp_delta": self.conf.bigquery.indicadores.clientes_monitoreados.endpoint_delta.sp_delta,
-                "date_to_calculate": self.conf.bigquery.indicadores.clientes_monitoreados.endpoint_delta.date_to_calculate,
-                "granularity": granularity,
+                "date_to_calculate": self.conf.bigquery.variables.delta.date_to_calculate,
+                "granularity": f"'{granularity}'",
                 "excluded_sublineaCD": self.conf.bigquery.variables.excluded_sublineaCD,
                 "included_direccionCD": self.conf.bigquery.variables.included_direccionCD,
                 "excluded_tipoNegociacion": self.conf.bigquery.variables.excluded_tipoNegociacion,
@@ -63,8 +63,8 @@ class BigQueryStage(IBigQueryStage):
             script.content,
             query_parameters={
                 "sp_carga_inicial": self.conf.bigquery.indicadores.clientes_monitoreados.endpoint_carga_inicial.sp_carga_inicial,
-                "start_date": self.conf.bigquery.indicadores.clientes_monitoreados.endpoint_carga_inicial.start_date,
-                "end_date": self.conf.bigquery.indicadores.clientes_monitoreados.endpoint_carga_inicial.end_date,
+                "start_date": self.conf.bigquery.variables.delta.start_date,
+                "end_date": self.conf.bigquery.variables.delta.end_date,
                 "granularity": f"'{granularity}'",
                 "excluded_sublineaCD": self.conf.bigquery.variables.excluded_sublineaCD,
                 "included_direccionCD": self.conf.bigquery.variables.included_direccionCD,

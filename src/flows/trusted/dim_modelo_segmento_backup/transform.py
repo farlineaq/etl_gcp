@@ -11,8 +11,23 @@ class TransformStage(Transform):
     def dedup_batch_query(self):
         self.spark.sql("""
             CREATE OR REPLACE GLOBAL TEMPORARY VIEW deduplicated_batch AS
-            SELECT DISTINCT
-                *,
+                SELECT DISTINCT
+                    *,
+                    DATE_FORMAT(
+                        FROM_UTC_TIMESTAMP(
+                            FROM_UNIXTIME(
+                                UNIX_TIMESTAMP(CURRENT_TIMESTAMP(), 'yyyy-MM-dd HH:mm:ss.SSSSSS')
+                            ), 
+                            'America/Bogota'
+                        ), 
+                        'yyyy-MM-dd HH:mm:ss'
+                    ) AS FechaActualizacion
+                FROM global_temp.batch
+            UNION ALL
+            SELECT
+                0 AS ModeloSegmentoid,
+                0 AS Modelid,
+                'NO APLICA' AS ModelSegmentoDesc,
                 DATE_FORMAT(
                     FROM_UTC_TIMESTAMP(
                         FROM_UNIXTIME(
@@ -22,7 +37,6 @@ class TransformStage(Transform):
                     ), 
                     'yyyy-MM-dd HH:mm:ss'
                 ) AS FechaActualizacion
-            FROM global_temp.batch
         """)
 
     def overwrite_query(self):
