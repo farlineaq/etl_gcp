@@ -16,7 +16,7 @@ class ExtractStage(Extract):
     def filtered_blobs(self):
         client = self.client()
         blobs = client.list(self.conf.paths.contactabilidad.raw_data_path)
-        return client.filter(blobs, lambda blob: get_blobs_days_ago(blob, self.conf.timedelta))
+        return client.filter(blobs, lambda blob: get_blobs_days_ago(blob, self.conf.timedelta[self.granularity]))
 
     @staticmethod
     def spark_schema():

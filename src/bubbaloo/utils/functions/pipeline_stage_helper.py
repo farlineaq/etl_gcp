@@ -52,6 +52,7 @@ def validate_params(params: Dict[str, Any]) -> Dict[str, Any]:
         'context': PipelineState,
         'conf': Config,
         'pipeline_name': str,
+        'granularity': str
     }
 
     if "conf" not in params:

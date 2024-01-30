@@ -32,13 +32,13 @@ BEGIN
     END CASE;
 
     IF granularity = 'DAY' THEN
-        SET formatted_date_expr = "Fecha";
+        SET formatted_date_expr = "cv.Fecha";
     ELSEIF granularity = 'MONTH' THEN
         SET formatted_date_expr = "DATE_TRUNC(cv.Fecha, MONTH)";
     ELSEIF granularity = 'YEAR' THEN
         SET formatted_date_expr = "DATE(DATE_TRUNC(cv.Fecha, YEAR))";
     ELSE
-        SET formatted_date_expr = "Fecha";
+        SET formatted_date_expr = "cv.Fecha";
     END IF;
 
     SET query = FORMAT("""

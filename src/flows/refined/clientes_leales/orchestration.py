@@ -46,7 +46,7 @@ class BigQueryStage(IBigQueryStage):
             query_parameters={
                 "sp_delta": self.conf.bigquery.indicadores.clientes_leales.endpoint_delta.sp_delta,
                 "date_to_calculate": self.conf.bigquery.variables.delta.date_to_calculate,
-                "granularity": granularity,
+                "granularity": f"'{granularity}'",
                 "excluded_sublineaCD": self.conf.bigquery.variables.excluded_sublineaCD,
                 "included_direccionCD": self.conf.bigquery.variables.included_direccionCD,
                 "excluded_tipoNegociacion": self.conf.bigquery.variables.excluded_tipoNegociacion,

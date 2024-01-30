@@ -84,6 +84,7 @@ class Pipeline:
         self._spark: SparkSession = self._params.get("spark")
         self._context: PipelineState = self._params.get("context")
         self._conf: Config = self._params.get("conf")
+        self._granularity: str = self._params.get("granularity")
         self._is_streaming: bool = False
         self._named_stages: Dict[str, OutputStageType] = {}
         self._pipeline: DataStreamWriter | None = None
@@ -179,7 +180,7 @@ class Pipeline:
             DataFrame: The DataFrame resulting from the extract stage.
         """
         name, extract_stage = self._stages["extract"]
-        extract_stage.initialize(self._conf, self._spark, self._logger, self._context)
+        extract_stage.initialize(self._conf, self._spark, self._logger, self._context, self._granularity)
         try:
             dataframe = extract_stage.execute()
             self._named_stages[name] = dataframe
@@ -213,7 +214,7 @@ class Pipeline:
             return
 
         for name, stage in transform_stages:
-            stage.initialize(self._conf, self._spark, self._logger, self._context)
+            stage.initialize(self._conf, self._spark, self._logger, self._context, self._granularity)
 
             try:
                 result = stage.execute(transformed_df)
@@ -256,7 +257,7 @@ class Pipeline:
 
         name, load_stage = self._stages["load"]
 
-        load_stage.initialize(self._conf, self._spark, self._logger, self._context)
+        load_stage.initialize(self._conf, self._spark, self._logger, self._context, self._granularity)
 
         try:
             result = load_stage.execute(dataframe, transform)

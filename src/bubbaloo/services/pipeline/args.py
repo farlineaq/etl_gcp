@@ -43,9 +43,10 @@ class ArgumentParser:
         and types. Some arguments are optional, while others are required.
         """
         self._parser.add_argument(
-            "-e", "--entity",
+            "-t", "--trusted_flows",
             required=False,
-            help="Provide a comma-separated list of entities. Each entity is a value to be passed as input to the job.",
+            help="Provide a comma-separated list of entities from trusted. Each entity is a value to be passed as "
+                 "input to the job.",
             type=lambda entity: list(entity.split(','))
         )
         self._parser.add_argument(
@@ -62,7 +63,7 @@ class ArgumentParser:
             default=None
         )
         self._parser.add_argument(
-            "-s", "--step",
+            "-s", "--execution_type",
             required=False,
             help="...",
             type=str,
@@ -74,6 +75,13 @@ class ArgumentParser:
             help="...",
             type=str,
             default=None
+        )
+        self._parser.add_argument(
+            "-r", "--refined_flows",
+            required=False,
+            help="Provide a comma-separated list of entities from refined. Each entity is a value to be passed as "
+                 "input to the job.",
+            type=lambda entity: list(entity.split(','))
         )
 
     def _parse_arguments(self) -> argparse.Namespace:

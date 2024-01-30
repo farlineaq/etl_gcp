@@ -30,6 +30,7 @@ class StageAbstract(ABC):
         self.spark: SparkSession | None = None
         self.logger: ILogger | None = None
         self.context: PipelineState | None = None
+        self.granularity: str | None = None
 
     def initialize(
             self,
@@ -37,6 +38,7 @@ class StageAbstract(ABC):
             spark: SparkSession,
             logger: ILogger,
             context: PipelineState,
+            granularity: str,
     ) -> None:
         """
         Initializes the stage with the necessary components.
@@ -49,11 +51,13 @@ class StageAbstract(ABC):
             spark (SparkSession): Spark session for the stage.
             logger (ILogger): Logger for the stage.
             context (PipelineState): Contextual state of the pipeline.
+            granularity (str): ...
         """
         self.conf = conf
         self.spark = spark
         self.logger = logger
         self.context = context
+        self.granularity = granularity
 
     @abstractmethod
     def execute(self, *args, **kwargs):

@@ -17,9 +17,9 @@ BEGIN
     IF granularity = 'DAY' THEN
         SET formatted_date_expr = "vc.Fecha";
     ELSEIF granularity = 'MONTH' THEN
-        SET formatted_date_expr = "DATE_TRUNC(Fecha, MONTH)";
+        SET formatted_date_expr = "DATE_TRUNC(vc.Fecha, MONTH)";
     ELSEIF granularity = 'YEAR' THEN
-        SET formatted_date_expr = "DATE(DATE_TRUNC(Fecha, YEAR))";
+        SET formatted_date_expr = "DATE(DATE_TRUNC(vc.Fecha, YEAR))";
     ELSE
         SET formatted_date_expr = "vc.Fecha";
     END IF;
