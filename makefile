@@ -1,10 +1,14 @@
-ENV ?= dev
+ENV ?= qa
 REGION ?= us-central1
 SUBNET ?= default
 BUCKET_NAME ?= co-grupo-exito-funnel-mercd-app-data-$(ENV)
 
 TARGET ?= app_files
 TEMPLATE_NAME ?= dp-funnel-mercd-workflow-$(ENV)
+
+YAML_PATH := /home/ronald/DataspellProjects/FunnelProject/deploy/$(ENV)
+
+YAML_FILES := $(wildcard $(YAML_PATH)/*.yaml)
 
 all: clean build workflow
 
@@ -23,12 +27,16 @@ build: clean
 	@gsutil -m cp -r ./dist gs://$(BUCKET_NAME)/$(TARGET)/
 	@echo "Code and dependencies have been packaged successfully"
 
-workflow: build
-	@gcloud dataproc workflow-templates import $(TEMPLATE_NAME) \
-		--source=./deploy/$(TEMPLATE_NAME).yaml \
-		--region=$(REGION) \
-		--quiet;
+workflow: $(YAML_FILES)
+	$(foreach yaml,$^, \
+		gcloud dataproc workflow-templates import $(notdir $(basename $(yaml))) \
+			--source=$(yaml) \
+			--region=$(REGION) \
+			--quiet;)
 
-init: workflow
-	@gcloud dataproc workflow-templates instantiate $(TEMPLATE_NAME) \
-		--region=$(REGION);
+init:
+	@gcloud dataproc workflow-templates instantiate $(flow) \
+		--region=$(REGION) \
+		--quiet
+
+.PHONY: all clean build workflow init

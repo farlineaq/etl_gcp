@@ -1,6 +1,6 @@
 CREATE OR REPLACE PROCEDURE `{sp_name}`(
     cadena_table STRING,
-    target_view STRING
+    dim_cadena_table STRING
 )
 BEGIN
     EXECUTE IMMEDIATE FORMAT("""
@@ -11,5 +11,5 @@ BEGIN
             IF(CadenaCD IN ('E', 'C', 'A', 'S'), CadenaDesc, 'NO APLICA CADENA') AS CadenaDesc
         FROM
             `%s`;
-    """, target_view, cadena_table);
+    """, dim_cadena_table, cadena_table);
 END;

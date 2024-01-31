@@ -41,6 +41,9 @@ def execute_refined(
         granularity: Literal["DAY", "MONTH", "YEAR"],
         flows_to_execute: List[str] | None = None
 ) -> None:
+    if flows_to_execute is not None and flows_to_execute[0] == 'false':
+        return
+
     orchestrator = BigQueryOrchestrator(
         refined,
         conf,

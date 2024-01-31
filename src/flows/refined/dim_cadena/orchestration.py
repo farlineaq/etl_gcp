@@ -46,8 +46,8 @@ class BigQueryStage(IBigQueryStage):
             script.content,
             query_parameters={
                 "sp_crear_dim_cadena": self.conf.bigquery.indicadores.dim_cadena.endpoint_carga_inicial.sp_crear_dim_cadena,
-                "cadena_table": self.conf.bigquery.indicadores.dim_cadena.endpoint_carga_inicial.cadena_table,
-                "target_view": self.conf.bigquery.indicadores.dim_cadena.endpoint_carga_inicial.target_view
+                "cadena_table": self.conf.bigquery.variables.cadena_table,
+                "dim_cadena_table": self.conf.bigquery.variables.dim_cadena_table
             }
         )
 
