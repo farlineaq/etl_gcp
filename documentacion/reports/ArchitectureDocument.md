@@ -1,12 +1,33 @@
 # Documento de Arquitectura de Datos
 
+## Tabla de contenido
+
+- [Introducción](#introducción)
+- [Visión general](#visión-general)
+- [Definición de ambientes](#definición-de-ambientes)
+- [Arquitectura de datos](#arquitectura-de-datos)
+    - [Drivers de arquitectura](#drivers-de-arquitectura)
+        - [Atributos de calidad](#atributos-de-calidad)
+        - [Consideraciones](#consideraciones)
+        - [Restricciones](#restricciones)
+        - [Métricas](#métricas)
+        - [Requerimientos](#requerimientos)
+    - [C4 Model](#c4-model)
+        - [Diagrama de contexto del sistema](#diagrama-de-contexto-del-sistema)
+        - [Diagrama de contenedores](#diagrama-de-contenedores)
+        - [Diagrama de componentes](#diagrama-de-componentes)
+        - [Diagrama de despliegue](#diagrama-de-despliegue)
+    - [Beneficios de la arquitectura](#beneficios-de-la-arquitectura)
+    - [Consideraciones de implementación](#consideraciones-de-implementación)
+    - [Nomenclatura de servicios](#nomenclatura-de-servicios)
+
 ## Introducción
 
 El auge de las tecnologías en la nube ha cambiado radicalmente la forma en que las organizaciones manejan sus datos.
 Google Cloud Platform (GCP) emerge como una solución líder, ofreciendo una gama de servicios innovadores que
 proporcionan la agilidad, escalabilidad y seguridad que las empresas modernas requieren.
 
-Este documento describe la arquitectura de datos propuesta para EL proyecto Funnel de Mercadeo, destacando
+Este documento describe la arquitectura de datos propuesta para el proyecto Funnel de Mercadeo, destacando
 la importancia de una infraestructura bien planificada que pueda respaldar tanto la operación inmediata como la visión
 a largo plazo de la organización.
 
@@ -50,7 +71,7 @@ toma de decisiones.
 En un mundo cada vez más impulsado por los datos, la arquitectura de datos es crucial para garantizar la confiabilidad,
 la seguridad y la disponibilidad de la información. Además, proporciona la flexibilidad necesaria para adaptarse a las
 cambiantes demandas del negocio y las tecnologías emergentes. A continuación, nos adentraremos en las etapas
-fundamentales para la definición de la arquitectura de datos del Data Lake de Flypass.
+fundamentales para la definición de la arquitectura de datos.
 
 ### Drivers de arquitectura
 
@@ -68,7 +89,7 @@ precisos y confiables en todo momento.
 
 | Escenario                              | Given                                                     | When                                                   | Then                                                                                                                                                                                  |
 |----------------------------------------|-----------------------------------------------------------|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Consistencia en el formato de datos    | Dado que los datos se ingresan en el Data Lake            | Cuando varias fuentes contribuyen con datos            | Entonces asegurarse de que los formatos de datos (por ejemplo, CSV, JSON, Apache Parquet, Delta) sean consistentes y validar que todos los campos de fecha sigan el estándar definido |                                                           |                                                        |                                                                                                                                                                  |
+| Consistencia en el formato de datos    | Dado que los datos se ingresan en el Data Lakehouse       | Cuando varias fuentes contribuyen con datos            | Entonces asegurarse de que los formatos de datos (por ejemplo, CSV, JSON, Apache Parquet, Delta) sean consistentes y validar que todos los campos de fecha sigan el estándar definido |                                                           |                                                        |                                                                                                                                                                  |
 | Consistencia en la validación de datos | Dado que se aplican procesos de transformación de datos   | Cuando los datos se transforman y limpian              | Entonces verificar que todos los datos cumplan con las reglas de validación definidas y asegurarse de la consistencia en el manejo de valores nulos en los conjuntos de datos         |
 | Consistencia en metadatos              | Dado que se definen metadatos para los conjuntos de datos | Cuando se realizan cambios en las estructuras de datos | Entonces actualizar automáticamente los metadatos para reflejar los cambios de esquema y asegurarse de que toda la documentación de datos permanezca consistente                      |
 
@@ -149,7 +170,7 @@ internas y externas.
 1. **Escalabilidad en GCP**: Aprovechar la escalabilidad de GCP para manejar el aumento de datos y usuarios.
 2. **Seguridad en la nube**: Implementar autenticación y autorización en GCP para proteger los datos y cumplir con las
    normativas.
-3. **Costos de GCP**: Usar servicios eficientes en costos como BigQuery y Dataflow, y aplicar estrategias de gestión de
+3. **Costos de GCP**: Usar servicios eficientes en costos como BigQuery y Dataproc, y aplicar estrategias de gestión de
    costos.
 4. **Latencia**: Optimizar la latencia en GCP para mejorar el rendimiento de consultas y análisis de datos.
 
@@ -162,7 +183,7 @@ internas y externas.
 
 #### Métricas
 
-1. **Tiempo de acceso a datos**: Monitorear el tiempo de acceso a datos en el Data Lake de GCP.
+1. **Tiempo de acceso a datos**: Monitorear el tiempo de acceso a datos en el Data Lakehouse de GCP.
 2. **Latencia de consultas**: Medir la latencia de las consultas en GCP para mantener respuestas rápidas.
 3. **Uso de recursos**: Controlar el uso de recursos en GCP, incluyendo CPU y almacenamiento.
 4. **Seguridad y cumplimiento**: Asegurar la conformidad con las políticas de seguridad y normativas de cumplimiento.
@@ -247,8 +268,8 @@ A continuación, se esquematiza y detalla la arquitectura de datos implementada 
 | Componente                  | Funcionalidad                                     | Ubicación en GCP                   | Conectividad                                          | Consumidores                           |
 |-----------------------------|---------------------------------------------------|------------------------------------|-------------------------------------------------------|----------------------------------------|
 | Infraestructura como Código | Automatización del despliegue de infraestructura. | Azure DevOps (integración externa) | Interactúa con GCP para desplegar recursos.           | Operaciones/DevOps                     |
-| Fuente de Datos             | Almacenamiento de datos iniciales.                | Cloud Storage                      | Fuente para procesos ETL.                             | DataProc, Dataflow                     |
-| Ingesta                     | Ingreso de datos en el sistema.                   | Dataflow, BigQuery (manual)        | Recibe datos de fuentes externas.                     | Data Lakehouse                         |
+| Fuente de Datos             | Almacenamiento de datos iniciales.                | Cloud Storage                      | Fuente para procesos ETL.                             | Dataproc                               |
+| Ingesta                     | Ingreso de datos en el sistema.                   | Dataproc, BigQuery (manual)        | Recibe datos de fuentes externas.                     | Data Lakehouse                         |
 | Orquestación                | Programación de ETLs y flujos de trabajo.         | Cloud Scheduler                    | Ejecuta trabajos programados.                         | Procesamiento, Trazabilidad            |
 | Procesamiento               | Transformación de datos (ETL).                    | Dataproc, BigQuery                 | Procesa datos para almacenamiento y análisis.         | Data Lakehouse, Área de Presentación   |
 | Almacenamiento              | Repositorio de datos procesados.                  | Cloud Storage, BigQuery            | Almacena los datos procesados.                        | Motor de Consumo, Analítica de Negocio |
@@ -258,26 +279,56 @@ A continuación, se esquematiza y detalla la arquitectura de datos implementada 
 
 ### Beneficios de la arquitectura
 
-Los beneficios de la arquitectura de Data Lakehouse en GCP incluyen:
+La arquitectura Data Lakehouse presenta numerosos beneficios en la gestión y análisis de datos. Aquí se detallan algunos
+de estos beneficios:
 
-- **Almacenamiento versátil**: Capacidad para manejar datos estructurados y no estructurados, adaptándose a diferentes
-  esquemas.
-- **Escalabilidad eficaz**: Aumento de capacidad de almacenamiento y procesamiento sin sacrificar el rendimiento.
-- **Acceso universal**: Datos accesibles para una amplia gama de herramientas y servicios, facilitando el análisis
-  colaborativo.
-- **Integridad de datos**: Transacciones ACID y un manejo de metadatos robusto garantizan datos consistentes y
-  confiables.
-- **Análisis profundos**: BigQuery facilita el análisis descriptivo y predictivo, potenciando la inteligencia
-  empresarial.
-- **Control de costos**: La infraestructura basada en la nube permite un modelo de pago por uso, optimizando la
-  inversión en recursos tecnológicos.
-- **Ejecución programada de los ETL:** La utilización de workflows de GCP y Cloud Scheduler permite la ejecución
-  programada de los ETL, lo que permite una gestión más eficiente de los procesos de integración de datos.
+1. **Almacenamiento de grandes cantidades de datos de cualquier tipo:** Permite el almacenamiento de grandes volúmenes
+   de datos sin necesidad de esquematizarlos previamente, brindando flexibilidad y escalabilidad. Los datos pueden ser
+   estructurados, semi estructurados o sin estructura.
+2. **Escalabilidad:** Facilita la incorporación de nuevos datos y la expansión de la capacidad de almacenamiento y
+   procesamiento sin afectar el rendimiento ni la funcionalidad de la solución.
+3. **Accesibilidad:** Los datos almacenados en el Data Lakehouse están disponibles para todas las herramientas y
+   aplicaciones que requieran acceso, fomentando la colaboración y el análisis de datos.
+4. **Flexibilidad:** La solución puede almacenar y procesar diferentes tipos de datos, tanto estructurados como no
+   estructurados, y adaptarse a los cambios en los requisitos de los datos. También permite la incorporación de nuevas
+   fuentes de datos y la modificación o eliminación de las existentes.
+5. **Formato abierto de acceso directo:** Los datos se almacenan en formato Delta, basado en Apache Parquet, un formato
+   de archivo de datos de código abierto diseñado para un almacenamiento eficiente y una recuperación de datos efectiva.
+6. **Separación del cómputo y el almacenamiento:** El almacenamiento de datos se centraliza en el Data Lakehouse,
+   mientras que el cómputo se realiza mediante herramientas de procesamiento y análisis como Apache Spark y Dataproc en
+   GCP. Esto permite una gestión eficiente de recursos y una escalabilidad óptima para manejar grandes volúmenes de
+   datos según la demanda.
+7. **Soporte para transacciones ACID:** Delta Lake garantiza la Atomicidad, Consistencia, Aislamiento y Durabilidad (
+   ACID) de todas las transacciones en las tablas delta, manteniendo la consistencia incluso en lecturas e inserciones
+   simultáneas.
+8. **Aplicación y evolución de esquemas:** Delta Lake implementa y mantiene el esquema al escribir datos en el
+   almacenamiento, previniendo la corrupción de datos y permitiendo modificaciones seguras del esquema según sea
+   necesario.
+9. **Soporte para DML (Lenguaje de Manipulación de Datos):** Delta Lake permite operaciones de Inserción, Selección,
+   Actualización y Eliminación, así como escenarios complejos de fusión y actualización en un Data Lake.
+10. **Viaje en el tiempo:** El registro de transacciones de Delta Lake permite acceder al historial de cambios en los
+    datos, lo que facilita la recuperación de versiones anteriores en caso de cambios accidentales.
+11. **Integración de Batch y Streaming en un solo modelo:** Delta Lake es compatible tanto con procesamiento de datos
+    por lotes como en streaming, lo que facilita la gestión de cargas de trabajo incrementales y en tiempo real.
+12. **Gestión escalable de metadatos:** Delta Lake escala las operaciones de procesamiento de metadatos utilizando
+    motores como Apache Spark y Apache Hive, lo que permite gestionar eficazmente metadatos para grandes volúmenes de
+    datos.
+13. **Seguridad y gobernanza mejoradas:** Delta Lake ofrece control de acceso granular a los datos, cumpliendo con
+    regulaciones como el GDPR y proporcionando seguridad en diferentes niveles.
+14. **Compartición de Delta:** Facilita la compartición segura de grandes conjuntos de datos de tablas delta entre
+    equipos de ingeniería de datos sin necesidad de replicación.
+15. **Ejecución programada de los ETL:** La ejecución programada de los ETL se logra mediante workflows de Dataproc, lo
+    que mejora la eficiencia en la gestión de procesos de integración de datos.
+16. **Administración completa de los datos desde GCP:** Permite la gestión integral de datos, incluyendo almacenamiento,
+    procesamiento y análisis, a través de GCP, proporcionando una gestión centralizada y eficiente.
+17. **Costo:** La arquitectura de Data Lakehouse reduce costos al eliminar la necesidad de invertir en hardware y
+    software para el almacenamiento y procesamiento de datos, optimizando el uso de recursos en función de las
+    necesidades.
 
 ### Consideraciones de implementación
 
 1. Uso de **GCP** como plataforma principal para la implementación de la solución de datos.
-2. **Google Cloud Storage** para almacenar las capas raw y trusted, con la capa raw en formato Apache Parquet para
+2. **Google Cloud Storage** para almacenar las capas raw y trusted, con la capa raw en formato Apache Parquet y CSV para
    eficiencia en operaciones de lectura y la capa trusted en formato Delta Lake para operaciones upsert y merge.
 3. **BigQuery** para procesamiento de datos (ETLs) y como motor de almacenamiento del área de presentación, aprovechando
    su capacidad de manejo de grandes volúmenes de datos y análisis avanzados.
@@ -358,12 +409,12 @@ su formato original, ya sea a través de procesos batch o streaming.
 Los datos arribarán al siguiente bucket **`co-grupo-exito-funnel-mercd-raw-data-[ambiente]`** respetando la siguiente
 estructura:
 
-`[país]_[empresa]_raw_data/[FUENTE]/[ÁREA TEMÁTICA o DOMINIO DE NEGOCIO]/[NOMBRE TABLA]/[PARTICIÓN](OPCIONAL)/[ARCHIVO]`
+`[país]_[empresa]_raw_data/[ÁREA TEMÁTICA o DOMINIO DE NEGOCIO]/[FUENTE]/[NOMBRE TABLA]/[PARTICIÓN](OPCIONAL)/[ARCHIVO]`
 
 Si el archivo tuviera errores o hubiera ocurrido un error durante el proceso, el pipeline almacenará el archivo en el
 siguiente ruta:
 
-`[país]_[empresa]_raw_fuente_error/[FUENTE]/[ÁREA TEMÁTICA o DOMINIO DE NEGOCIO]/[NOMBRE TABLA]/[PARTICIÓN](OPCIONAL)/[ARCHIVO]`
+`[país]_[empresa]_raw_fuente_error/[ÁREA TEMÁTICA o DOMINIO DE NEGOCIO]/[FUENTE]/[NOMBRE TABLA]/[PARTICIÓN](OPCIONAL)/[ARCHIVO]`
 
 ![Zona raw](../assets/architecture/RawZone.png)
 
@@ -376,7 +427,7 @@ disponibles para las diferentes iniciativas de modelado de datos, business intel
 Los datos arribarán al bucket **`co-grupo-exito-funnel-mercd-trusted-data-[ambiente]`** y dependiendo de área temática,
 fuente de información o dominio se almacenarán en la siguiente ruta:
 
-`[FUENTE]/[ÁREA TEMÁTICA o DOMINIO DE NEGOCIO]/[NOMBRE TABLA]/[PARTICIÓN](OPCIONAL)/[ARCHIVO]`
+`[ÁREA TEMÁTICA o DOMINIO DE NEGOCIO]/[FUENTE]/[NOMBRE TABLA]/[PARTICIÓN](OPCIONAL)/[ARCHIVO]`
 
 ![Zona trusted](../assets/architecture/TrustedZone.png)
 
@@ -387,8 +438,6 @@ para la ejecución de los pipelines de datos.
 
 Los datos arribarán al bucket **`co-grupo-exito-funnel-mercd-app-data-[ambiente]`** y dependiendo del recurso se
 dispondrán en el bucket siguiendo la estructura definida.
-
-Para los activos de datos de AWS Glue se debe seguir la siguiente estructura:
 
 `[NOMBRE PROYECTO]/[CATEGORIA]/[ARCHIVOS]`
 

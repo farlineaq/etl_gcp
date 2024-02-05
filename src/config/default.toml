@@ -1,0 +1,9 @@
+[default]
+
+log_level = "INFO"
+business_domain = "FUNNEL"
+origin = { teradata = "TERADATA", excel = "EXCEL" }
+table_history_retention_time = 0
+timedelta.DAY = 1
+timedelta.MONTH = 30
+timedelta.YEAR = 365

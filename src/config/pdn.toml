@@ -1,0 +1,13 @@
+[pdn]
+
+log_level = "INFO"
+raw_bucket_name = "co-grupo-exito-raw-data-dev"
+trusted_bucket_name = "co-grupo-exito-trusted-data-dev"
+project = "co-grupoexito-ppldp-promo-dev"
+invalid_blobs_prefix = "co-grupo-exito-raw-fuente-error"
+table_history_retention_time = 0
+delete_batch_size = 1000
+timedelta = 5
+business_domain = "PROMOCIONES"
+origin = "NAPSE"
+main_folder = "bk-promo-co-grupoexito-datalake-dev"
