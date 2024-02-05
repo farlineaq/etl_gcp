@@ -1,5 +1,23 @@
 # Diseño e Implementación del Modelo Dimensional
 
+## Tabla de contenido
+
+- [Introducción](#introducción)
+- [Definiciones](#definiciones)
+- [Diseño del Modelo Dimensional](#diseño-del-modelo-dimensional)
+    - [Proceso de negocio](#proceso-de-negocio)
+    - [Grano](#grano)
+    - [Tablas de Dimensiones](#tablas-de-dimensiones)
+        - [DimDate (Fecha)](#dimdate-fecha)
+        - [DimCadena (Cadena)](#dimcadena-cadena)
+        - [DimModeloSegmento (Modelo de Segmento)](#dimmodelosegmento-modelo-de-segmento)
+        - [DimKPI (Key Performance Indicator)](#dimkpi-key-performance-indicator)
+    - [Tablas de Hechos](#tablas-de-hechos)
+        - [Tablas de Hechos de indicadores calculados](#tablas-de-hechos-de-indicadores-calculados)
+        - [Tablas de Hechos de Metas](#tablas-de-hechos-de-metas)
+- [Implementación del Modelo Dimensional](#implementación-del-modelo-dimensional)
+- [Recomendaciones](#recomendaciones)
+
 ## Introducción
 
 En la era de la información, donde los datos son un activo vital, la capacidad de una organización para comprender y
