@@ -1,4 +1,4 @@
-ENV ?= qa
+ENV ?= dev
 REGION ?= us-central1
 SUBNET ?= default
 BUCKET_NAME ?= co-grupo-exito-funnel-mercd-app-data-$(ENV)
@@ -6,7 +6,7 @@ BUCKET_NAME ?= co-grupo-exito-funnel-mercd-app-data-$(ENV)
 TARGET ?= app_files
 TEMPLATE_NAME ?= dp-funnel-mercd-workflow-$(ENV)
 
-YAML_PATH := /home/ronald/DataspellProjects/FunnelProject/deploy/$(ENV)
+YAML_PATH := ./deploy/$(ENV)
 
 YAML_FILES := $(wildcard $(YAML_PATH)/*.yaml)
 

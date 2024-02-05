@@ -7,8 +7,8 @@ BEGIN
         CREATE OR REPLACE VIEW `%s` AS
         SELECT DISTINCT
             CorporacionCD,
-            IF(CadenaCD IN ('E', 'C', 'A', 'S'), CadenaCD, 'NA') AS CadenaCD,
-            IF(CadenaCD IN ('E', 'C', 'A', 'S'), CadenaDesc, 'NO APLICA CADENA') AS CadenaDesc
+            IF(CadenaCD IN ('E', 'C', 'A', 'S'), CadenaCD, 'ACES') AS CadenaCD,
+            IF(CadenaCD IN ('E', 'C', 'A', 'S'), CadenaDesc, 'CONJUNTO DE LAS CADENAS A, C, E Y S') AS CadenaDesc
         FROM
             `%s`;
     """, dim_cadena_table, cadena_table);

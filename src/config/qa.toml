@@ -165,6 +165,7 @@ dimensional_model.fact_table.YEAR = "fact_years"
 dimensional_model.target_table.DAY = "fact_target_days"
 dimensional_model.target_table.MONTH = "fact_target_months"
 dimensional_model.target_table.YEAR = "fact_target_years"
+dimensional_model.dim_cadena_table = "dim_cadena"
 
 granularity = ["DAY", "MONTH", "YEAR"]
 excluded_sublineaCD = [1, 2, 3, 4, 5, 6, 99, 505]
@@ -172,23 +173,23 @@ included_direccionCD = [10, 20, 30, 40, 50]
 excluded_tipoNegociacion = [2]
 included_CadenaCD = ['E', 'C', 'A', 'S']
 
-delta.start_date = "DATE '2021-11-01'"
-delta.end_date = "DATE '2022-01-01'"
-delta.date_to_calculate = "DATE '2021-10-01'"
+delta.start_date = "DATE '2021-10-01'"
+delta.end_date = "DATE '2022-03-01'"
+delta.date_to_calculate = "DATE '2021-11-01'"
 
 contact_table = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.CONTACTABILIDAD'"
-sales_table = "'co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwVentaLineaConClientes'"
+sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.MuestraVentasParticionada'"
 segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.SEGMENTACION'"
 modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.DIM_MODELO_SEGMENTO'"
 segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.SEGMENTACION_BACKUP'"
 modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.DIM_MODELO_SEGMENTO_BACKUP'"
-cadena_table = "'co-grupoexito-datalake-dev.VistasDesdeOtrosProyectos.vwCadenaGCP'"
-dim_cadena_table = "'co-grupoexito-funnel-mercd-dev.refined_qa.dim_cadena'"
+cadena_table = "'co-grupoexito-funnel-mercd-dev.indicadores.CadenaGCP'"
 source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_MONTHS'"
 source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_TARGET_DAYS'"
 source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_TARGET_MONTHS'"
 source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_TARGET_YEARS'"
 
+dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
 fact_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.DAY}'"
 fact_table.MONTH = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.MONTH}'"
 fact_table.YEAR = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.YEAR}'"
