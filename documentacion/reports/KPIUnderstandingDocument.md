@@ -66,9 +66,6 @@ Esta consulta realiza lo siguiente:
 3. **Cálculo del indicador**: Calcula el total de ventas sin IVA, dividiendo la suma de `VentaSinImpuesto` por
    1.000.000.000 para obtener el total en miles de millones y redondeando el resultado a dos decimales.
 
-Este esquema se adapta dinámicamente a las necesidades específicas de filtrado y agrupación definidas por los parámetros
-de entrada del SP, proporcionando un marco flexible para calcular el indicador de ventas totales sin IVA.
-
 ```sql
 WITH FiltrosAplicados AS (
   SELECT

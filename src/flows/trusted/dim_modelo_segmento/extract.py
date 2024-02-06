@@ -3,7 +3,7 @@ from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 from bubbaloo.pipeline.stages import Extract
 from bubbaloo.services.cloud.google.storage.storage import CloudStorageManager
-from bubbaloo.services.validation import Parquet
+from bubbaloo.services.validation.structure import Parquet
 from bubbaloo.utils.functions import get_blobs_days_ago
 
 
