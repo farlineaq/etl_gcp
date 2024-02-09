@@ -1,5 +1,5 @@
 import pytest
-from bubbaloo.services.pipeline.state import PipelineState
+from quind_data_library.services.pipeline.state import PipelineState
 
 
 @pytest.fixture

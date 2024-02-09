@@ -33,7 +33,7 @@ jobs:
         spark.sql.autoBroadcastJoinThreshold: '-1'
         spark.sql.adaptive.enabled: 'false'
       pythonFileUris:
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/bubbaloo.zip
+        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/quind_data_library.zip
         - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/flows.zip
     stepId: dp-funnel-mercd-job-qa
 placement:

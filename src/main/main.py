@@ -1,9 +1,9 @@
-from bubbaloo.services.local import Logger
-from bubbaloo.services.pipeline import Config, PipelineState, GetSpark, ArgumentParser
-from bubbaloo.services.cloud.google.bigquery.client import BigQueryClient
-from bubbaloo.services.cloud.google.bigquery.orchestration import BigQueryOrchestrator
-from bubbaloo.orchestration import Orchestrator
-from bubbaloo.utils.interfaces.pipeline_logger import ILogger
+from quind_data_library.services.local import Logger
+from quind_data_library.services.pipeline import Config, PipelineState, GetSpark, ArgumentParser
+from quind_data_library.services.cloud.google.bigquery.client import BigQueryClient
+from quind_data_library.services.cloud.google.bigquery.orchestration import BigQueryOrchestrator
+from quind_data_library.orchestration import Orchestrator
+from quind_data_library.utils.interfaces.pipeline_logger import ILogger
 
 from typing import List, Literal
 

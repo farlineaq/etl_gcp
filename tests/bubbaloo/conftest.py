@@ -7,8 +7,8 @@ import os
 
 from pyspark.sql.types import StructType, StringType, StructField
 
-from bubbaloo.services.local import Logger
-from bubbaloo.services.pipeline import Measure, GetSpark, PipelineState, Config
+from quind_data_library.services.local import Logger
+from quind_data_library.services.pipeline import Measure, GetSpark, PipelineState, Config
 
 
 @pytest.fixture(scope="session")

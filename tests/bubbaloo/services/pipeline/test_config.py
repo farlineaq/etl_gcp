@@ -1,4 +1,4 @@
-from bubbaloo.services.pipeline.config import Config
+from quind_data_library.services.pipeline.config import Config
 
 
 class TestConfig:

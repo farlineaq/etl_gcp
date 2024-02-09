@@ -3,17 +3,17 @@ from typing import Dict, Any, List
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DateType, DoubleType
 
-from bubbaloo.pipeline.stages import Extract
-from bubbaloo.services.cloud.google.storage.storage import CloudStorageManager
-from bubbaloo.services.validation.quality.expectations import (
+from quind_data_library.pipeline.stages import Extract
+from quind_data_library.services.cloud.google.storage.storage import CloudStorageManager
+from quind_data_library.services.validation.quality.expectations import (
     RegexExpectation,
     DistinctValuesExpectation,
     UniqueExpectation,
     NotNullExpectation
 )
-from bubbaloo.services.validation.structure import CSV
-from bubbaloo.utils.functions import get_blobs_days_ago
-from bubbaloo.utils.interfaces.quality_expectation import Expectation
+from quind_data_library.services.validation.structure import CSV
+from quind_data_library.utils.functions import get_blobs_days_ago
+from quind_data_library.utils.interfaces.quality_expectation import Expectation
 
 
 class ExtractStage(Extract):

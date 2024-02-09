@@ -2,8 +2,8 @@ from typing import Callable, Any
 
 from pyspark.sql import DataFrame
 
-from bubbaloo.pipeline.stages import Transform
-from bubbaloo.utils.functions import get_metrics_from_delta_table
+from quind_data_library.pipeline.stages import Transform
+from quind_data_library.utils.functions import get_metrics_from_delta_table
 
 
 class TransformStage(Transform):

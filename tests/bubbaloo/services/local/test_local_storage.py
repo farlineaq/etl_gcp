@@ -1,6 +1,6 @@
 import os
 import pytest
-from bubbaloo.services.local.storage import LocalFileManager
+from quind_data_library.services.local.storage import LocalFileManager
 
 
 class TestLocalFileManager:

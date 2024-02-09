@@ -1,6 +1,6 @@
 from pyspark.sql import DataFrame
 
-from bubbaloo.pipeline.stages import Extract
+from quind_data_library.pipeline.stages import Extract
 
 
 class ExtractStage(Extract):

@@ -1,9 +1,9 @@
-from bubbaloo.services.cloud.google.bigquery.client import BigQueryClient
-from bubbaloo.services.cloud.google.bigquery.script_loader import SQLScript
-from bubbaloo.services.pipeline import Config
+from quind_data_library.services.cloud.google.bigquery.client import BigQueryClient
+from quind_data_library.services.cloud.google.bigquery.script_loader import SQLScript
+from quind_data_library.services.pipeline import Config
 from typing import List, Literal
 
-from bubbaloo.utils.interfaces.bigquery_stage import IBigQueryStage
+from quind_data_library.utils.interfaces.bigquery_stage import IBigQueryStage
 
 
 class BigQueryStage(IBigQueryStage):
