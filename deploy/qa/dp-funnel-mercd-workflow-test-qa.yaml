@@ -3,8 +3,9 @@ jobs:
       args:
         #- --trusted_flows=dim_modelo_segmento
         - --env=qa
-        - --granularity=DAY
+        - --granularity=MONTH
         - --execution_type=full
+        - --refined_flows=false
       jarFileUris:
         - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/dev.toml
         - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/default.toml

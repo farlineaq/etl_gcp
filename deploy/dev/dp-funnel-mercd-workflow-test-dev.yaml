@@ -1,18 +1,19 @@
 jobs:
   - pysparkJob:
       args:
-        #- --trusted_flows=dim_modelo_segmento
-        - --env=qa
-        - --granularity=DAY
-        - --execution_type=full
+        - --trusted_flows=fact_months
+        - --env=dev
+        - --granularity=MONTH
+        - --execution_type=delta
+        - --refined_flows=false
       jarFileUris:
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/dev.toml
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/default.toml
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/pdn.toml
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/qa.toml
-      mainPythonFileUri: gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/main.py
+        - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/dev.toml
+        - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/default.toml
+        - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/pdn.toml
+        - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/qa.toml
+      mainPythonFileUri: gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/main.py
       properties:
-        spark.app.name: trusted_workflow_qa
+        spark.app.name: trusted_workflow_dev
         spark.jars.packages: "io.delta:delta-spark_2.12:3.0.0"
         spark.sql.extensions: "io.delta.sql.DeltaSparkSessionExtension"
         spark.sql.catalog.spark_catalog: "org.apache.spark.sql.delta.catalog.DeltaCatalog"
@@ -32,14 +33,14 @@ jobs:
         spark.sql.autoBroadcastJoinThreshold: '-1'
         spark.sql.adaptive.enabled: 'false'
       pythonFileUris:
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/bubbaloo.zip
-        - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/flows.zip
-    stepId: dp-funnel-mercd-job-qa
+        - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/bubbaloo.zip
+        - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/flows.zip
+    stepId: dp-funnel-mercd-job-dev
 placement:
   managedCluster:
-    clusterName: dp-funnel-mercd-pipeline-qa
+    clusterName: dp-funnel-mercd-pipeline-dev
     config:
-      configBucket: co-grupo-exito-funnel-mercd-app-data-qa
+      configBucket: co-grupo-exito-funnel-mercd-app-data-dev
       gceClusterConfig:
         networkUri: default
         serviceAccountScopes:

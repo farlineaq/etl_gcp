@@ -22,8 +22,6 @@ build: clean
 	@cp ./src/config/*.toml ./dist
 	@cp -r ./src/bubbaloo ./dist && cd ./dist && zip -r bubbaloo.zip bubbaloo && rm -rf bubbaloo
 	@cp -r ./src/flows ./dist && cd ./dist && zip -r flows.zip flows && rm -rf flows
-	@pip install -r requirements.txt -t ./dist/libs && cd ./dist/libs && zip -r -D ../libs.zip .
-	@cd ./dist && rm -rf libs
 	@gsutil -m cp -r ./dist gs://$(BUCKET_NAME)/$(TARGET)/
 	@echo "Code and dependencies have been packaged successfully"
 
