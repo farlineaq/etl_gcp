@@ -27,6 +27,20 @@ segmentacion = "SEGMENTACION"
 segmentacion_backup = "SEGMENTACION_BACKUP"
 
 # ================================================================================
+# Data Quality Expectations
+# ================================================================================
+
+[qa.expectations]
+
+not_null_expectation.columns = ["Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
+unique_expectation.columns = ["CadenaId", "IndicadorId", "Fecha"]
+in_set_expectation.columns.cadena_id = { name = "CadenaId", value_set = ['E', 'ACES', 'C', 'A', 'S'] }
+in_set_expectation.columns.indicador_id = { name = "IndicadorId", value_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
+in_set_expectation.columns.actualizacion = { name = "Actualizacion", value_set = ['SI', 'NO'] }
+regex_expectation.columns.fecha = { name = "Fecha", pattern = '\d{4}-\d{2}-\d{2}' }
+
+
+# ================================================================================
 # Path Prefixes
 # ================================================================================
 
@@ -36,15 +50,15 @@ data_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.data_folder}/\
-    {this.origin.teradata}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.teradata}\
 """
 error_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.error_folder}/\
-    {this.origin.teradata}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.teradata}\
 """
 
 [qa.paths.raw_path_prefix.excel]
@@ -53,24 +67,24 @@ data_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.data_folder}/\
-    {this.origin.excel}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.excel}\
 """
 error_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.error_folder}/\
-    {this.origin.excel}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.excel}\
 """
 
 [qa.paths.trusted_path_prefix.teradata]
 
-data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.origin.teradata}/{this.business_domain}"
+data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.business_domain}/{this.origin.teradata}"
 
 [qa.paths.trusted_path_prefix.excel]
 
-data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.origin.excel}/{this.business_domain}"
+data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.business_domain}/{this.origin.excel}"
 
 # ================================================================================
 # Flows Paths
@@ -177,17 +191,17 @@ delta.start_date = "DATE '2021-10-01'"
 delta.end_date = "DATE '2022-03-01'"
 delta.date_to_calculate = "DATE '2021-11-01'"
 
-contact_table = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.CONTACTABILIDAD'"
+contact_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.CONTACTABILIDAD'"
 sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.MuestraVentasParticionada'"
-segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.SEGMENTACION'"
-modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.DIM_MODELO_SEGMENTO'"
-segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.SEGMENTACION_BACKUP'"
-modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.DIM_MODELO_SEGMENTO_BACKUP'"
+segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION'"
+modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO'"
+segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION_BACKUP'"
+modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO_BACKUP'"
 cadena_table = "'co-grupoexito-funnel-mercd-dev.indicadores.CadenaGCP'"
-source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_MONTHS'"
-source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_TARGET_DAYS'"
-source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_TARGET_MONTHS'"
-source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.Alberto_trusted.FACT_TARGET_YEARS'"
+source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_MONTHS'"
+source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_DAYS'"
+source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_MONTHS'"
+source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_YEARS'"
 
 dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
 fact_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.DAY}'"

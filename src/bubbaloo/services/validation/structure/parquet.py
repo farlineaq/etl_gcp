@@ -132,7 +132,7 @@ class Parquet(IValidation):
         """
         self._logger.error(
             "Some corrupted files found: \n"
-            f"{json.dumps(self._error_context.errors['dataProcessing'])} \n"
+            f"{json.dumps(self._error_context.errors['DataProcessing'])} \n"
             "Corrupted files will not be processed, check these files in storage."
         )
 
@@ -158,7 +158,7 @@ class Parquet(IValidation):
             for key, items in itertools.groupby(sorted_list, key=lambda item: item["error"])
         ]
 
-        self._error_context.errors["dataProcessing"] = str(self._validation_resume)
+        self._error_context.errors["DataProcessing"] = str(self._validation_resume)
 
     def _get_schema_from_temp_copy(self, file_path: str) -> pa.Schema:
         """

@@ -44,6 +44,7 @@ def validate_csv_params(params: Dict[str, Any]) -> Dict[str, Any]:
         "storage_client": IStorageManager,
         "context": PipelineState,
         "error_path": str,
+        "expectation_config": dict
     }
     for param, expected_type in param_types.items():
         if param not in params or not isinstance(params[param], expected_type):

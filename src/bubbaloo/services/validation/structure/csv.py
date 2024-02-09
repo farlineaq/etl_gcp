@@ -1,10 +1,11 @@
 import json
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
 from bubbaloo.services.pipeline import PipelineState
+from bubbaloo.services.validation.quality import QualityValidator
 from bubbaloo.utils.functions.validation_csv_helper import validate_csv_params
 from bubbaloo.utils.interfaces.pipeline_logger import ILogger
 from bubbaloo.utils.interfaces.services_validation import IValidation
@@ -60,10 +61,11 @@ class CSV(IValidation):
         self._storage_client: IStorageManager = self._params.get("storage_client")
         self._error_context: PipelineState = self._params.get("context")
         self._error_path: str = self._params.get("error_path")
-        self._format = "csv"
+        self._expectation_config: Dict[str, Any] = self._params.get("expectation_config")
+        self._format: str = "csv"
         self._invalid_files: List[str] | None = None
         self._validation_resume: List[Dict[str, str]] | str = []
-        self._error_message: List[Dict[str, str]] = []
+        self._error_message: List[Dict[str, str | Dict[str, str]]] = []
 
     @property
     def invalid_files(self) -> List[str] | None:
@@ -97,10 +99,12 @@ class CSV(IValidation):
         ]
 
         if malformed_files:
-            self._error_message.append({
-                "message": "They are not CSV files",
-                "files": list(malformed_files)
-            })
+            self._error_message.append(
+                {
+                    "message": "They are not CSV files",
+                    "files": list(malformed_files)
+                }
+            )
 
         return malformed_files
 
@@ -138,16 +142,71 @@ class CSV(IValidation):
                 malformed_files.append(file)
 
         if unreadable_csv:
-            self._error_message.append({
-                "message": "Error while reading file",
-                "files": list(unreadable_csv)
-            })
+            self._error_message.append(
+                {
+                    "message": "Error while reading file",
+                    "files": list(unreadable_csv)
+                }
+            )
 
         if schema_mismatch:
-            self._error_message.append({
-                "message": "Schema does not match",
-                "files": list(schema_mismatch)
-            })
+            self._error_message.append(
+                {
+                    "message": "Schema does not match",
+                    "files": list(schema_mismatch)
+                }
+            )
+
+        return malformed_files
+
+    def _check_data_expectations(self, file_paths: List[str]) -> List[str]:
+        """Validates the file content against the specified expectations.
+
+        Args:
+            file_paths (List[str]): List of file paths to validate.
+
+        Returns:
+            List[str]: List of file paths with content issues.
+        """
+        malformed_files = []
+        not_success_expectations = []
+
+        for file in file_paths:
+            df = (
+                self._spark
+                .read
+                .options(**self._read_options)
+                .schema(self._spark_schema)
+                .format(self._format)
+                .load(file)
+            )
+
+            validator = QualityValidator(
+                dataframe=df,
+                project_name=self._expectation_config["project_name"],
+            )
+
+            validator.add_expectations(self._expectation_config["expectations"])
+
+            validator.run()
+
+            if not validator.success:
+                malformed_files.append(file)
+                not_success_expectations.extend(
+                    [
+                        {"file": file, "result": result}
+                        for result in validator.results
+                        if not result["success"]
+                    ]
+                )
+
+        if malformed_files:
+            self._error_message.append(
+                {
+                    "message": "This files does not meet the expectations",
+                    "files": not_success_expectations
+                }
+            )
 
         return malformed_files
 
@@ -162,9 +221,16 @@ class CSV(IValidation):
         """
         malformed_files = self._check_file_extension(files)
 
-        files_to_validate = [file for file in files if file not in malformed_files]
+        files_to_validate_after_check_file_extension = [file for file in files if file not in malformed_files]
 
-        malformed_files.extend(self._check_file_structure(files_to_validate))
+        malformed_files.extend(self._check_file_structure(files_to_validate_after_check_file_extension))
+
+        files_to_validate_after_check_file_structure = [
+            file for file in files_to_validate_after_check_file_extension
+            if file not in malformed_files
+        ]
+
+        malformed_files.extend(self._check_data_expectations(files_to_validate_after_check_file_structure))
 
         return malformed_files
 
@@ -175,7 +241,7 @@ class CSV(IValidation):
             invalid_files (List[Dict[str, str]]): List of dictionaries containing invalid file information.
         """
         self._validation_resume = sorted(invalid_files, key=lambda item: item["message"])
-        self._error_context.errors["dataProcessing"] = str(self._validation_resume)
+        self._error_context.errors["DataProcessing"] = str(self._validation_resume)
 
     def _move_invalid_files(self, malformed_files: List[str]) -> None:
         """Moves invalid files to a specified error path.
@@ -185,7 +251,7 @@ class CSV(IValidation):
         """
         self._logger.error(
             "Some corrupted files found: \n"
-            f"{json.dumps(self._error_context.errors['dataProcessing'])} \n"
+            f"{json.dumps(self._error_context.errors['DataProcessing'])} \n"
             "Corrupted files will not be processed, check these files in storage."
         )
 

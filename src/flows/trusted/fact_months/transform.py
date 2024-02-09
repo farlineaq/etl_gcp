@@ -8,10 +8,6 @@ from bubbaloo.utils.functions import get_metrics_from_delta_table
 
 class TransformStage(Transform):
 
-    # TODO Verificar estas transformaciones. Si hay dos indicadores iguales, con valores diferentes, debe fallar
-    #      el proceso.
-    #      Fallo si los ids de los indicadores no son iguales a los definidos.
-
     def dedup_batch_query(self):
         self.spark.sql("""
             CREATE OR REPLACE GLOBAL TEMPORARY VIEW deduplicated_batch AS
