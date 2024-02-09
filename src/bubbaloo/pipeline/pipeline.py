@@ -14,7 +14,6 @@ from bubbaloo.pipeline.stages.extract import Extract
 from bubbaloo.services.pipeline.config import Config
 from bubbaloo.services.pipeline.state import PipelineState
 
-
 OutputStageType = DataFrame | Callable[..., None | DataFrame] | DataStreamWriter | None
 StageType = Tuple[str, Transform | Load | Extract]
 InputStageType = List[StageType] | StageType | None
