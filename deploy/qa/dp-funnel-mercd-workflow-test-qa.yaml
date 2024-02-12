@@ -59,4 +59,3 @@ placement:
           dataproc:dataproc.allow.zero.workers: 'true'
           dataproc:dataproc.logging.stackdriver.job.driver.enable: 'true'
           dataproc:pip.packages: 'dynaconf==3.2.2,toml==0.10.2,great-expectations==0.18.7'
-

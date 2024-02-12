@@ -187,12 +187,12 @@ included_direccionCD = [10, 20, 30, 40, 50]
 excluded_tipoNegociacion = [2]
 included_CadenaCD = ['E', 'C', 'A', 'S']
 
-delta.start_date = "DATE '2021-10-01'"
-delta.end_date = "DATE '2022-03-01'"
-delta.date_to_calculate = "DATE '2021-10-03'"
+delta.start_date = "DATE '2021-10-04'"
+delta.end_date = "DATE '2022-03-24'"
+delta.date_to_calculate = "DATE '2021-10-04'"
 
 contact_table = "'co-grupoexito-funnel-mercd-dev.external.contactabilidad'"
-sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.MuestraVentasParticionada'"
+sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'"
 segmentacion_table = "'co-grupoexito-funnel-mercd-dev.external.segmentacion'"
 modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento'"
 segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.external.segmentacion_backup'"

@@ -42,15 +42,30 @@ BEGIN
     );
 
     EXECUTE IMMEDIATE FORMAT("""
-        INSERT INTO `%s`
-        SELECT
-            Fecha,
-            CadenaCD,
-            0 AS ModeloSegmentoid,
-            4 AS IndicadorKey,
-            PorcentajeRetencion AS Valor,
-            CURRENT_TIMESTAMP() AS FechaActualizacion
-        FROM temp_table;
+        MERGE INTO `%s` AS target
+        USING temp_table AS source
+        ON target.Fecha = source.Fecha AND target.CadenaCD = source.CadenaCD AND target.IndicadorKey = 4
+        WHEN MATCHED THEN
+            UPDATE SET
+                target.Valor = source.PorcentajeRetencion,
+                target.FechaActualizacion = CURRENT_TIMESTAMP()
+        WHEN NOT MATCHED THEN
+            INSERT (
+                Fecha,
+                CadenaCD,
+                ModeloSegmentoid,
+                IndicadorKey,
+                Valor,
+                FechaActualizacion
+            )
+            VALUES (
+                source.Fecha,
+                source.CadenaCD,
+                0,
+                4,
+                source.PorcentajeRetencion,
+                CURRENT_TIMESTAMP()
+            );
     """, final_table);
 
     DROP TABLE IF EXISTS temp_table;

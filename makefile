@@ -20,7 +20,7 @@ build: clean
 	@mkdir ./dist
 	@cp ./src/main/main.py ./dist
 	@cp ./src/config/*.toml ./dist
-	@cp -r ./src/bubbaloo ./dist && cd ./dist && zip -r bubbaloo.zip bubbaloo && rm -rf bubbaloo
+	@cp -r ./src/quind_data_library ./dist && cd ./dist && zip -r quind_data_library.zip quind_data_library && rm -rf quind_data_library
 	@cp -r ./src/flows ./dist && cd ./dist && zip -r flows.zip flows && rm -rf flows
 	@gsutil -m cp -r ./dist gs://$(BUCKET_NAME)/$(TARGET)/
 	@echo "Code and dependencies have been packaged successfully"
