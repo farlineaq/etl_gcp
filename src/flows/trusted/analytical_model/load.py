@@ -3,7 +3,7 @@ from typing import Callable
 from pyspark.sql import DataFrame
 from pyspark.sql.streaming import DataStreamWriter
 
-from bubbaloo.pipeline.stages import Load
+from quind_data_library.pipeline.stages import Load
 
 
 # noinspection SqlNoDataSourceInspection

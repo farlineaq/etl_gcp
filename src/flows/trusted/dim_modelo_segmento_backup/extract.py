@@ -1,10 +1,10 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
-from bubbaloo.pipeline.stages import Extract
-from bubbaloo.services.cloud.google.storage.storage import CloudStorageManager
-from bubbaloo.services.validation import Parquet
-from bubbaloo.utils.functions import get_blobs_days_ago
+from quind_data_library.pipeline.stages import Extract
+from quind_data_library.services.cloud.google.storage.storage import CloudStorageManager
+from quind_data_library.services.validation.structure import Parquet
+from quind_data_library.utils.functions import get_blobs_days_ago
 
 
 # noinspection SqlNoDataSourceInspection

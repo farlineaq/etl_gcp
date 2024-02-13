@@ -27,6 +27,20 @@ segmentacion = "SEGMENTACION"
 segmentacion_backup = "SEGMENTACION_BACKUP"
 
 # ================================================================================
+# Data Quality Expectations
+# ================================================================================
+
+[dev.expectations]
+
+not_null_expectation.columns = ["Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
+unique_expectation.columns = ["CadenaId", "IndicadorId", "Fecha"]
+in_set_expectation.columns.cadena_id = { name = "CadenaId", value_set = ['E', 'ACES', 'C', 'A', 'S'] }
+in_set_expectation.columns.indicador_id = { name = "IndicadorId", value_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
+in_set_expectation.columns.actualizacion = { name = "Actualizacion", value_set = ['SI', 'NO'] }
+regex_expectation.columns.fecha = { name = "Fecha", pattern = '\d{4}-\d{2}-\d{2}' }
+
+
+# ================================================================================
 # Path Prefixes
 # ================================================================================
 
@@ -36,15 +50,15 @@ data_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.data_folder}/\
-    {this.origin.teradata}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.teradata}\
 """
 error_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.error_folder}/\
-    {this.origin.teradata}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.teradata}\
 """
 
 [dev.paths.raw_path_prefix.excel]
@@ -53,24 +67,24 @@ data_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.data_folder}/\
-    {this.origin.excel}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.excel}\
 """
 error_folder = """\
     @format \
     gs://{this.variables.raw_bucket_name}/\
     {this.variables.error_folder}/\
-    {this.origin.excel}/\
-    {this.business_domain}\
+    {this.business_domain}/\
+    {this.origin.excel}\
 """
 
 [dev.paths.trusted_path_prefix.teradata]
 
-data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.origin.teradata}/{this.business_domain}"
+data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.business_domain}/{this.origin.teradata}"
 
 [dev.paths.trusted_path_prefix.excel]
 
-data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.origin.excel}/{this.business_domain}"
+data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.business_domain}/{this.origin.excel}"
 
 # ================================================================================
 # Flows Paths
@@ -173,12 +187,12 @@ included_direccionCD = [10, 20, 30, 40, 50]
 excluded_tipoNegociacion = [2]
 included_CadenaCD = ['E', 'C', 'A', 'S']
 
-delta.start_date = "DATE '2021-10-01'"
-delta.end_date = "DATE '2022-03-01'"
-delta.date_to_calculate = "DATE '2021-10-03'"
+delta.start_date = "DATE '2021-10-04'"
+delta.end_date = "DATE '2022-03-24'"
+delta.date_to_calculate = "DATE '2021-10-04'"
 
 contact_table = "'co-grupoexito-funnel-mercd-dev.external.contactabilidad'"
-sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.MuestraVentasParticionada'"
+sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'"
 segmentacion_table = "'co-grupoexito-funnel-mercd-dev.external.segmentacion'"
 modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento'"
 segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.external.segmentacion_backup'"

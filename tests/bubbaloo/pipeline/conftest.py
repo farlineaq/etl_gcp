@@ -7,7 +7,7 @@ from pyspark.sql.streaming import DataStreamWriter
 from pyspark.sql.types import StructType, StringType, StructField
 from pyspark.sql import functions as f
 
-from bubbaloo.pipeline.stages import Extract, Transform, Load
+from quind_data_library.pipeline.stages import Extract, Transform, Load
 
 
 @pytest.fixture(scope="session")

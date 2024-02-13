@@ -2,7 +2,7 @@ from typing import Callable, Any
 
 from pyspark.sql import DataFrame
 
-from bubbaloo.pipeline.stages import Transform
+from quind_data_library.pipeline.stages import Transform
 
 
 class TransformStage(Transform):

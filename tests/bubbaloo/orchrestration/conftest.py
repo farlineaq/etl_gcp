@@ -182,7 +182,7 @@ def extract_module_entity_1(entity1_dir):
     code = textwrap.dedent("""
         from pyspark.sql import DataFrame
         from pyspark.sql.types import StructType, StringType, StructField
-        from bubbaloo.pipeline.stages import Extract
+        from quind_data_library.pipeline.stages import Extract
 
         class ExtractStage(Extract):
 
@@ -221,7 +221,7 @@ def transform_module_entity_1(entity1_dir):
     code = textwrap.dedent("""
         from pyspark.sql import DataFrame
         from pyspark.sql import functions as f
-        from bubbaloo.pipeline.stages import Transform
+        from quind_data_library.pipeline.stages import Transform
 
         class TransformStage1(Transform):
 
@@ -252,7 +252,7 @@ def load_module_entity_1(entity1_dir):
         from typing import Callable
         from pyspark.sql import DataFrame
         from pyspark.sql.streaming import DataStreamWriter
-        from bubbaloo.pipeline.stages import Load
+        from quind_data_library.pipeline.stages import Load
 
         class LoadStage(Load):
 
@@ -283,7 +283,7 @@ def extract_module_entity_2(entity2_dir):
     code = textwrap.dedent("""
         from pyspark.sql import DataFrame
         from pyspark.sql.types import StructType, StringType, StructField
-        from bubbaloo.pipeline.stages import Extract
+        from quind_data_library.pipeline.stages import Extract
 
         class ExtractStage(Extract):
 
@@ -322,7 +322,7 @@ def transform_module_entity_2(entity2_dir):
     code = textwrap.dedent("""
         from pyspark.sql import DataFrame
         from pyspark.sql import functions as f
-        from bubbaloo.pipeline.stages import Transform
+        from quind_data_library.pipeline.stages import Transform
 
         class TransformStage1(Transform):
 
@@ -357,7 +357,7 @@ def load_module_entity_2(entity2_dir):
         from typing import Callable
         from pyspark.sql import DataFrame
         from pyspark.sql.streaming import DataStreamWriter
-        from bubbaloo.pipeline.stages import Load
+        from quind_data_library.pipeline.stages import Load
 
         class LoadStage(Load):
 
@@ -386,7 +386,7 @@ def extract_module_entity_3(entity3_dir):
     extract_module_path = entity3_dir / "extract.py"
     code = textwrap.dedent("""
         from pyspark.sql import DataFrame
-        from bubbaloo.pipeline.stages import Extract
+        from quind_data_library.pipeline.stages import Extract
 
         class ExtractStage(Extract):
 
@@ -414,7 +414,7 @@ def transform_module_entity_3(entity3_dir):
     transform_module_path = entity3_dir / "transform.py"
     code = textwrap.dedent("""
         from pyspark.sql import DataFrame
-        from bubbaloo.pipeline.stages import Transform
+        from quind_data_library.pipeline.stages import Transform
 
         class TransformStage1(Transform):
 
@@ -444,7 +444,7 @@ def load_module_entity_3(entity3_dir):
         from typing import Callable
         from pyspark.sql import DataFrame
         from pyspark.sql.streaming import DataStreamWriter
-        from bubbaloo.pipeline.stages import Load
+        from quind_data_library.pipeline.stages import Load
 
         class LoadStage(Load):
 

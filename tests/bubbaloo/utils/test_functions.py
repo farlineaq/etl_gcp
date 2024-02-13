@@ -6,11 +6,11 @@ import importlib.util
 
 from pyspark.sql import SparkSession
 
-from bubbaloo.errors.errors import ExecutionError
-from bubbaloo.services.local import Logger
-from bubbaloo.services.pipeline import PipelineState
-from bubbaloo.utils.functions.pipeline_stage_helper import validate_params, raise_error, get_default_params
-from bubbaloo.utils.functions.pipeline_orchestration_helper import get_error
+from quind_data_library.errors.errors import ExecutionError
+from quind_data_library.services.local import Logger
+from quind_data_library.services.pipeline import PipelineState
+from quind_data_library.utils.functions.pipeline_stage_helper import validate_params, raise_error, get_default_params
+from quind_data_library.utils.functions.pipeline_orchestration_helper import get_error
 
 
 class TestPipelineOrchestrationHelper:
@@ -79,9 +79,9 @@ class TestPipelineStageHelper:
         path = conf / "default_settings.py"
 
         code = textwrap.dedent("""
-            from bubbaloo.services.local.logger import Logger
-            from bubbaloo.services.pipeline.get_spark import GetSpark
-            from bubbaloo.services.pipeline.state import PipelineState
+            from quind_data_library.services.local.logger import Logger
+            from quind_data_library.services.pipeline.get_spark import GetSpark
+            from quind_data_library.services.pipeline.state import PipelineState
             
             LOGGER = Logger()
             SPARK = GetSpark()

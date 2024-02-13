@@ -7,9 +7,9 @@ from unittest.mock import MagicMock
 import pytest
 from pyspark.sql.types import StructField, StringType, TimestampType, StructType
 
-from bubbaloo.pipeline.stages import Extract
-from bubbaloo.services.local import Logger
-from bubbaloo.orchestration import Orchestrator
+from quind_data_library.pipeline.stages import Extract
+from quind_data_library.services.local import Logger
+from quind_data_library.orchestration import Orchestrator
 
 
 @pytest.mark.usefixtures(

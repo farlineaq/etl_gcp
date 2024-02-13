@@ -1,12 +1,12 @@
 import pytest
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType
 
-from bubbaloo.errors.errors import ExecutionError
-from bubbaloo.pipeline.pipeline import Pipeline
-from bubbaloo.pipeline.stages import Extract, Transform, Load
-from bubbaloo.services.pipeline.config import Config
-from bubbaloo.services.pipeline.state import PipelineState
-from bubbaloo.services.local import Logger
+from quind_data_library.errors.errors import ExecutionError
+from quind_data_library.pipeline.pipeline import Pipeline
+from quind_data_library.pipeline.stages import Extract, Transform, Load
+from quind_data_library.services.pipeline.config import Config
+from quind_data_library.services.pipeline.state import PipelineState
+from quind_data_library.services.local import Logger
 from pyspark.sql import SparkSession
 
 
