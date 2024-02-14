@@ -66,10 +66,24 @@ BEGIN
         WHEN MATCHED THEN
             UPDATE SET
                 final.Valor = temp.NumeroTransacciones,
-                final.FechaActualizacion = CURRENT_TIMESTAMP()
+                final.FechaActualizacion = TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
         WHEN NOT MATCHED THEN
-            INSERT (Fecha, CadenaCD, ModeloSegmentoid, IndicadorKey, Valor, FechaActualizacion)
-            VALUES (temp.Fecha, temp.CadenaCD, 0, 2, temp.NumeroTransacciones, CURRENT_TIMESTAMP());
+            INSERT (
+                Fecha,
+                CadenaCD,
+                ModeloSegmentoid,
+                IndicadorKey,
+                Valor,
+                FechaActualizacion
+            )
+            VALUES (
+                temp.Fecha,
+                temp.CadenaCD,
+                0,
+                2,
+                temp.NumeroTransacciones,
+                TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
+            );
     """, final_table);
 
     DROP TABLE IF EXISTS temp_table;

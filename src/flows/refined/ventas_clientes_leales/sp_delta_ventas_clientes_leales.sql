@@ -74,11 +74,14 @@ BEGIN
     EXECUTE IMMEDIATE FORMAT("""
         MERGE INTO `%s` AS final
         USING temp_table AS temp
-            ON final.Fecha = temp.Fecha AND final.CadenaCD = temp.CadenaCD AND final.IndicadorKey = 6
+            ON final.Fecha = temp.Fecha
+            AND final.CadenaCD = temp.CadenaCD
+            AND final.ModeloSegmentoid = temp.ModeloSegmentoid
+            AND final.IndicadorKey = 6
         WHEN MATCHED THEN
             UPDATE SET
                 final.Valor = temp.Valor,
-                final.FechaActualizacion = CURRENT_TIMESTAMP()
+                final.FechaActualizacion = TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
         WHEN NOT MATCHED THEN
             INSERT (
                 Fecha,
@@ -94,7 +97,7 @@ BEGIN
                 temp.ModeloSegmentoid,
                 6,
                 temp.Valor,
-                CURRENT_TIMESTAMP()
+                TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
             );
     """, final_table);
 

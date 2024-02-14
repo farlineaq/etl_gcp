@@ -36,7 +36,7 @@ BEGIN
             0 AS ModeloSegmentoid,
             2 AS IndicadorKey,
             NumeroTransacciones AS Valor,
-            CURRENT_TIMESTAMP() AS FechaActualizacion
+            TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota')) AS FechaActualizacion
         FROM temp_table;
     """, final_table);
 

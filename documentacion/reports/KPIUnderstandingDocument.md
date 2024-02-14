@@ -500,7 +500,10 @@ WITH ClientesTop AS (
 ClientesLeales AS (
     SELECT
         ct.PartyId,
-        'ClienteLeal' AS Segmento
+        CASE
+            WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+            ELSE 'ClienteNoLeal'
+        END AS Segmento
     FROM
         ClientesTop ct
         JOIN `segment_table` s ON ct.PartyId = s.PartyID
@@ -516,15 +519,22 @@ TransanccionesTotales AS (
             WHEN @granularity = 'MONTH' THEN DATE_TRUNC(vc.Fecha, MONTH)
             WHEN @granularity = 'YEAR' THEN DATE_TRUNC(vc.Fecha, YEAR)
         END AS Fecha,
-        COUNT(DISTINCT vc.PartyId) AS ConteoClientes
+        COUNT(DISTINCT vc.PartyId) AS ConteoClientes,
+        cl.Segmento
     FROM 
         `sales_table` vc
     JOIN ClientesLeales cl ON vc.PartyId = cl.PartyId
     WHERE
         vc.Fecha BETWEEN @start_date AND @end_date
+        AND vc.PartyId IS NOT NULL
+        AND vc.PartyId != 0
+        AND vc.SublineaCD NOT IN (SELECT * FROM UNNEST(?))
+        AND vc.DireccionCD IN (SELECT * FROM UNNEST(?))
+        AND vc.TipoNegociacion NOT IN (SELECT * FROM UNNEST(?))
         AND vc.CadenaCD = 'E'
     GROUP BY
-        Fecha
+        Fecha,
+        cl.Segmento
 )
 SELECT
     Fecha,
@@ -532,7 +542,9 @@ SELECT
     0 AS ModeloSegmentoid,
     ROUND((ConteoClientes / SUM(ConteoClientes) OVER(PARTITION BY Fecha)) * 100, 2) AS Valor
 FROM
-    TransanccionesTotales;
+    TransanccionesTotales
+WHERE
+    Segmento = 'ClienteLeal';
 ```
 
 ## Porcentaje de las Ventas de los Clientes Leales
@@ -655,7 +667,11 @@ WITH ClientesTop AS (
 ),
 ClientesLeales AS (
     SELECT
-        ct.PartyId
+        ct.PartyId,
+        CASE 
+            WHEN ms.ModelSegmentoDesc IN ('Decil 8', 'Decil 9', 'Decil 10') THEN 'ClienteLeal'
+            ELSE 'ClienteNoLeal'
+        END AS Segmento
     FROM
         ClientesTop ct
         JOIN `segment_table` s ON ct.PartyId = s.PartyID
@@ -676,9 +692,15 @@ TransaccionesTotales AS (
     JOIN ClientesLeales cl ON vc.PartyId = cl.PartyId
     WHERE
         vc.Fecha BETWEEN @start_date AND @end_date
+        AND vc.PartyId IS NOT NULL
+        AND vc.PartyId != 0
+        AND vc.SublineaCD NOT IN (SELECT * FROM UNNEST(?))
+        AND vc.DireccionCD IN (SELECT * FROM UNNEST(?))
+        AND vc.TipoNegociacion NOT IN (SELECT * FROM UNNEST(?))
         AND vc.CadenaCD = 'E'
     GROUP BY
-        Fecha
+        Fecha,
+        cl.Segmento
 )
 SELECT
     Fecha,
@@ -686,7 +708,9 @@ SELECT
     0 AS ModeloSegmentoid,
     ROUND((Ventas / SUM(Ventas) OVER(PARTITION BY Fecha)) * 100, 2) AS Valor
 FROM
-    TransaccionesTotales;
+    TransaccionesTotales
+WHERE
+    Segmento = 'ClienteLeal';
 ```
 
 ## Porcentaje de Contactabilidad

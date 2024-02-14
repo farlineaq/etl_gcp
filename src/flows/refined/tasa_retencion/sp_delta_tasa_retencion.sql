@@ -48,7 +48,7 @@ BEGIN
         WHEN MATCHED THEN
             UPDATE SET
                 target.Valor = source.PorcentajeRetencion,
-                target.FechaActualizacion = CURRENT_TIMESTAMP()
+                target.FechaActualizacion = TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
         WHEN NOT MATCHED THEN
             INSERT (
                 Fecha,
@@ -64,7 +64,7 @@ BEGIN
                 0,
                 4,
                 source.PorcentajeRetencion,
-                CURRENT_TIMESTAMP()
+                TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
             );
     """, final_table);
 

@@ -1,11 +1,11 @@
 jobs:
   - pysparkJob:
       args:
-        #- --trusted_flows=fact_months
+        - --trusted_flows=fact_months
         - --env=dev
-        - --granularity=DAY
+        - --granularity=MONTH
         - --execution_type=delta
-        - --refined_flows=tasa_retencion,porcentaje_contactabilidad,ventas_totales
+        - --refined_flows=false
       jarFileUris:
         - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/dev.toml
         - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/default.toml

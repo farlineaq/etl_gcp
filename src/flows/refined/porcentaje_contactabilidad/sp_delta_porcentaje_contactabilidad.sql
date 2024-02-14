@@ -42,7 +42,7 @@ BEGIN
         WHEN MATCHED THEN
             UPDATE SET
                 target.Valor = source.Valor,
-                target.FechaActualizacion = CURRENT_TIMESTAMP()
+                target.FechaActualizacion = TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
         WHEN NOT MATCHED THEN
             INSERT (
                 Fecha,
@@ -58,7 +58,7 @@ BEGIN
                 source.ModeloSegmentoid,
                 7,
                 source.Valor,
-                CURRENT_TIMESTAMP()
+                TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
             );
     """, final_table);
 

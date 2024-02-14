@@ -70,7 +70,8 @@ BEGIN
         WHEN MATCHED THEN
             UPDATE SET
                 final.Valor = temp.VentaTotalEnMilesDeMillones,
-                final.FechaActualizacion = CURRENT_TIMESTAMP()
+                final.FechaActualizacion = TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
+
         WHEN NOT MATCHED THEN
             INSERT (
                 Fecha,
@@ -86,7 +87,7 @@ BEGIN
                 0,
                 1,
                 temp.VentaTotalEnMilesDeMillones,
-                CURRENT_TIMESTAMP()
+                TIMESTAMP(FORMAT_TIMESTAMP('%%F %%X', CURRENT_TIMESTAMP(), 'America/Bogota'))
             );
     """, final_table);
 

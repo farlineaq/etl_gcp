@@ -12,7 +12,7 @@ class TransformStage(Transform):
         self.spark.sql("""
             CREATE OR REPLACE GLOBAL TEMPORARY VIEW deduplicated_batch AS
             SELECT DISTINCT
-                Fecha,
+                TRUNC(Fecha, 'MONTH') AS Fecha,
                 CadenaId,
                 IndicadorId,
                 0 AS ModeloSegmentoId,
