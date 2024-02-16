@@ -2,15 +2,15 @@
 
 # Tablas
 
-- [analytical_model](#nebula_slots)
-- [contactabilidad](#nebula_historic)
-- [dim_modelo_segmento](#nebula_items)
-- [fact_months](#nebula_jobs)
-- [fact_target_days](#nebula_quotas_v2)
-- [fact_target_months](#nebula_stores)
-- [fact_target_years](#nebula_steps)
-- [model_run](#nebula_resources)
-- [segmentacion](#nebula_task)
+- [analytical_model](#analytical_model)
+- [contactabilidad](#contactabilidad)
+- [dim_modelo_segmento](#dim_modelo_segmento)
+- [fact_months](#fact_months)
+- [fact_target_days](#fact_target_days)
+- [fact_target_months](#fact_target_months)
+- [fact_target_years](#fact_target_years)
+- [model_run](#model_run)
+- [segmentacion](#segmentacion)
 
 # analytical_model
 
