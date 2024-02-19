@@ -2,9 +2,9 @@
 
 **Área:** 
 
-**Analista Ágil:** 
+**Analista Ágil:** Sebastian Echeverry
 
-**Dominio:** 
+**Dominio:** Mercadeo
 
 **Proyecto:** FUNNEL
 
@@ -188,13 +188,13 @@ Las hojas técnicas de infraestructura se relacionan en las siguientes tablas:
 
 Esta integración está orquestada por el Cloud Scheduler de GCP:
 
-| Parámetros Cloud Scheduler                                 |            |          |     |            |                |                                      |
-|------------------------------------------------------------|------------|----------|-----|------------|----------------|--------------------------------------|
-| Nombre de la Tarea                                         | Frecuencia | Objetivo | URL | Verbo HTTP | Tipo de cuerpo | Cuerpo                               |
-| cs-funnel-mercd-scheduler-delta-day-[ambiente]             | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
-| cs-funnel-mercd-scheduler-delta-month-[ambiente]           | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
-| cs-funnel-mercd-scheduler-delta-year-[ambiente]            | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
-| cs-funnel-mercd-scheduler-delta-duplicado-month-[ambiente] | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| Parámetros Cloud Scheduler                                 |            |          |                                                                                                                                                                                                         |            |                |                                      |
+|------------------------------------------------------------|------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|----------------|--------------------------------------|
+| Nombre de la Tarea                                         | Frecuencia | Objetivo | URL                                                                                                                                                                                                     | Verbo HTTP | Tipo de cuerpo | Cuerpo                               |
+| cs-funnel-mercd-scheduler-delta-day-[ambiente]             | 0 6 * * *  | HTTP     | https://dataproc.googleapis.com/v1/projects/co-grupo-exito-funnel-mercd-[ambiente]/regions/us-central1/workflowTemplates/dp-funnel-mercd-workflow-delta-day-[ambiente]:instantiate?alt=json             | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| cs-funnel-mercd-scheduler-delta-month-[ambiente]           | 0 6 * * *  | HTTP     | https://dataproc.googleapis.com/v1/projects/co-grupo-exito-funnel-mercd-[ambiente]/regions/us-central1/workflowTemplates/dp-funnel-mercd-workflow-delta-month-[ambiente]:instantiate?alt=json           | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| cs-funnel-mercd-scheduler-delta-year-[ambiente]            | 0 6 * * *  | HTTP     | https://dataproc.googleapis.com/v1/projects/co-grupo-exito-funnel-mercd-[ambiente]/regions/us-central1/workflowTemplates/dp-funnel-mercd-workflow-delta-year-[ambiente]:instantiate?alt=json            | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| cs-funnel-mercd-scheduler-delta-duplicado-month-[ambiente] | 0 6 * * *  | HTTP     | https://dataproc.googleapis.com/v1/projects/co-grupo-exito-funnel-mercd-[ambiente]/regions/us-central1/workflowTemplates/dp-funnel-mercd-workflow-delta-duplicado-month-[ambiente]:instantiate?alt=json | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
 
 ## Manejo de errores
 
@@ -220,8 +220,7 @@ Con el desafío de manejar un volumen de datos que abarca desde las ventas en l�
 Para la resolución de necesidad se detalla el diseño e implementación de una solución de modelado dimensional que se estructura alrededor de un conjunto de tablas de hechos y dimensiones, concebidas para soportar consultas analíticas y reportes.
 
 Para aquellos no familiarizados con los términos y procedimientos específicos de esta metodología, se incluye un glosario de términos clave, ofreciendo una comprensión clara de conceptos esenciales. Estos fundamentos no solo enriquecen la comprensión del lector sino que también sientan las bases para apreciar la complejidad y la meticulosidad del diseño propuesto.
-Además, cabe destacar que el desarrollo se realizó siguendo la metodología de Kimball, líder y exponente en el diseño de Data Warehouse, el cual se centra en la claridad lógica y la eficiencia técnica, garantizando una solución escalable y mantenible.
-
+Además, cabe destacar que el desarrollo se realizó siguiendo la metodología de Kimball, líder y exponente en el diseño de Data Warehouse, el cual se centra en la claridad lógica y la eficiencia técnica, garantizando una solución escalable y mantenible.
 Este documento profundiza en las etapas críticas del diseño dimensional, desde la selección de procesos de negocio hasta la identificación de hechos, cada una vital para asegurar que la solución cumpla con las necesidades analíticas de la organización.
 Para aquellos interesados en profundizar más en los detalles técnicos y las especificaciones de este proyecto transformador, se anexa el documento completo correspondiente a la arquitectura implementada para el Proyecto Funnel de Mercadeo.
 
@@ -295,17 +294,18 @@ Cloud IAM es un sistema de identidad y acceso de Google Cloud Platform (GCP) que
 
 ## Procesos
 
-### Modelo Dimensional
+### Capa de Presentación (Definir introducción sobre la capa de presentación y el modelo dimensional)
 
-El modelo dimensional se presenta como una técnica esencial en el ámbito del diseño de Data Warehouse y Data Marts, enfocándose en una estructura organizacional de datos que promueve la eficiencia en consultas y análisis.
-El modelo dimensional también es forma de organizar los datos para facilitar la consulta y el análisis de datos. 
+La capa de presentación permite que los datos sean comprensibles y accesibles para todos los usuarios, independientemente de su nivel técnico, facilitando la toma de decisiones basada en datos.
+Esta, se beneficia enormemente de la estructura organizacional de los datos permitiendo a los usuarios navegar a través de los datos de manera intuitiva, realizando análisis complejos con relativa facilidad.
+La Capa de Presentación junto con el modelo dimensional hacen de puente para establecer la relación entre la tecnología de información y las necesidades estratégicas del negocio. 
+Al alinear la organización de los datos con las herramientas de presentación, se facilita una colaboración efectiva entre los estrategas de datos, los desarrolladores de productos y servicios, y otros stakeholders del negocio.
 
-Más allá de su aplicación técnica, el modelo dimensional se erige como un puente entre la tecnología de información y las necesidades estratégicas del negocio. 
-Facilita una plataforma de colaboración entre los estrategas de datos, los desarrolladores de productos y servicios, y otros stakeholders del negocio, permitiendo una gestión de datos más integrada y orientada a la toma de decisiones. 
+Por otro lado, el modelo dimensional se presenta como una técnica esencial en el ámbito del diseño de Data Warehouse y Data Marts, enfocándose en una estructura organizacional de datos que promueve la eficiencia en consultas y análisis.
+El modelo dimensional también es forma de organizar los datos para facilitar la consulta y el análisis de datos. Facilita una plataforma de colaboración entre los estrategas de datos, los desarrolladores de productos y servicios, y otros stakeholders del negocio, permitiendo una gestión de datos más integrada y orientada a la toma de decisiones. 
 Este enfoque colaborativo busca centralizar la toma de decisiones, orientándolo hacia la satisfacción de las necesidades empresariales, el diseño eficaz de soluciones, y una operación eficiente.
-
 Finalmente, el modelo dimensional supone un marco de integración que pone énfasis en el negocio, asegurando así no solo la eficiencia operativa sino también la conformidad y la sostenibilidad a largo plazo de las iniciativas de datos dentro de la organización.
-Ademas de que otorga la capacidad de responder de manera más efectiva a preguntas críticas sobre la gestión de datos, la maximización del valor obtenido de los mismos, la optimización de costos asociados al almacenamiento y procesamiento de datos, la reducción de la complejidad infraestructural, la gestión de riesgos, y la garantía de la escalabilidad y disponibilidad de las soluciones propuestas.
+Además de que otorga la capacidad de responder de manera más efectiva a preguntas críticas sobre la gestión de datos, la maximización del valor obtenido de los mismos, la optimización de costos asociados al almacenamiento y procesamiento de datos, la reducción de la complejidad infraestructural, la gestión de riesgos, y la garantía de la escalabilidad y disponibilidad de las soluciones propuestas.
 
 En la documentación general se encuentra un apartado sobre el modelo dimensional y además se cuenta con un documento específico sobre el abordaje técnico.
 [Apartado Modelo Dimensional](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/docs/img/Diagrama%20de%20Despliegue.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=feature/mateomg&resolveLfs=true&%24format=octetStream&api-version=5.0), [Documentación Modelo Dimensional](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/docs/img/Diagrama%20de%20Despliegue.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=feature/mateomg&resolveLfs=true&%24format=octetStream&api-version=5.0)
@@ -331,13 +331,13 @@ Linaje de datos es el proceso de rastrear la historia de los datos desde su orig
 
 El linaje de los datos se divide en dos categorías: linaje lógico y linaje físico. El linaje lógico se refiere al camino que sigue el dato a través de los procesos y sistemas de negocio, mientras que el linaje físico se refiere al camino que sigue el dato a través de los sistemas de almacenamiento y bases de datos.
 
-**Nota**: El linaje se relaciona en las siguientes página: 
+**Nota**: El linaje se relaciona en las siguientes páginas: 
 - [Linaje de Datos Correspondiente a la Capa Trusted](linaje_trusted.md)    
 - [Linaje de Datos Correspondiente a la Capa Refined](linaje_refined.md)
 
 ### Ciclo de vida de los datos (aclarar que para el proyecto no aplica)
 
-El ciclo de vida de los datos se refiere a las diferentes etapas que atraviesan los datos desde su creación hasta su eliminación o archivo.
+Aunque para el presente proyecto no se aplica una política sobre el ciclo de vida de los datos, este último término se refiere a las diferentes etapas que atraviesan los datos desde su creación hasta su eliminación o archivo.
 
 1. **Fuente de datos**: Es la primera etapa en la que se generan o recolectan los datos.
 2. **Captura**: Es la etapa en la que los datos se registran, se verifica la precisión de los datos, se validan y se limpian.
@@ -347,7 +347,7 @@ El ciclo de vida de los datos se refiere a las diferentes etapas que atraviesan 
 
 ![Diagrama ciclo de vida](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/docs/img/Ciclo_de_Vida.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=feature/mateomg&resolveLfs=true&%24format=octetStream&api-version=5.0)
 
-### Monitorización y Gestión (se le delega todo esto a operaciones - Arus, disponibilizar o decirles que buscar manual de errores como rastrear y que hacer respecto a eso)
+### Monitorización y Gestión 
 
 La monitorización y gestión de la solución en la nube está a cargo de los administradores de la solución, en este caso, **ARUS**, con previa capacitación por parte del equipo de Quind. Se tiene que todo el monitoreo y gestión de la solución se hace desde un proyecto de GCP dedicado para este fin. Todos los registros asociados a la solución se envían a un topic Pub/Sub que es posteriormente consumido por los administradores de la solución.
 
@@ -479,16 +479,16 @@ De acuerdo a estas definiciones, se identificaron 3 políticas de permisos en el
 
 Política ingeniero de datos
 
-| Rol                   | ID                         | Principal                                | Nivel en Jerarquía |
-|-----------------------|----------------------------|------------------------------------------|--------------------|
-| Viewer                | roles/viewer               | ingenierodedatosgcpdatex@grupo-exito.com | Proyecto           |
-| Storage Object Viewer | roles/storage.objectViewer | ingenierodedatosgcpdatex@grupo-exito.com | Proyecto           |
-| BigQuery Data Viewer  | roles/bigquery.dataViewer  | ingenierodedatosgcpdatex@grupo-exito.com | Proyecto           |
+| Rol                   | ID                         | Principal                                 | Nivel en Jerarquía |
+|-----------------------|----------------------------|-------------------------------------------|--------------------|
+| Viewer                | roles/viewer               | ingenierodedatosgcpfunnel@grupo-exito.com | Proyecto           |
+| Storage Object Viewer | roles/storage.objectViewer | ingenierodedatosgcpfunnel@grupo-exito.com | Proyecto           |
+| BigQuery Data Viewer  | roles/bigquery.dataViewer  | ingenierodedatosgcpfunnel@grupo-exito.com | Proyecto           |
 
 
 Esta política de permisos está diseñada para que el usuario tenga la posibilidad de visualizar todos los recursos asociados a un proyecto, sin poder modificar o crear nuevos recursos.
 
-Esta política está asignada al grupo `ingenierodedatosgcpdatex@grupo-exito.com`.
+Esta política está asignada al grupo `ingenierodedatosgcpfunnel@grupo-exito.com`.
 
 **Científico de Datos**
 
@@ -496,9 +496,9 @@ Esta política está asignada al grupo `ingenierodedatosgcpdatex@grupo-exito.com
 
 Política científico
 
-| Title                      | Principal                                 | Nivel en Jerarquía | 
-|----------------------------|-------------------------------------------|--------------------|
-| Data Scientist Custom Role | cientificodedatosgcpdatex@grupo-exito.com | Proyecto           |
+| Title                      | Principal                                  | Nivel en Jerarquía | 
+|----------------------------|--------------------------------------------|--------------------|
+| Data Scientist Custom Role | cientificodedatosgcpfunnel@grupo-exito.com | Proyecto           |
 
 En el diagrama anterior podemos ver esquematizada la política de de permisos a nivel de proyecto. Se organizan los permisos de manera jerárquica y se agrupan en roles personalizados y predefinidos siguiendo la política de privilegios mínimos. Los permisos asignados en una mayor jerarquía se heredan en los niveles de menor jerarquía. Por ejemplo, el permiso `bigquery.tables.get` otorgados a nivel de proyecto, se heredan a nivel de dataset.
 
@@ -511,7 +511,7 @@ Esta política de permisos permite que un usuario tenga las siguientes funciones
 
 **Asignación de política**
 
-Esta política está asignada al grupo con email `cientificodedatosgcpdatex@grupo-exito.com`, por lo que para otorgar o denegar permisos a un usuario solo se debe agregar o eliminar el usuario del grupo en cuestión.
+Esta política está asignada al grupo con email `cientificodedatosgcpfunnel@grupo-exito.com`, por lo que para otorgar o denegar permisos a un usuario solo se debe agregar o eliminar el usuario del grupo en cuestión.
 
 **Analista de Datos**
 
@@ -519,10 +519,10 @@ Esta política está asignada al grupo con email `cientificodedatosgcpdatex@grup
 
 Política analista de datos
 
-| Title | Principal | Nivel en Jerarquía |
-| --- | --- | --- |
-| Data Analyst Custom Rol | analistadedatosgcpdatex@grupo-exito.com | dataset vistas | 
-| Storage Object Viewer | analistadedatosgcpdatex@grupo-exito.com | bucket trusted | 
+| Title | Principal                                | Nivel en Jerarquía |
+| --- |------------------------------------------| --- |
+| Data Analyst Custom Rol | analistadedatosgcpfunnel@grupo-exito.com | dataset vistas | 
+| Storage Object Viewer | analistadedatosgcpfunnel@grupo-exito.com | bucket trusted | 
 
 Se usan vistas autorizadas para dar acceso granular (columnar) a vistas específicas. Una vista autorizada te permite compartir resultados de consultas con usuarios y grupos específicos sin darles acceso a los datos de origen.
 
@@ -538,10 +538,10 @@ El usuario al que se le aplique esta política de permisos podrá realizar las s
 
 Para asignar a un usuario esta política de permisos se deben seguir los siguientes pasos:
 
-1. Agregar al usuario al grupo con email `analistadedatosgcpdatex@grupo-exito.com`. Este grupo tiene el rol `storage.objectViewer` asignado en el bucket `co-grupo-exito-abast-datex-trusted-data-pdn` de Cloud Storage.
-2. Se debe crear un nuevo dataset en BigQuery, este dataset es el que se compartirá con los usuarios. En este dataset se debe asignar el rol `Data Analyst Custom Rol` al grupo con email `analistadedatosgcpdatex@grupo-exito.com`.
+1. Agregar al usuario al grupo con email `analistadedatosgcpfunnel@grupo-exito.com`. Este grupo tiene el rol `storage.objectViewer` asignado en el bucket `co-grupo-exito-funnel-mercd-pdn` de Cloud Storage.
+2. Se debe crear un nuevo dataset en BigQuery, este dataset es el que se compartirá con los usuarios. En este dataset se debe asignar el rol `Data Analyst Custom Rol` al grupo con email `analistadedatosgcpfunnel@grupo-exito.com`.
 3. En el dataset que será compartido se crea la vista requerida `<nombre_vista>`. A esta vista se le debe asignar el rol `bigquery.dataViewer` al **USUARIO INDIVIDUAL** que requiere el acceso. Se debe hacer de esta forma para evitar que otros usuarios pertenecientes al grupo tengan acceso a vistas no permitidas o requeridas, dado que si se asigna este rol al grupo entero, todos los miembros tendrían acceso a la totalidad de las vistas del dataset compartido.
-4. Se debe autorizar la vista. Para esto vamos al dataset fuente, de donde creamos la vista, por ejemplo, `trusted_abast_instaleap_external_tables`. En el dataset fuente seguimos los siguientes pasos:
+4. Se debe autorizar la vista. Para esto vamos al dataset fuente, de donde creamos la vista, por ejemplo, `refined_funnel_merc_external_tables`. En el dataset fuente seguimos los siguientes pasos:
 1. En el panel **Explorador**, selecciona el conjunto de datos.
 2. Expande la opción **Acciones** y haz clic en **Abrir**.
 3. Haz clic en **Compartir** y, luego, selecciona **Autorizar vistas**.
