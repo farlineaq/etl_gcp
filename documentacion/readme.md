@@ -2,46 +2,23 @@
 
 **Área:** 
 
-**Analista Ágil:** Sara Pena Restrepo - Edwin Santiago Gonzalez
+**Analista Ágil:** 
 
 **Dominio:** 
 
 **Proyecto:** FUNNEL
 
-**Palabras Clave:** Pipeline, Google Cloud Platform (GCP), Arquitectura de datos, BigQuery, PySpark, Delta Lake, Cloud Logging, IAM (Identity and Access Management),
+**Palabras Clave:** Pipeline, Google Cloud Platform (GCP), Arquitectura de datos, Modelo Dimensional, Indicadores Claves de Desempeño (KPIs), BigQuery, PySpark, Delta Lake, Cloud Logging, IAM (Identity and Access Management)
 
 **Infraestructura de despliegue:** Google Cloud Platform (GCP)
 
-**Sistemas Origen:** Integración manual y a través de Terraform
+**Sistemas Origen:** Integraciones manuales e integraciones a través de Terraform
 
 **Sistemas Destino:** Cloud Storage - BigQuery
 
 **Tipo desarrollo:** 
 
 **Versión Lenguaje:** Python
-
-#### Tabla de contenido
-
-- [Descripción de la necesidad](#descripción-de-la-necesidad)
-- [Diagrama de la necesidad](#diagrama-de-la-necesidad)
-- [Clasificacion de las Interfaces](#clasificacion-de-las-interfaces)
-- [Atributos de calidad de la solucion](#atributos-de-calidad-de-la-solucion)
-- [Diagrama de componentes de la Interfaz](#diagrama-de-componentes-de-la-interfaz)
-- [Consideraciones](#consideraciones)
-- [Mapeo de datos](#mapeo-de-datos)
-  - [Mapeo Movil_Exito_Bolsillo](#mapeo_movil_exito_bolsillo)
-  - [Mapeo Movil_Exito_Gestores](#mapeo_movil_exito_gestores)
-  - [Mapeo Movil_Exito_Tipoajuste](#mapeo_movil_exito_tipoajuste)
-- [Características técnicas de la Interfaz](#características-técnicas-de-la-interfaz)
-- [Manejo de Errores](#manejo-de-errores)
-- [Manejo de reproceso](#manejo-de-reproceso)
-- [Manual de despliegue](#manual-de-despliegue)
-
-* [Inventario de Artefactos](#inventario-de-artefactos)
-* [Topologías](#topologías) 
-* [Directorios](#directorios)
-* [Operaciones de la Interfaz (Servicio)](#Operaciones-de-la-Interfaz-(Servicio))
-
 
 #### Tabla de contenido
 
@@ -54,18 +31,13 @@
   - [Alcance y resultados esperados](#alcance-y-resultados-esperados)
     - [Incluye](#incluye)
     - [No incluye](#no-incluye)
-- [Arquitectura](#arquitectura)
-  - [Diagrama físico de la necesidad](#diagrama-físico-de-la-necesidad)
-  - [Arquitectura de integraciones](#arquitectura-de-integraciones)
-  - [Arquitectura de datos](#arquitectura-de-datos)
-  - [Beneficios de la arquitectura](#beneficios-de-la-arquitectura)
-  - [Diagrama de componentes de la solución](#diagrama-de-componentes-de-la-solución)
+- [Arquitectura](#arquitectura) 
   - [Consideraciones](#consideraciones)
-    - [De arquitectura](#de-arquitectura)
     - [Técnicas](#técnicas)
   - [Características técnicas de la solución](#características-técnicas-de-la-solución)
   - [Manejo de errores](#manejo-de-errores)
   - [Manejo de reproceso](#manejo-de-reproceso)
+- [Modelo Dimensional](#modelo-dimensional)
 - [Gobierno de datos](#gobierno-de-datos)
   - [Tecnología](#tecnología)
     - [Almacenamiento de datos](#almacenamiento-de-datos)
@@ -96,9 +68,8 @@ Lo anterior, con el fin de garantizar la disponibilidad y calidad de la informac
 # Descripción de la necesidad
 
 ## Contexto
-
 El escenario empresarial cada vez es más dinámico y competitivo, la capacidad de adaptación y la toma de decisiones fundamentadas en datos son cruciales para el éxito.
-Grupo Éxito reconoce esta realidad y busca posicionarse a la vanguardia como negocio a traves del proyecto "Funnel de Mercadeo" en el que por medio de la gestión de datos, busca mejorar la toma de decisiones estratégicas y operativas.
+Grupo Éxito reconoce esta realidad y busca posicionarse a la vanguardia como negocio a través del proyecto "Funnel de Mercadeo" en el que por medio de la gestión de datos, busca mejorar la toma de decisiones estratégicas y operativas.
 
 ## Objetivo
 El objetivo del proyecto es implementar una solución integral en la nube de Google Cloud Platform (GCP) a traves de una arquitectura de datos para recopilar, procesar, almacenar, consumir, gobernar y gestionar los datos provenientes de diferentes fuentes de información.
@@ -161,7 +132,7 @@ Estos KPIs no solo servirán para representar insights confiables de la compañi
 # Arquitectura
 
 En el contexto de una transformación radical impulsada por las tecnologías en la nube, Google Cloud Platform (GCP) se destaca como una solución líder, proporcionando servicios innovadores que ofrecen agilidad, escalabilidad y seguridad esenciales para las empresas modernas. 
-Este apartado hace enfasis en la arquitectura de datos propuesta para el proyecto Funnel de Mercadeo, destacando la necesidad de una infraestructura bien planificada capaz de respaldar tanto la operación inmediata como la visión a largo plazo de la organización.
+Este apartado hace énfasis en la arquitectura de datos propuesta para el proyecto Funnel de Mercadeo, destacando la necesidad de una infraestructura bien planificada capaz de respaldar tanto la operación inmediata como la visión a largo plazo de la organización.
 
 De manera general, se subraya la importancia de la arquitectura de datos en la gestión eficiente de la información empresarial. Este conjunto de estructuras y procesos se encarga de capturar, procesar, almacenar, modelar, publicar y aprovechar los datos de manera efectiva. 
 En el proyecto actual, se enfoca en la construcción de un Data Lakehouse en Google Cloud Platform, consolidando datos desde diversas fuentes para su almacenamiento centralizado. 
@@ -170,7 +141,7 @@ A continuación, se anexa el documento correspondiente a la arquitectura impleme
 El documento sirve como un detallado insumo fundamental que proporciona el marco, el diseño sistemático e implementación de la arquitectura, siguiendo las mejores prácticas y recomendaciones de expertos. 
 El objetivo es establecer una base robusta y eficiente para el manejo de datos, potenciando la inteligencia de negocios y la toma de decisiones informadas.
 
-![Documentación Detallada de la Arquitectura]()
+![Documentación Detallada de la Arquitectura](...)
 
 ## Consideraciones
 
@@ -216,22 +187,20 @@ Las hojas técnicas de infraestructura se relacionan en las siguientes tablas:
 | Cloud Scheduler Job (Delta Duplicado Month) | Orquestador      | cs-funnel-mercd-scheduler-delta-duplicado-month-[ambiente] |
 
 Esta integración está orquestada por el Cloud Scheduler de GCP:
-(modificar para agregar los otros shceduler)
-| Parámetros Cloud Scheduler |                                                                                                                                                                        |
-|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Nombre de la Tarea         |                                                                                                                                    |
-| Frecuencia                 | 0 6 * * *                                                                                                                                                              |
-| Objetivo                   | HTTP                                                                                                                                                                   |
-| URL                        | |
-| Verbo HTTP                 | POST                                                                                                                                                                   |
-| Tipo de cuerpo             | JSON                                                                                                                                                                   |
-| Cuerpo                     | {User-Agent: Google-Cloud-Scheduler}                                                                                                                                   |
+
+| Parámetros Cloud Scheduler                                 |            |          |     |            |                |                                      |
+|------------------------------------------------------------|------------|----------|-----|------------|----------------|--------------------------------------|
+| Nombre de la Tarea                                         | Frecuencia | Objetivo | URL | Verbo HTTP | Tipo de cuerpo | Cuerpo                               |
+| cs-funnel-mercd-scheduler-delta-day-[ambiente]             | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| cs-funnel-mercd-scheduler-delta-month-[ambiente]           | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| cs-funnel-mercd-scheduler-delta-year-[ambiente]            | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
+| cs-funnel-mercd-scheduler-delta-duplicado-month-[ambiente] | 0 6 * * *  | HTTP     |     | POST       | JSON           | {User-Agent: Google-Cloud-Scheduler} |
 
 ## Manejo de errores
 
 |                | Si/No | Cómo se realiza                                                          |
 |----------------|-------|--------------------------------------------------------------------------|
-| Notificaciones | Si    | Manejo a traves de operaciones con el equipo de monitoreo de Grupo Exito |
+| Notificaciones | Si    | Manejo a través de operaciones con el equipo de monitoreo de Grupo Exito |
 | Reintentos     | Si    | Se ejecuta de nuevo el flujo de trabajo manualmente                      |
 | Trazabilidad   | Si    | En los logs enrutados al proyecto de logging y monitoreo                 |
 
@@ -242,6 +211,21 @@ Especificar los puntos en que se debe hacer el reproceso y cómo hacerlo.
 | Punto                           | Como se reprocesa                                                     | Aplicabilidad |
 |---------------------------------|-----------------------------------------------------------------------|---------------|
 | Fallo en el trabajo de Dataproc | Se debe iniciar manualmente el trabajo en Dataproc desde el Pipeline. |               |
+
+# Modelo Dimensional
+
+El Proyecto Funnel de Mercadeo emerge como una iniciativa clave para Grupo Éxito, marcando un hito en su camino hacia la excelencia analítica y una comprensión profunda de las dinámicas de mercado.
+Este esfuerzo pionero busca implementar una solución de almacén de datos de vanguardia que centralice datos críticos del negocio, facilitando un acceso sin precedentes para análisis en profundidad y la generación de reportes oportunos.
+Con el desafío de manejar un volumen de datos que abarca desde las ventas en línea hasta las interacciones con los clientes, el Proyecto Funnel se propone hacer accesibles 19 indicadores clave de rendimiento (KPIs), que serán esenciales para afinar las estrategias de marketing y ventas.
+Para la resolución de necesidad se detalla el diseño e implementación de una solución de modelado dimensional que se estructura alrededor de un conjunto de tablas de hechos y dimensiones, concebidas para soportar consultas analíticas y reportes.
+
+Para aquellos no familiarizados con los términos y procedimientos específicos de esta metodología, se incluye un glosario de términos clave, ofreciendo una comprensión clara de conceptos esenciales. Estos fundamentos no solo enriquecen la comprensión del lector sino que también sientan las bases para apreciar la complejidad y la meticulosidad del diseño propuesto.
+Además, cabe destacar que el desarrollo se realizó siguendo la metodología de Kimball, líder y exponente en el diseño de Data Warehouse, el cual se centra en la claridad lógica y la eficiencia técnica, garantizando una solución escalable y mantenible.
+
+Este documento profundiza en las etapas críticas del diseño dimensional, desde la selección de procesos de negocio hasta la identificación de hechos, cada una vital para asegurar que la solución cumpla con las necesidades analíticas de la organización.
+Para aquellos interesados en profundizar más en los detalles técnicos y las especificaciones de este proyecto transformador, se anexa el documento completo correspondiente a la arquitectura implementada para el Proyecto Funnel de Mercadeo.
+
+![Documentación Detallada del Modelo Dimensional](...)
 
 # Gobierno de datos
 
@@ -311,34 +295,30 @@ Cloud IAM es un sistema de identidad y acceso de Google Cloud Platform (GCP) que
 
 ## Procesos
 
-### Modelo Dimensional (darle un apartado en el doc general y aqui solamente hacer mención del uso dentro del negocio)
+### Modelo Dimensional
 
-El modelo dimensional es una técnica de modelado de datos que se utiliza comúnmente en el diseño de Data Warehouse y Data Marts. Se basa en tipos de tablas que principalmente hacen referencia a hechos y dimensiones. 
-Los hechos son las métricas que se desean analizar, mientras que las dimensiones son las categorías que se utilizan para analizar los hechos. El modelo dimensional es una forma de organizar los datos que facilita la consulta y el análisis de los datos.
+El modelo dimensional se presenta como una técnica esencial en el ámbito del diseño de Data Warehouse y Data Marts, enfocándose en una estructura organizacional de datos que promueve la eficiencia en consultas y análisis.
+El modelo dimensional también es forma de organizar los datos para facilitar la consulta y el análisis de datos. 
 
-#### Marco de integración (Enfoque en el Negocio) (Ponerlo en introduccion 314 330 resumir en un parrafo)
+Más allá de su aplicación técnica, el modelo dimensional se erige como un puente entre la tecnología de información y las necesidades estratégicas del negocio. 
+Facilita una plataforma de colaboración entre los estrategas de datos, los desarrolladores de productos y servicios, y otros stakeholders del negocio, permitiendo una gestión de datos más integrada y orientada a la toma de decisiones. 
+Este enfoque colaborativo busca centralizar la toma de decisiones, orientándolo hacia la satisfacción de las necesidades empresariales, el diseño eficaz de soluciones, y una operación eficiente.
 
-Permite que los estrategas de datos, los profesionales en desarrollo del producto/servicio y las partes interesadas del negocio, puedan colaborar en la definición de los datos, la gestión de los datos y la toma de decisiones.
+Finalmente, el modelo dimensional supone un marco de integración que pone énfasis en el negocio, asegurando así no solo la eficiencia operativa sino también la conformidad y la sostenibilidad a largo plazo de las iniciativas de datos dentro de la organización.
+Ademas de que otorga la capacidad de responder de manera más efectiva a preguntas críticas sobre la gestión de datos, la maximización del valor obtenido de los mismos, la optimización de costos asociados al almacenamiento y procesamiento de datos, la reducción de la complejidad infraestructural, la gestión de riesgos, y la garantía de la escalabilidad y disponibilidad de las soluciones propuestas.
 
-El objetivo es que haya una centralización para la toma de decisiones acertadas en respuesta a la necesidad del negocio, el diseño de la solución y su funcionamiento, en este sentido surgen mejores respuestas a cuestionamientos tales como:
-- Cómo administrar los datos
-- Cómo obtener valor de los datos.
-- Cómo minimizar costos de almacenamiento, procesamiento y rendimiento.
-- Cómo reducir la complejidad de la infraestructura.
-- Cómo administrar riesgos y garantizar el funcionamiento de la solución.
-- Cómo garantizar la escalabilidad y la disponibilidad de la solución.
-- Cómo establecer normativas ante requisitos legales, regulatorios y otros
+En la documentación general se encuentra un apartado sobre el modelo dimensional y además se cuenta con un documento específico sobre el abordaje técnico.
+[Apartado Modelo Dimensional](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/docs/img/Diagrama%20de%20Despliegue.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=feature/mateomg&resolveLfs=true&%24format=octetStream&api-version=5.0), [Documentación Modelo Dimensional](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/docs/img/Diagrama%20de%20Despliegue.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=feature/mateomg&resolveLfs=true&%24format=octetStream&api-version=5.0)
 
-##### Procesos (aqui se aplican los lineamientos de popliticas de estandares y controles)
+##### Procesos
 
-Los procesos de gobierno constan de toda la documentación recomendada en DAMA-DMBOK; sin embargo, a continuación se comentan los procesos recomendados por "DGI Data Governance Framework" 
-para la integración de otras partes del negocio que se relacionan con el entendimiento, aplicabilidad y aprovechamiento de una solución que cuente con el desarrollo de un modelo dimensional.
+Los procesos de gobierno de datos para este aparta, son los recomendados por "DGI Data Governance Framework" para la integración de otras partes del negocio sobre las cuales pueda brindarse un entendimiento, aplicabilidad y aprovechamiento de la solución que cuente con el desarrollo de un modelo dimensional.
 
-- Políticas, Estándares y controles  
-- Matriz de escalamiento decisiones(quien administra esta parte)
-- Requisitos de calidad de datos
-- Roles y monitoreo
-- Stakholders: - Interesados del negocio y objetivos sobre los datos. Pueden provenir de adentro y fuera de la organización, son los consumidores de los datos, establecen las reglas y los objetivos.
+- **Políticas, estándares y controles:** Reglas y directrices que se utilizan para gestionar y proteger los datos. Estas políticas y estándares se utilizan para garantizar la calidad, integridad, seguridad y utilización efectiva de los datos en una organización. 
+- **Matriz de escalamiento decisiones:** Los encargados del monitoreo de la solución, tienen la responsabilidad de definir procedimientos sobre la toma de decisiones de manera efectiva y acertada para la solución de problemas o normativas.
+- **Requisitos de calidad de datos:** Requerimientos de calidad de datos que se deben cumplir para garantizar la integridad, precisión y confiabilidad de los datos para la solución.
+- **Roles y monitoreo:** Definición de roles y responsabilidades para el gobierno de datos, así como a la implementación de un sistema de monitoreo y control para garantizar el cumplimiento de las políticas y estándares de datos así como también sobre el uso y acceso a los recursos.
+- **Stakeholders:** Interesados del negocio y objetivos sobre los datos. Pueden provenir de adentro y fuera de la organización, son los consumidores de los datos, establecen las reglas y los objetivos.
 
 ### Arquitectura
 
@@ -392,6 +372,8 @@ Los posibles mensajes de error están asociados a la validación que se hace:
 - `"they are not csv files"` → Si el archivo no es un archivo csv.
 - `"error while reading file"` → Si el archivo está corrupto y no es legible.
 - `"schema does not match"` → Si el esquema del archivo no coincide con el esquema definido.
+- `"this files does not meet the expectations"` → Si el archivo no cumple con la validación predefinida
+- `"schema does not match in the columns: {', '.join(invalid_cols)}"` → Si el esquema del archivo no coincide con el esquema definido.
 
 ```json
 [
