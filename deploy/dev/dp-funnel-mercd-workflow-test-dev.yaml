@@ -14,7 +14,7 @@ jobs:
       mainPythonFileUri: gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/main.py
       properties:
         spark.app.name: trusted_workflow_dev
-        spark.jars.packages: "io.delta:delta-spark_2.12:3.0.0"
+        spark.jars.packages: "io.delta:delta-core_2.12:2.3.0"
         spark.sql.extensions: "io.delta.sql.DeltaSparkSessionExtension"
         spark.sql.catalog.spark_catalog: "org.apache.spark.sql.delta.catalog.DeltaCatalog"
         spark.databricks.delta.properties.defaults.enableChangeDataFeed: "false"
@@ -54,7 +54,7 @@ placement:
         machineTypeUri: n2-standard-8
         numInstances: 1
       softwareConfig:
-        imageVersion: 2.2-debian12
+        imageVersion: 2.1-debian11
         properties:
           dataproc:dataproc.allow.zero.workers: 'true'
           dataproc:dataproc.logging.stackdriver.job.driver.enable: 'true'

@@ -23,10 +23,10 @@ BEGIN
         SET model_segment_desc_condition = ['VERDE', 'DIAMANTE', 'BLACK'];
     WHEN included_CadenaCD = 'A' THEN
         SET model_id_condition = 25;
-        SET model_segment_desc_condition = ['AAA', 'AA'];
+        SET model_segment_desc_condition = ['AAA', 'AA', 'A'];
     WHEN included_CadenaCD = 'S' THEN
         SET model_id_condition = 24;
-        SET model_segment_desc_condition = ['AAA', 'AA'];
+        SET model_segment_desc_condition = ['AAA', 'AA', 'A'];
     ELSE
         RAISE USING MESSAGE = 'Valor de included_CadenaCD no reconocido.';
     END CASE;
