@@ -91,7 +91,7 @@ class BigQueryStage(IBigQueryStage):
             script.content,
             query_parameters={
                 "sp_crear_dim_indicadores": self.conf.bigquery.indicadores.dim_indicadores.endpoint_carga_inicial.sp_crear_dim_indicadores,
-                "table_name": self.conf.bigquery.indicadores.dim_indicadores.endpoint_carga_inicial.table_name
+                "table_name": self.conf.bigquery.variables.dim_indicadores_table
             }
         )
 

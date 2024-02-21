@@ -2,9 +2,9 @@
 
 [qa.variables]
 
-raw_bucket_name = "co-grupo-exito-funnel-mercd-raw-data-qa"
-trusted_bucket_name = "co-grupo-exito-funnel-mercd-trusted-data-qa"
-project = "co-grupoexito-funnel-mercd-dev"
+raw_bucket_name = "co-grupo-exito-funnel-mercd-raw-data-qa" # Variabilizar
+trusted_bucket_name = "co-grupo-exito-funnel-mercd-trusted-data-qa" # Variabilizar
+project = "co-grupoexito-funnel-mercd-dev" # Variabilizar
 error_folder = "co-grupo-exito-error-data"
 data_folder = "co-grupo-exito-raw-data"
 
@@ -171,15 +171,16 @@ trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folde
 
 [qa.bigquery.variables]
 
-procedures_dataset = "procedures_qa"
-refined_dataset = "refined_qa"
-dimensional_model.fact_table.DAY = "fact_days"
-dimensional_model.fact_table.MONTH = "fact_months"
-dimensional_model.fact_table.YEAR = "fact_years"
-dimensional_model.target_table.DAY = "fact_target_days"
-dimensional_model.target_table.MONTH = "fact_target_months"
-dimensional_model.target_table.YEAR = "fact_target_years"
-dimensional_model.dim_cadena_table = "dim_cadena"
+procedures_dataset = "procedures_qa" # Variabilizar
+refined_dataset = "refined_qa" # Variabilizar
+dimensional_model.fact_table.DAY = "fact_days" # Variabilizar
+dimensional_model.fact_table.MONTH = "fact_months" # Variabilizar
+dimensional_model.fact_table.YEAR = "fact_years" # Variabilizar
+dimensional_model.target_table.DAY = "fact_target_days" # Variabilizar
+dimensional_model.target_table.MONTH = "fact_target_months" # Variabilizar
+dimensional_model.target_table.YEAR = "fact_target_years" # Variabilizar
+dimensional_model.dim_cadena_table = "dim_cadena" # Variabilizar
+dimensional_model.dim_indicadores_table = "dim_indicadores" # Variabilizar
 
 granularity = ["DAY", "MONTH", "YEAR"]
 excluded_sublineaCD = [1, 2, 3, 4, 5, 6, 99, 505]
@@ -187,22 +188,23 @@ included_direccionCD = [10, 20, 30, 40, 50]
 excluded_tipoNegociacion = [2]
 included_CadenaCD = ['E', 'C', 'A', 'S']
 
-delta.start_date = "DATE '2021-10-04'"
-delta.end_date = "DATE '2022-03-24'"
-delta.date_to_calculate = "DATE '2021-10-04'"
+delta.start_date = "DATE '2021-10-04'" # Variabilizar
+delta.end_date = "DATE '2022-03-24'" # Variabilizar
+delta.date_to_calculate = "DATE '2021-10-06'" # Variabilizar
 
-contact_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.CONTACTABILIDAD'"
-sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'"
-segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION'"
-modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO'"
-segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION_BACKUP'"
-modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO_BACKUP'"
-cadena_table = "'co-grupoexito-funnel-mercd-dev.indicadores.CadenaGCP'"
-source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_MONTHS'"
-source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_DAYS'"
-source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_MONTHS'"
-source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_YEARS'"
+contact_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.CONTACTABILIDAD'" # Variabilizar
+sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'" # Variabilizar
+segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION'" # Variabilizar
+modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO'" # Variabilizar
+segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION_BACKUP'" # Variabilizar
+modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO_BACKUP'" # Variabilizar
+cadena_table = "'co-grupoexito-funnel-mercd-dev.indicadores.CadenaGCP'" # Variabilizar
+source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_MONTHS'" # Variabilizar
+source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_DAYS'" # Variabilizar
+source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_MONTHS'" # Variabilizar
+source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.FACT_TARGET_YEARS'" # Variabilizar
 
+dim_indicadores_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_indicadores_table}'"
 dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
 fact_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.DAY}'"
 fact_table.MONTH = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.MONTH}'"
@@ -528,7 +530,6 @@ sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_
 [qa.bigquery.indicadores.dim_indicadores.endpoint_carga_inicial]
 
 sp_crear_dim_indicadores = "@format {this.bigquery.indicadores.dim_indicadores.sp_crear_dim_indicadores.sp_name}"
-table_name = "'co-grupoexito-funnel-mercd-dev.refined.dim_indicadores'"
 
 # ================================================================================
 # Procedimiento: Crear Dim Cadena

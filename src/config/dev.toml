@@ -2,9 +2,9 @@
 
 [dev.variables]
 
-raw_bucket_name = "co-grupo-exito-funnel-mercd-raw-data-dev"
-trusted_bucket_name = "co-grupo-exito-funnel-mercd-trusted-data-dev"
-project = "co-grupoexito-funnel-mercd-dev"
+raw_bucket_name = "co-grupo-exito-funnel-mercd-raw-data-dev" # Variabilizar
+trusted_bucket_name = "co-grupo-exito-funnel-mercd-trusted-data-dev" # Variabilizar
+project = "co-grupoexito-funnel-mercd-dev" # Variabilizar
 error_folder = "co-grupo-exito-error-data"
 data_folder = "co-grupo-exito-raw-data"
 
@@ -171,15 +171,16 @@ trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folde
 
 [dev.bigquery.variables]
 
-procedures_dataset = "procedures"
-refined_dataset = "refined"
-dimensional_model.fact_table.DAY = "fact_days"
-dimensional_model.fact_table.MONTH = "fact_months"
-dimensional_model.fact_table.YEAR = "fact_years"
-dimensional_model.target_table.DAY = "fact_target_days"
-dimensional_model.target_table.MONTH = "fact_target_months"
-dimensional_model.target_table.YEAR = "fact_target_years"
-dimensional_model.dim_cadena_table = "dim_cadena"
+procedures_dataset = "procedures" # Variabilizar
+refined_dataset = "refined_dev" # Variabilizar
+dimensional_model.fact_table.DAY = "fact_Dia" # Variabilizar
+dimensional_model.fact_table.MONTH = "fact_Mes" # Variabilizar
+dimensional_model.fact_table.YEAR = "fact_Ano" # Variabilizar
+dimensional_model.target_table.DAY = "fact_MetasDia" # Variabilizar
+dimensional_model.target_table.MONTH = "fact_MetasMes" # Variabilizar
+dimensional_model.target_table.YEAR = "fact_MetasAno" # Variabilizar
+dimensional_model.dim_cadena_table = "dim_Cadena" # Variabilizar
+dimensional_model.dim_indicadores_table = "dim_Indicadores" # Variabilizar
 
 granularity = ["DAY", "MONTH", "YEAR"]
 excluded_sublineaCD = [1, 2, 3, 4, 5, 6, 99, 505]
@@ -187,22 +188,23 @@ included_direccionCD = [10, 20, 30, 40, 50]
 excluded_tipoNegociacion = [2]
 included_CadenaCD = ['E', 'C', 'A', 'S']
 
-delta.start_date = "DATE '2021-10-04'"
-delta.end_date = "DATE '2022-03-24'"
-delta.date_to_calculate = "DATE '2021-10-04'"
+delta.start_date = "DATE '2021-10-04'" # Variabilizar
+delta.end_date = "DATE '2022-03-24'" # Variabilizar
+delta.date_to_calculate = "DATE '2021-10-04'" # Variabilizar
 
-contact_table = "'co-grupoexito-funnel-mercd-dev.external.contactabilidad'"
-sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'"
-segmentacion_table = "'co-grupoexito-funnel-mercd-dev.external.segmentacion'"
-modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento'"
-segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.external.segmentacion_backup'"
-modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento_backup'"
-cadena_table = "'co-grupoexito-funnel-mercd-dev.indicadores.CadenaGCP'"
-source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.external.fact_months'"
-source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.external.fact_target_days'"
-source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.external.fact_target_months'"
-source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.external.fact_target_years'"
+contact_table = "'co-grupoexito-funnel-mercd-dev.external.contactabilidad'" # Variabilizar
+sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'" # Variabilizar
+segmentacion_table = "'co-grupoexito-funnel-mercd-dev.external.segmentacion'" # Variabilizar
+modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento'" # Variabilizar
+segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.external.segmentacion_backup'" # Variabilizar
+modelo_segmento_table_backup = "'co-grupoexito-funnel-mercd-dev.external.dim_modelo_segmento_backup'" # Variabilizar
+cadena_table = "'co-grupoexito-funnel-mercd-dev.indicadores.CadenaGCP'" # Variabilizar
+source_fact_table.MONTH = "'co-grupoexito-funnel-mercd-dev.external.fact_months'" # Variabilizar
+source_target_table.DAY = "'co-grupoexito-funnel-mercd-dev.external.fact_target_days'" # Variabilizar
+source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.external.fact_target_months'" # Variabilizar
+source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.external.fact_target_years'" # Variabilizar
 
+dim_indicadores_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_indicadores_table}'"
 dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
 fact_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.DAY}'"
 fact_table.MONTH = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.MONTH}'"
@@ -528,7 +530,6 @@ sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_
 [dev.bigquery.indicadores.dim_indicadores.endpoint_carga_inicial]
 
 sp_crear_dim_indicadores = "@format {this.bigquery.indicadores.dim_indicadores.sp_crear_dim_indicadores.sp_name}"
-table_name = "'co-grupoexito-funnel-mercd-dev.refined.dim_indicadores'"
 
 # ================================================================================
 # Procedimiento: Crear Dim Cadena
