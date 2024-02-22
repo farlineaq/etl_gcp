@@ -6,7 +6,8 @@ Este documento ha sido elaborado con el objetivo de ofrecer una comprensión int
 Desempeño (KPIs) asociados a nuestro proyecto. Esta recopilación de KPIs busca servir como una herramienta esencial
 para una visión panorámica y detallada del proyecto.
 
-> **Nota:** Las consultas de SQL presentadas son preliminares.
+> **Nota:** Las consultas de SQL presentadas están generalizadas y muestran la lógica que se sigue al calcular los
+indicadores individuales.
 
 ## Tabla de Contenido
 
