@@ -2,7 +2,7 @@
 
 **Área:**
 
-**Analista Ágil:** Sebastian Echeverry
+**Analista Ágil:** Sebastian Echeverri
 
 **Dominio:** Mercadeo
 
@@ -222,10 +222,10 @@ Las hojas técnicas de infraestructura se relacionan en las siguientes tablas:
 | Dataproc Cluster                            | Procesamiento    | dp-funnel-mercd-pipeline-[ambiente]                        |
 | Dataproc Job                                | Trabajo          | dp-funnel-mercd-job-[ambiente]                             |
 | GCS (Capa Trusted)                          | Almacenamiento   | co-grupo-exito-funnel-mercd-trusted-data-[ambiente]        |
-| BigQuery (Dataset)(Modelo Dimensional)      | Base de datos    | refined_funnel_mercd_dimensional_model                     |
-| BigQuery (External tables dataset)          | Base de datos    | refined_funnel_mercd_external_tables                       |
-| BigQuery ( Views dataset)                   | Base de datos    | refined_funnel_mercd_views                                 |
-| BigQuery (Stored Procedures)                | Base de datos    | refined_funnel_mercd_procedures                            |
+| BigQuery (Dataset Modelo Dimensional)       | Base de datos    | refined_funnel_mercd_dimensional_model                     |
+| BigQuery (Dataset Tablas Externas)          | Base de datos    | refined_funnel_mercd_external_tables                       |
+| BigQuery (Dataset Vistas)                   | Base de datos    | refined_funnel_mercd_views                                 |
+| BigQuery (Dataset Procedures)               | Base de datos    | refined_funnel_mercd_procedures                            |
 | Cloud Scheduler Job (Delta Day)             | Orquestador      | cs-funnel-mercd-scheduler-delta-day-[ambiente]             |
 | Cloud Scheduler Job (Delta Month)           | Orquestador      | cs-funnel-mercd-scheduler-delta-month-[ambiente]           |
 | Cloud Scheduler Job (Delta Year)            | Orquestador      | cs-funnel-mercd-scheduler-delta-year-[ambiente]            |
@@ -474,41 +474,64 @@ refiere a las diferentes etapas que atraviesan los datos desde su creación hast
 5. **Uso**: Es la etapa en la que los datos se utilizan para generar informes, tomar decisiones y apoyar las operaciones
    de negocio.
 
-![Diagrama ciclo de vida](...)
+![Diagrama ciclo de vida](./assets/images/ciclo_de_vida.png)
 
-### Monitorización y Gestión
+### Monitorización y gestión
 
-La monitorización y gestión de la solución en la nube está a cargo de los administradores de la solución, en este caso,
-**ARUS**, con previa capacitación por parte del equipo de Quind. Se tiene que todo el monitoreo y gestión de la solución
-se hace desde un proyecto de GCP dedicado para este fin. Todos los registros asociados a la solución se envían a un
-topic Pub/Sub que es posteriormente consumido por los administradores de la solución.
-
-Los registros enviados son los que cumplen en siguiente filtro:
+La monitorización y gestión de la solución en la nube, a cargo de **ARUS** con capacitación previa por parte del equipo
+de Quind, se realiza desde un proyecto de GCP dedicado. Los registros enviados cumplen con filtros específicos para
+facilitar la identificación y manejo eficiente de errores encontrados durante las validaciones:
 
 ```graphql
 resource.type="cloud_dataproc_job"
 ```
 
-Los registros de la solución se diseñaron para tener una estructura y severidad definida. Esto permite encontrarlos
-fácilmente y tener el contexto suficiente en caso de presentarse algún error conocido. El filtro para encontrar estos
-logs es el siguiente:
+Los registros de la solución están diseñados para tener una estructura y severidad definida, lo que facilita su
+localización y proporciona el contexto suficiente en caso de errores conocidos. El filtro para encontrar estos logs es
+el siguiente:
 
 ```graphql
-jsonPayload.class="LoggerProvider" 
+jsonPayload.class="DataLibraryLogger" 
 severity=ERROR 
 resource.type="cloud_dataproc_job"
 ```
 
-Este filtro permite tener suficiente información en caso de encontrarse con algún archivo corrupto en la capa raw:
+#### Validaciones Estructurales vs. Validaciones de Calidad de Datos
 
-Los posibles mensajes de error están asociados a la validación que se hace:
+- **Validaciones Estructurales:** Verifican que los archivos cumplan con aspectos básicos como el formato correcto (
+  CSV/Parquet), la integridad del archivo, y la conformidad con el esquema esperado.
+- **Validaciones de Calidad de Datos:** Se enfocan en asegurar la precisión, la integridad y la relevancia de los datos
+  dentro de los archivos, aplicando reglas más específicas sobre los datos mismos, como la verificación de valores
+  nulos, la unicidad de los datos, y la consistencia de formatos.
 
-- `"they are not csv files"` → Si el archivo no es un archivo csv.
-- `"error while reading file"` → Si el archivo está corrupto y no es legible.
-- `"schema does not match"` → Si el esquema del archivo no coincide con el esquema definido.
-- `"this files does not meet the expectations"` → Si el archivo no cumple con la validación predefinida
-- `"schema does not match in the columns: {', '.join(invalid_cols)}"` → Si el esquema del archivo no coincide con el
-  esquema definido.
+#### Mensajes de Error de Validación
+
+Los mensajes de error generados durante las validaciones estructurales y de calidad de datos se clasifican en las
+siguientes categorías:
+
+- `"They are not CSV/Parquet files"`: El archivo no es un archivo CSV o Parquet.
+- `"Error while reading file"`: El archivo está corrupto y no es legible.
+- `"Schema does not match"`: El esquema del archivo no coincide con el esquema definido.
+- `"This files does not meet the expectations"`: El archivo no cumple con las validaciones de calidad de datos
+  predefinidas.
+
+#### Gestion de Errores en la Validación Estructural
+
+La gestión eficaz de errores es un componente esencial en el proceso de monitorización de la calidad de los datos.
+Cuando un archivo no pasa las validaciones, se genera un mensaje de error detallado para su posterior análisis y
+corrección.
+
+##### Mensajes de Error de Validación
+
+Los mensajes de error generados durante la validación de archivos se clasifican en las siguientes categorías:
+
+- `"They are not CSV/Parquet files"`: El archivo no es un archivo CSV o Parquet.
+- `"Error while reading file"`: El archivo está corrupto y no es legible.
+- `"Schema does not match"`: El esquema del archivo no coincide con el esquema definido.
+
+##### Estructura de los Mensajes de Error
+
+La estructura de los mensajes de error enviados a los registros es la siguiente:
 
 ```json
 [
@@ -527,33 +550,149 @@ Los posibles mensajes de error están asociados a la validación que se hace:
       "other files",
       "with the same error"
     ]
-  },
-  ...
+  }
 ]
 ```
 
-**Comportamientos atípicos de la solución**
+- Ejemplo de mensaje de error por formato incorrecto:
+  ```json
+  {
+    "message": "File format error",
+    "files": ["path/to/incorrect_format_file.txt"],
+    "error": "They are not CSV/Parquet files"
+  }
+  ```
 
-A continuación se detalla el plan de acción en caso de tener comportamientos atípicos:
+- Ejemplo de mensaje de error por archivo corrupto:
+  ```json
+  {
+    "message": "File read error",
+    "files": ["path/to/corrupt_file.csv"],
+    "error": "Error while reading file"
+  }
+  ```
 
-| Comportamiento            | Acción                                     |
-|---------------------------|--------------------------------------------|
-| Crash o error en Dataproc | Notificar y/o escalar al área responsable. |
+#### Acciones Correctivas para la Gestión de Errores en la Validación Estructural
 
-**Caracterización de eventos**
+Cuando se detecta un error durante la validación de archivos, se deben tomar las siguientes acciones correctivas en
+función del tipo de error:
 
-Esta tabla detalla la caracterización de eventos críticos en el marco del monitoreo de la solución. El objetivo es
-establecer claramente los umbrales de advertencia y críticos, las frecuencias de chequeo, y las causas potenciales de
-cada evento. Además, proporciona un marco de acción y escalación para garantizar una respuesta rápida y efectiva a
-cualquier evento que pueda afectar la integridad de los datos y el rendimiento del sistema.
+- **Archivo no es CSV/Parquet:** Verificar el proceso de generación de archivos para asegurar el formato correcto. Si el
+  archivo es generado manualmente, revisar las instrucciones de exportación aplicadas.
 
-| Id Tipo de servicio (Metrica)              | % Warning | % Critical | Id Tipo de umbral | Frecuencia de chequeo (Horas) | Causa del Evento             | Notificación Alarma | Acción Crítica                            | Escalamiento 1 | Escalamiento 2 | Escalamiento 3 |
-|--------------------------------------------|-----------|------------|-------------------|-------------------------------|------------------------------|---------------------|-------------------------------------------|----------------|----------------|----------------|
-| ETL con errores                            | N/A       | N/A        | Error             | 12                            | `Error en los datos`         | Error en log        | Notificar al analista funcional           | Super usuario  | Líder técnico  | Equipo Cloud   |
-| Archivo no es csv                          | N/A       | N/A        | Error             | 12                            | `"they are not csv files"`   | Error en log        | Notificar y/o escalar al área responsable | Super usuario  | Líder técnico  | Equipo Cloud   |
-| Archivo corrupto y no legible              | N/A       | N/A        | Error             | 12                            | `"error while reading file"` | Error en log        | Notificar y/o escalar al área responsable | Super usuario  | Líder técnico  | Equipo Cloud   |
-| Esquema del archivo no coincide            | N/A       | N/A        | Error             | 12                            | `"schema does not match"`    | Error en log        | Notificar y/o escalar al área responsable | Super usuario  | Líder técnico  | Equipo Cloud   |
-| Crash o error en Dataproc (Comportamiento) | N/A       | N/A        | Error             | 12                            | `Crash o error en Dataproc`  | Error en log        | Notificar y/o escalar al área responsable | Super usuario  | Líder técnico  | Equipo Cloud   |
+- **Archivo corrupto y no legible:** Reemplazar el archivo corrupto con una versión válida. Si el problema persiste,
+  revisar el proceso de transferencia de archivos para identificar posibles causas de corrupción.
+
+- **Esquema del archivo no coincide:** Alinear el esquema de los archivos con el esperado en el sistema. Esto puede
+  implicar ajustar el proceso de generación de datos o actualizar el esquema esperado en la solución en función de
+  nuevos requisitos.
+
+#### Gestión de Errores en la Validación de Calidad de Datos
+
+La gestión eficaz de errores es un componente esencial en el proceso de monitorización de la calidad de los datos.
+Cuando un archivo no cumple con las expectativas de calidad definidas, se genera un mensaje de error detallado para
+facilitar la identificación y corrección del problema.
+
+##### Estructura de los Mensajes de Error
+
+Cada mensaje de error generado durante la validación de calidad de datos sigue una estructura específica, diseñada para
+proporcionar una visión clara del error encontrado:
+
+```json
+{
+  "message": "This files does not meet the expectations",
+  "files": [
+    {
+      "file_name": {
+        "expectation_name": "Nombre de la expectativa no cumplida",
+        "expectation_type": "Tipo de expectativa",
+        "description": "Descripción detallada del error",
+        "column": "Columna afectada",
+        "success": false
+      }
+    }
+  ]
+}
+```
+
+- Ejemplo de mensaje de error por valores nulos:
+  ```json
+  {
+    "message": "This files does not meet the expectations",
+    "files": [
+      {
+        "path/to/null_values_file.csv": {
+          "expectation_name": "NotNullExpectation",
+          "expectation_type": "expect_column_values_to_not_be_null",
+          "description": "Expect the column values to not be null",
+          "column": "Columna afectada",
+          "success": false
+        }
+      }
+    ]
+  }
+  ```
+
+##### Expectativas de Validación
+
+Las expectativas de validación aplicadas a los datos y cómo se reflejan en los mensajes de error son las siguientes:
+
+1. **NotNullExpectation**: Verifica que no haya valores nulos en campos críticos.
+    - Aplicada a: "Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor".
+
+2. **DistinctValuesExpectation**: Asegura que los valores pertenezcan a un conjunto específico.
+    - Aplicada a: `cadena_id`, `indicador_id`, `actualizacion`.
+
+3. **UniqueExpectation**: Garantiza la unicidad de los valores en determinados campos.
+    - Aplicada a: "CadenaId", "IndicadorId", "Fecha".
+
+4. **RegexExpectation**: Comprueba que los valores coincidan con un patrón regex específico.
+    - Patrón: '\d{4}-\d{2}-\d{2}'.
+    - Aplicada a: "Fecha".
+
+##### Acciones Correctivas
+
+Cuando se encuentra un error, los mensajes detallados facilitan la identificación rápida del problema y la columna
+afectada, permitiendo tomar acciones correctivas específicas:
+
+- **Valores nulos en campos críticos:** Identificar y corregir las fuentes de datos para eliminar o completar los
+  valores nulos antes de la carga de datos.
+
+- **Valores duplicados en campos que deben ser únicos:** Revisar los procesos de inserción o actualización de datos para
+  evitar duplicidades.
+
+- **Valores fuera de rango o formato:** Corregir los valores de datos que no cumplen con las expectativas definidas, ya
+  sea modificando los datos en la fuente o ajustando el proceso de validación de datos si los criterios han cambiado.
+
+#### Manejo de Archivos Inválidos
+
+Los archivos que no pasan las validaciones son movidos a una ubicación de error especificada para su revisión y
+corrección. Este proceso asegura que solo los datos válidos y conformes sean procesados y almacenados para su uso
+posterior.
+
+Es importante notar que la gestión de errores es un proceso continuo. A medida que se procesan más archivos y se
+implementan nuevas validaciones, es probable que se encuentren nuevos errores. Por lo tanto, es importante mantener un
+proceso de gestión de errores efectivo y eficiente.
+
+#### Caracterización de Eventos
+
+Esta tabla proporciona una caracterización detallada de eventos críticos en el marco del monitoreo de la solución,
+estableciendo claros los umbrales de advertencia y críticos, las frecuencias de chequeo, causas potenciales de cada
+evento, y proporcionando un marco de acción y escalamiento para asegurar una respuesta efectiva a cualquier evento que
+pueda afectar la integridad de los datos y el rendimiento del sistema.
+
+| Evento                              | Descripción                                                                   | Severidad | Frecuencia de Chequeo | Causa Potencial                                           | Acción Inmediata                                                                                                                                                                                      | Escalamiento                    |
+|-------------------------------------|-------------------------------------------------------------------------------|-----------|-----------------------|-----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
+| Archivos no son CSV/Parquet         | Los archivos cargados no cumplen con el formato esperado.                     | Crítico   | Al intentar procesar  | Formato incorrecto de los archivos cargados.              | 1. Verificar el formato del archivo fallido.<br>2. Corregir o convertir el archivo a un formato soportado.<br>3. Reintentar la carga.                                                                 | Notificar al equipo técnico.    |
+| Error al leer archivo               | El sistema no puede leer uno o más archivos debido a corrupción o errores.    | Crítico   | Al intentar procesar  | Archivos corruptos o con errores de formato.              | 1. Identificar el archivo afectado en los logs.<br>2. Chequear la integridad del archivo y corregir o reemplazarlo.<br>3. Volver a cargar el archivo corregido.                                       | Notificar al equipo técnico.    |
+| Inconsistencia en el esquema        | El esquema del archivo no coincide con el esquema esperado.                   | Alto      | Al intentar procesar  | Cambios en el esquema de datos sin actualizar el sistema. | 1. Comparar el esquema del archivo con el esquema esperado.<br>2. Ajustar el esquema del archivo o actualizar el sistema para aceptar el nuevo esquema.<br>3. Probar la carga del archivo nuevamente. | Notificar al equipo técnico.    |
+| Valores nulos en campos críticos    | Se detectan valores nulos en campos donde se esperan datos.                   | Medio     | Al intentar procesar  | Errores en la fuente de datos o en el proceso de carga.   | 1. Revisar el origen de datos para identificar la causa de los valores nulos.<br>2. Corregir los datos en la fuente o aplicar un proceso de limpieza.<br>3. Cargar los datos corregidos.              | Notificar al analista de datos. |
+| Valores duplicados en campos únicos | Se encuentran valores duplicados en campos que deben ser únicos.              | Medio     | Al intentar procesar  | Inserciones de datos incorrectas o duplicidad de datos.   | 1. Utilizar herramientas de deduplicación para identificar y eliminar duplicados.<br>2. Validar la unicidad de los datos antes de la carga.<br>3. Revisar las políticas de inserción de datos.        | Notificar al analista de datos. |
+| Valores fuera de rango o formato    | Valores en campos específicos no cumplen con los rangos o formatos definidos. | Bajo      | Al intentar procesar  | Errores de formato o entrada de datos incorrecta.         | 1. Revisar los datos para encontrar los valores problemáticos.<br>2. Corregir los valores según las expectativas de formato o rango.<br>3. Revalidar y cargar los datos ajustados.                    | Notificar al analista de datos. |
+
+Estas acciones y escalamientos están diseñados para garantizar que los problemas identificados sean abordados de manera
+efectiva y eficiente, minimizando el impacto en la operación general de la solución y manteniendo la calidad y la
+integridad de los datos procesados.
 
 ### Soporte y mantenimiento
 
@@ -599,7 +738,7 @@ Los recursos de Google Cloud están organizados jerárquicamente. Todos los recu
 jerarquía, tienen exactamente un elemento superior. En el nivel más bajo, los recursos de servicio son los componentes
 fundamentales que conforman todos los servicios de Google Cloud.
 
-![jerarquia_cloud.png](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/documentacion/img/jerarquia_gcp.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=develop&resolveLfs=true&%24format=octetStream&api-version=5.0)
+![jerarquia_cloud.png](./assets/images/jerarquia_cloud.png)
 
 IAM te permite establecer políticas de permisos en los siguientes niveles de la jerarquía de recursos:
 
@@ -653,7 +792,7 @@ De acuerdo a estas definiciones, se identificaron 3 políticas de permisos en el
 
 **Ingeniero de Datos**
 
-![politica_ingeniero_de_datos.png](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/documentacion/img/politica_ingeniero_de_datos.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=develop&resolveLfs=true&%24format=octetStream&api-version=5.0)
+![politica_ingeniero_de_datos.png](./assets/images/politica_ingeniero_de_datos.png)
 
 Política ingeniero de datos
 
@@ -670,7 +809,7 @@ Esta política está asignada al grupo `ingenierodedatosgcpfunnel@grupo-exito.co
 
 **Científico de Datos**
 
-![politica_cientifico_de_datos.png](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/documentacion/img/politica_cientifico_de_datos.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=develop&resolveLfs=true&%24format=octetStream&api-version=5.0)
+![politica_cientifico_de_datos.png](./assets/images/politica_cientifico_de_datos.png)
 
 Política científico
 
@@ -699,7 +838,7 @@ denegar permisos a un usuario solo se debe agregar o eliminar el usuario del gru
 
 **Analista de Datos**
 
-![politica_analista_de_datos.png](https://dev.azure.com/grupo-exito/eaff7c2c-ee42-4b16-abe8-670b3fb8b200/_apis/git/repositories/8fdc11ad-308b-465b-bab3-884a5269a145/items?path=/documentacion/img/politica_analista_de_datos.png&versionDescriptor%5BversionOptions%5D=0&versionDescriptor%5BversionType%5D=0&versionDescriptor%5Bversion%5D=develop&resolveLfs=true&%24format=octetStream&api-version=5.0)
+![politica_analista_de_datos.png](./assets/images/politica_analista_de_datos.png)
 
 Política analista de datos
 
@@ -738,28 +877,28 @@ Para asignar a un usuario esta política de permisos se deben seguir los siguien
    este rol al grupo entero, todos los miembros tendrían acceso a la totalidad de las vistas del dataset compartido.
 4. Se debe autorizar la vista. Para esto vamos al dataset fuente, de donde creamos la vista, por
    ejemplo, `refined_funnel_merc_external_tables`. En el dataset fuente seguimos los siguientes pasos:
-1. En el panel**Explorador**, selecciona el conjunto de datos.
-2. Expande la opción**Acciones**y haz clic en**Abrir**.
-3. Haz clic en**Compartir**y, luego, selecciona**Autorizar vistas**.
-4. En el panel**Vistas autorizadas**que se abre, ingresa la vista`<nombre_vista>`en el campo**Vista autorizada**.
-5. Haz clic en**Agregar autorización**.
+
+    1. En el panel**Explorador**, selecciona el conjunto de datos.
+    2. Expande la opción**Acciones**y haz clic en**Abrir**.
+    3. Haz clic en**Compartir**y, luego, selecciona**Autorizar vistas**.
+    4. En el panel**Vistas autorizadas**que se abre, ingresa la vista`<nombre_vista>`en el campo**Vista autorizada**.
+    5. Haz clic en**Agregar autorización**.
+
 5. Si se requieren más detalles sobre la autorización de vistas, se debe visitar la
    página [Crear una vista autorizada](https://cloud.google.com/bigquery/docs/share-access-views?hl=es-419).
 
 > 📘 NOTA Con esta política de permisos se garantiza que las identidades que utilizan la solución como analistas de
 > datos, no pueden acceder a los objetos almacenados en Cloud Storage desde la consola de Google. Pero se debe hacer
-> cierta salvedad: estos SÍ podrían acceder a los objetos desde la Cloud Shell de Google, si esta no está desactivada para
-> los usuarios, lo que implica un riesgo en cuanto a la filtración de datos sensibles. Este es un requisito importante, no
-> solo para lo mencionado, si no también para implementar soluciones en la nube con mejores prácticas de seguridad. Si aún
-> no está deshabilitado el acceso a la Cloud Shell de Google, se debe seguir la siguiente documentación oficial para
-> hacerlo: Inhabilita o restablece Cloud Shell.
+> cierta salvedad: estos SÍ podrían acceder a los objetos desde la Cloud Shell de Google, si esta no está desactivada
+> para los usuarios, lo que implica un riesgo en cuanto a la filtración de datos sensibles. Este es un requisito
+> importante, no solo para lo mencionado, si no también para implementar soluciones en la nube con mejores prácticas de
+> seguridad. Si aún no está deshabilitado el acceso a la Cloud Shell de Google, se debe seguir la siguiente
+> documentación oficial para hacerlo: Inhabilita o restablece Cloud Shell.
 >
-
 > 📘 NOTA GENERAL La recomendación por parte de Google es trabajar con ROLES PREDEFINIDOS, ya que estos son administrados
-> por el propio Google, por lo que van a funcionar ante cualquier eventualidad. Los ROLES PERSONALIZADOS se deben usar si
-> los PREDEFINIDOS no cumplen con los requerimientos de permisos. Hay que tener en cuenta que la administración de estos
-> roles queda a cargo de los administradores de la solución.
->
+> por el propio Google, por lo que van a funcionar ante cualquier eventualidad. Los ROLES PERSONALIZADOS se deben usar
+> si los PREDEFINIDOS no cumplen con los requerimientos de permisos. Hay que tener en cuenta que la administración de
+> estos roles queda a cargo de los administradores de la solución.
 >
 > Se tienen los siguientes roles en la política de permisos asociada a un **Científico de Datos**:
 >

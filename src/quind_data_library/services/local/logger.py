@@ -26,7 +26,7 @@ class Logger(ILogger):
             name: Optional; The name of the logger. Defaults to "quind_data_library" if None.
         """
         if name is None:
-            name = "Bubbaloo"
+            name = "DataLibraryLogger"
 
         self.spark = GetSpark()
         self.logger = self.spark.sparkContext._jvm.org.apache.log4j.Logger.getLogger(name) # noqa
