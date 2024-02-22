@@ -175,7 +175,7 @@ de la arquitectura, siguiendo las mejores prácticas y recomendaciones de expert
 El objetivo es establecer una base robusta y eficiente para el manejo de datos, potenciando la inteligencia de negocios
 y la toma de decisiones informadas.
 
-![Documentación detallada de la arquitectura](./reports/documento_arquitectura_funnel.md)
+[Documentación detallada de la arquitectura](./reports/documento_arquitectura_funnel.md)
 
 ## Consideraciones técnicas
 
@@ -284,7 +284,7 @@ Para aquellos interesados en profundizar más en los detalles técnicos y las es
 transformador, se anexa el documento completo correspondiente a la arquitectura implementada para el Proyecto Funnel de
 Mercadeo.
 
-![Documentación Detallada del Modelo Dimensional](./reports/documento_modelo_dimensional_funnel.md)
+[Documentación Detallada del Modelo Dimensional](./reports/documento_modelo_dimensional_funnel.md)
 
 # Gobierno de datos
 
@@ -457,8 +457,8 @@ sigue el dato a través de los sistemas de almacenamiento y bases de datos.
 
 **Nota**: El linaje se relaciona en las siguientes páginas:
 
-- [Linaje de Datos Correspondiente a la Capa Trusted](./linaje/linaje_trusted.md)
-- [Linaje de Datos Correspondiente a la Capa Refined](./linaje/linaje_refined.md)
+- [Linaje de Datos Correspondiente a la Capa Trusted](lineage/linaje_trusted.md)
+- [Linaje de Datos Correspondiente a la Capa Refined](lineage/linaje_refined.md)
 
 ### Ciclo de vida de los datos (aclarar que para el proyecto no aplica)
 
