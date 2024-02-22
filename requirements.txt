@@ -2,4 +2,3 @@ py4j == 0.10.9.5
 dynaconf == 3.2.2
 toml == 0.10.2
 great-expectations == 0.18.7
-numpy == 1.26.2
