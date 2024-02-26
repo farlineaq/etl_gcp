@@ -460,7 +460,7 @@ sigue el dato a través de los sistemas de almacenamiento y bases de datos.
 - [Linaje de Datos Correspondiente a la Capa Trusted](lineage/linaje_trusted.md)
 - [Linaje de Datos Correspondiente a la Capa Refined](lineage/linaje_refined.md)
 
-### Ciclo de vida de los datos (aclarar que para el proyecto no aplica)
+### Ciclo de vida de los datos
 
 Aunque para el presente proyecto no se aplica una política sobre el ciclo de vida de los datos, este último término se
 refiere a las diferentes etapas que atraviesan los datos desde su creación hasta su eliminación o archivo.
@@ -572,7 +572,7 @@ La estructura de los mensajes de error enviados a los registros es la siguiente:
   }
   ```
 
-#### Acciones Correctivas para la Gestión de Errores en la Validación Estructural
+##### Acciones Correctivas
 
 Cuando se detecta un error durante la validación de archivos, se deben tomar las siguientes acciones correctivas en
 función del tipo de error:
@@ -829,7 +829,6 @@ Esta política de permisos permite que un usuario tenga las siguientes funciones
 - Hacer trabajos de consultas en BigQuery desde un proyecto de **consulta**, sin poder guardar los resultados como
   vistas.
 - Guardar y visualizar consultas SQL desde un proyecto de **consulta**.
-- No puede acceder a la consola del proyecto de almacenamiento.
 
 **Asignación de política**
 
@@ -912,7 +911,7 @@ Para asignar a un usuario esta política de permisos se deben seguir los siguien
 > - **Personalizado:** `Data Analyst Custom Rol` rol a nivel de dataset que contiene solo los permisos definidos en la
     política para el dataset autorizado.
 
-### **Cuentas de servicios**
+### Cuentas de servicios
 
 Una cuenta de servicio es una identidad de Google que se utiliza para acceder a los recursos y servicios de Google Cloud
 Platform (GCP) de forma programática, sin necesidad de interactuar directamente con la consola de GCP. Este enfoque

@@ -172,7 +172,7 @@ trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folde
 [dev.bigquery.variables]
 
 procedures_dataset = "procedures" # Variabilizar
-refined_dataset = "refined_dev" # Variabilizar
+refined_dataset = "refined" # Variabilizar
 dimensional_model.fact_table.DAY = "fact_Dia" # Variabilizar
 dimensional_model.fact_table.MONTH = "fact_Mes" # Variabilizar
 dimensional_model.fact_table.YEAR = "fact_Ano" # Variabilizar

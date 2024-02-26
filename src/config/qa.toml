@@ -193,7 +193,7 @@ delta.end_date = "DATE '2022-03-24'" # Variabilizar
 delta.date_to_calculate = "DATE '2021-10-06'" # Variabilizar
 
 contact_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.CONTACTABILIDAD'" # Variabilizar
-sales_table = "'co-grupoexito-funnel-mercd-dev.Capa_Raw_QA.DATA_PRUEBA'" # Variabilizar
+sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.MuestraVentasParticionada'" # Variabilizar
 segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION'" # Variabilizar
 modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO'" # Variabilizar
 segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION_BACKUP'" # Variabilizar
