@@ -799,8 +799,6 @@ Política ingeniero de datos
 | Rol                   | ID                         | Principal                                 | Nivel en Jerarquía |
 |-----------------------|----------------------------|-------------------------------------------|--------------------|
 | Viewer                | roles/viewer               | ingenierodedatosgcpfunnel@grupo-exito.com | Proyecto           |
-| Storage Object Viewer | roles/storage.objectViewer | ingenierodedatosgcpfunnel@grupo-exito.com | Proyecto           |
-| BigQuery Data Viewer  | roles/bigquery.dataViewer  | ingenierodedatosgcpfunnel@grupo-exito.com | Proyecto           |
 
 Esta política de permisos está diseñada para que el usuario tenga la posibilidad de visualizar todos los recursos
 asociados a un proyecto, sin poder modificar o crear nuevos recursos.
@@ -813,9 +811,10 @@ Esta política está asignada al grupo `ingenierodedatosgcpfunnel@grupo-exito.co
 
 Política científico
 
-| Title                      | Principal                                  | Nivel en Jerarquía | 
-|----------------------------|--------------------------------------------|--------------------|
-| Data Scientist Custom Role | cientificodedatosgcpfunnel@grupo-exito.com | Proyecto           |
+| Rol                        | ID                     | Principal                                  | Nivel en Jerarquía | 
+|----------------------------|------------------------|--------------------------------------------|--------------------|
+| Data Scientist Custom Role |                        | cientificodedatosgcpfunnel@grupo-exito.com | Proyecto           |
+| BigQuery Job User          | roles/bigquery.jobUser | cientificodedatosgcpfunnel@grupo-exito.com | proyecto           |
 
 En el diagrama anterior podemos ver esquematizada la política de de permisos a nivel de proyecto. Se organizan los
 permisos de manera jerárquica y se agrupan en roles personalizados y predefinidos siguiendo la política de privilegios
@@ -828,7 +827,6 @@ Esta política de permisos permite que un usuario tenga las siguientes funciones
   desde un proyecto de **consulta** sin poder crear nuevas entidades ni modificar las existentes en BigQuery.
 - Hacer trabajos de consultas en BigQuery desde un proyecto de **consulta**, sin poder guardar los resultados como
   vistas.
-- Guardar y visualizar consultas SQL desde un proyecto de **consulta**.
 
 **Asignación de política**
 
@@ -841,10 +839,13 @@ denegar permisos a un usuario solo se debe agregar o eliminar el usuario del gru
 
 Política analista de datos
 
-| Title                   | Principal                                | Nivel en Jerarquía |
-|-------------------------|------------------------------------------|--------------------|
-| Data Analyst Custom Rol | analistadedatosgcpfunnel@grupo-exito.com | dataset vistas     | 
-| Storage Object Viewer   | analistadedatosgcpfunnel@grupo-exito.com | bucket trusted     | 
+| Rol                     | ID                         | Principal                                | Nivel en Jerarquía |
+|-------------------------|----------------------------|------------------------------------------|--------------------|
+| Data Analyst Custom Rol |                            | analistadedatosgcpfunnel@grupo-exito.com | dataset vistas     | 
+| Storage Object Viewer   |                            | analistadedatosgcpfunnel@grupo-exito.com | bucket trusted     | 
+| BigQuery Job User       | roles/bigquery.jobUser     | analistadedatosgcpfunnel@grupo-exito.com | proyecto           |
+| Storage Object Viewer   | roles/storage.objectViewer | analistadedatosgcpfunnel@grupo-exito.com | capa trusted       |
+| BigQuery Data Viewer    | roles/bigquery.dataViewer  | analistadedatosgcpfunnel@grupo-exito.com | vista autorizada   |
 
 Se usan vistas autorizadas para dar acceso granular (columnar) a vistas específicas. Una vista autorizada te permite
 compartir resultados de consultas con usuarios y grupos específicos sin darles acceso a los datos de origen.
@@ -859,8 +860,7 @@ página [Crear una vista autorizada](https://cloud.google.com/bigquery/docs/shar
 
 El usuario al que se le aplique esta política de permisos podrá realizar las siguientes acciones:
 
-- Visualizar y consultar las vistas granulares en las cuales tenga los permisos necesarios desde un proyecto de *
-  *consulta**.
+- Visualizar y consultar las vistas granulares en las cuales tenga los permisos necesarios.
 
 **Asignación de política**
 
@@ -952,6 +952,3 @@ deben seguirse las mejores prácticas de seguridad que permitan garantizar el pr
 significa asignar solamente los permisos que son necesarios para el desempeño de las funciones que la cuenta de servicio
 requiere, revisar y actualizar regularmente estos permisos para mantener la seguridad y eficiencia de los recursos y
 servicios de GCP.
-
-
-
