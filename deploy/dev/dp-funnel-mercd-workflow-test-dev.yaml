@@ -5,7 +5,7 @@ jobs:
         - --env=dev
         - --granularity=MONTH
         - --execution_type=delta
-        - --refined_flows=false
+        - --refined_flows=indicadores_manuales
       jarFileUris:
         - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/dev.toml
         - gs://co-grupo-exito-funnel-mercd-app-data-dev/app_files/dist/default.toml

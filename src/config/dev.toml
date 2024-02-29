@@ -32,12 +32,12 @@ segmentacion_backup = "SEGMENTACION_BACKUP"
 
 [dev.expectations]
 
-not_null_expectation.columns = ["Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
-unique_expectation.columns = ["CadenaId", "IndicadorId", "Fecha"]
+not_null_expectation.columns = ["FechaIndicador", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
+unique_expectation.columns = ["CadenaId", "IndicadorId", "FechaIndicador"]
 in_set_expectation.columns.cadena_id = { name = "CadenaId", value_set = ['E', 'ACES', 'C', 'A', 'S'] }
 in_set_expectation.columns.indicador_id = { name = "IndicadorId", value_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
 in_set_expectation.columns.actualizacion = { name = "Actualizacion", value_set = ['SI', 'NO'] }
-regex_expectation.columns.fecha = { name = "Fecha", pattern = '\d{4}-\d{2}-\d{2}' }
+regex_expectation.columns.fecha = { name = "FechaIndicador", pattern = '\d{4}-\d{2}-\d{2}' }
 
 
 # ================================================================================
@@ -173,14 +173,14 @@ trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folde
 
 procedures_dataset = "procedures" # Variabilizar
 refined_dataset = "refined" # Variabilizar
-dimensional_model.fact_table.DAY = "fact_Dia" # Variabilizar
-dimensional_model.fact_table.MONTH = "fact_Mes" # Variabilizar
-dimensional_model.fact_table.YEAR = "fact_Ano" # Variabilizar
-dimensional_model.target_table.DAY = "fact_MetasDia" # Variabilizar
-dimensional_model.target_table.MONTH = "fact_MetasMes" # Variabilizar
-dimensional_model.target_table.YEAR = "fact_MetasAno" # Variabilizar
-dimensional_model.dim_cadena_table = "dim_Cadena" # Variabilizar
-dimensional_model.dim_indicadores_table = "dim_Indicadores" # Variabilizar
+dimensional_model.fact_table.DAY = "fact_days" # Variabilizar fact_Dia
+dimensional_model.fact_table.MONTH = "fact_months" # Variabilizar fact_Mes
+dimensional_model.fact_table.YEAR = "fact_years" # Variabilizar fact_Ano
+dimensional_model.target_table.DAY = "fact_target_days" # Variabilizar fact_MetasDia
+dimensional_model.target_table.MONTH = "fact_target_months" # Variabilizar fact_MetasMes
+dimensional_model.target_table.YEAR = "fact_target_years" # Variabilizar fact_MetasAno
+dimensional_model.dim_cadena_table = "dim_cadena" # Variabilizar dim_Cadena
+dimensional_model.dim_indicadores_table = "dim_indicadores" # Variabilizar dim_Indicadores
 
 granularity = ["DAY", "MONTH", "YEAR"]
 excluded_sublineaCD = [1, 2, 3, 4, 5, 6, 99, 505]

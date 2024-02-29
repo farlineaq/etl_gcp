@@ -32,12 +32,12 @@ segmentacion_backup = "SEGMENTACION_BACKUP"
 
 [qa.expectations]
 
-not_null_expectation.columns = ["Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
-unique_expectation.columns = ["CadenaId", "IndicadorId", "Fecha"]
+not_null_expectation.columns = ["FechaIndicador", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
+unique_expectation.columns = ["CadenaId", "IndicadorId", "FechaIndicador"]
 in_set_expectation.columns.cadena_id = { name = "CadenaId", value_set = ['E', 'ACES', 'C', 'A', 'S'] }
 in_set_expectation.columns.indicador_id = { name = "IndicadorId", value_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
 in_set_expectation.columns.actualizacion = { name = "Actualizacion", value_set = ['SI', 'NO'] }
-regex_expectation.columns.fecha = { name = "Fecha", pattern = '\d{4}-\d{2}-\d{2}' }
+regex_expectation.columns.fecha = { name = "FechaIndicador", pattern = '\d{4}-\d{2}-\d{2}' }
 
 
 # ================================================================================
@@ -188,12 +188,12 @@ included_direccionCD = [10, 20, 30, 40, 50]
 excluded_tipoNegociacion = [2]
 included_CadenaCD = ['E', 'C', 'A', 'S']
 
-delta.start_date = "DATE '2021-10-04'" # Variabilizar
-delta.end_date = "DATE '2022-03-24'" # Variabilizar
+delta.start_date = "DATE '2020-01-01'" # Variabilizar
+delta.end_date = "DATE '2021-12-31'" # Variabilizar
 delta.date_to_calculate = "DATE '2021-10-06'" # Variabilizar
 
 contact_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.CONTACTABILIDAD'" # Variabilizar
-sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.MuestraVentasParticionada'" # Variabilizar
+sales_table = "'co-grupoexito-funnel-mercd-dev.indicadores.ventaLineaConClientes'" # Variabilizar
 segmentacion_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION'" # Variabilizar
 modelo_segmento_table = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.DIM_MODELO_SEGMENTO'" # Variabilizar
 segmentacion_table_backup = "'co-grupoexito-funnel-mercd-dev.Capa_Trusted_QA.SEGMENTACION_BACKUP'" # Variabilizar

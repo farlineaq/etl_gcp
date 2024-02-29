@@ -31,7 +31,7 @@ class ExtractStage(Extract):
         return StructType(
             [
                 StructField('Actualizacion', StringType(), True),
-                StructField('Fecha', DateType(), True),
+                StructField('FechaIndicador', DateType(), True),
                 StructField('Cadena', StringType(), True),
                 StructField('CadenaId', StringType(), True),
                 StructField('Indicador', StringType(), True),

@@ -5,7 +5,7 @@ jobs:
         - --env=qa
         - --granularity=MONTH
         - --execution_type=full
-        - --refined_flows=false
+        - --refined_flows=porcentaje_contactabilidad
       jarFileUris:
         - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/dev.toml
         - gs://co-grupo-exito-funnel-mercd-app-data-qa/app_files/dist/default.toml
