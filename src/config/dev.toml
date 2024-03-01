@@ -173,6 +173,7 @@ trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folde
 
 procedures_dataset = "procedures" # Variabilizar
 refined_dataset = "refined" # Variabilizar
+views_dataset = "refined_funnel_mercd_views" # Variabilizar
 dimensional_model.fact_table.DAY = "fact_days" # Variabilizar fact_Dia
 dimensional_model.fact_table.MONTH = "fact_months" # Variabilizar fact_Mes
 dimensional_model.fact_table.YEAR = "fact_years" # Variabilizar fact_Ano
@@ -205,7 +206,7 @@ source_target_table.MONTH = "'co-grupoexito-funnel-mercd-dev.external.fact_targe
 source_target_table.YEAR = "'co-grupoexito-funnel-mercd-dev.external.fact_target_years'" # Variabilizar
 
 dim_indicadores_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_indicadores_table}'"
-dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
+dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.views_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
 fact_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.DAY}'"
 fact_table.MONTH = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.MONTH}'"
 fact_table.YEAR = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.YEAR}'"
