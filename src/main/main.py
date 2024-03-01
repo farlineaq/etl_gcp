@@ -35,6 +35,9 @@ def execute_trusted(
         granularity (Literal["DAY", "MONTH", "YEAR"]): The data processing granularity.
         flows_to_execute (List[str] | None): An optional list of specific workflow names to execute.
     """
+    if flows_to_execute is not None and flows_to_execute[0] == 'false':
+        return
+
     orchestrator = Orchestrator(
         trusted,
         flows_to_execute,
