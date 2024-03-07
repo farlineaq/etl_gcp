@@ -1,0 +1,37 @@
+[
+  {
+    "name": "IndicadorKey",
+    "mode": "REQUIRED",
+    "type": "INTEGER",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "Indicador",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "Tipo",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "Descripcion",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "FechaActualizacion",
+    "mode": "",
+    "type": "TIMESTAMP",
+    "description": null,
+    "fields": []
+  }
+]

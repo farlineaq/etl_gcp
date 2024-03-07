@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Fecha",
+    "mode": "REQUIRED",
+    "type": "DATE",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "CadenaCD",
+    "mode": "REQUIRED",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "ModeloSegmentoid",
+    "mode": "REQUIRED",
+    "type": "INTEGER",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "IndicadorKey",
+    "mode": "REQUIRED",
+    "type": "INTEGER",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "Valor",
+    "mode": "",
+    "type": "FLOAT",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "FechaActualizacion",
+    "mode": "",
+    "type": "TIMESTAMP",
+    "description": null,
+    "fields": []
+  }
+]

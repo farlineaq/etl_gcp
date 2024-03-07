@@ -1,0 +1,30 @@
+trigger: none
+
+parameters:
+
+- name: selectScheduler
+  displayName: 'Select a Scheduler'
+  type: string
+  default: cs-funnel-mercd-scheduler-delta-day
+  values:
+  - cs-funnel-mercd-scheduler-delta-day
+  - cs-funnel-mercd-scheduler-delta-month
+  - cs-funnel-mercd-scheduler-delta-year
+  - cs-funnel-mercd-scheduler-delta-duplicado-month
+
+
+resources:
+  repositories:
+  - repository: templates
+    name: GCIT-Agile/infra-gcloud
+    type: git
+    ref: feature/funnel
+
+variables:
+  - template: variables/vars-azure-pipeline.yml
+
+extends:
+  template: pipeline/main.yml@templates
+  parameters:
+      dataStage: Force workflow
+      selectScheduler: ${{ parameters.selectScheduler }}
