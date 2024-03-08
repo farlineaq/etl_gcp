@@ -32,12 +32,12 @@ segmentacion_backup = "SEGMENTACION_BACKUP"
 
 [pdn.expectations]
 
-not_null_expectation.columns = ["Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
-unique_expectation.columns = ["CadenaId", "IndicadorId", "Fecha"]
+not_null_expectation.columns = ["FechaIndicador", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
+unique_expectation.columns = ["CadenaId", "IndicadorId", "FechaIndicador"]
 in_set_expectation.columns.cadena_id = { name = "CadenaId", value_set = ['E', 'ACES', 'C', 'A', 'S'] }
 in_set_expectation.columns.indicador_id = { name = "IndicadorId", value_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
 in_set_expectation.columns.actualizacion = { name = "Actualizacion", value_set = ['SI', 'NO'] }
-regex_expectation.columns.fecha = { name = "Fecha", pattern = '\d{4}-\d{2}-\d{2}' }
+regex_expectation.columns.fecha = { name = "FechaIndicador", pattern = '\d{4}-\d{2}-\d{2}' }
 
 
 # ================================================================================
