@@ -1,12 +1,26 @@
+trigger: none
+
+parameters:
+- name: dataStage
+  type: string
+  displayName: dataStage
+  default: IaC
+  values:
+  - IaC
+  - Initial data
+
 resources:
   repositories:
   - repository: templates
-    name: GCIT/arquitectura-documentacion
+    name: GCIT-Agile/infra-gcloud
     type: git
+    ref: feature/funnel
+
+variables:
+  - template: variables/vars-azure-pipeline.yml
 
 extends:
   template: pipeline/main.yml@templates
   parameters:
-      language: documentation
-      typerelease: backstage-tech-docs
+      dataStage: ${{ parameters.dataStage }}
 

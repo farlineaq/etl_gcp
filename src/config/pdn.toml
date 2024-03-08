@@ -1,0 +1,545 @@
+[pdn]
+
+[pdn.variables]
+
+raw_bucket_name = "#{pdn_raw_bucket_name}#" # Variabilizar
+trusted_bucket_name = "#{pdn_trusted_bucket_name}#" # Variabilizar
+project = "#{pdn_project}#" # Variabilizar
+error_folder = "co-grupo-exito-error-data"
+data_folder = "co-grupo-exito-raw-data"
+
+[pdn.paths.entity_names]
+
+analytical_model = "ANALYTICAL_MODEL"
+analytical_model_backup = "ANALYTICAL_MODEL_BACKUP"
+contactabilidad = "CONTACTABILIDAD"
+contactabilidad_backup = "CONTACTABILIDAD_BACKUP"
+dim_modelo_segmento = "DIM_MODELO_SEGMENTO"
+dim_modelo_segmento_backup = "DIM_MODELO_SEGMENTO_BACKUP"
+fact_days = "FACT_DAYS"
+fact_months = "FACT_MONTHS"
+fact_target_days = "FACT_TARGET_DAYS"
+fact_target_months = "FACT_TARGET_MONTHS"
+fact_target_years = "FACT_TARGET_YEARS"
+model_run = "MODEL_RUN"
+model_run_backup = "MODEL_RUN_BACKUP"
+segmentacion = "SEGMENTACION"
+segmentacion_backup = "SEGMENTACION_BACKUP"
+
+# ================================================================================
+# Data Quality Expectations
+# ================================================================================
+
+[pdn.expectations]
+
+not_null_expectation.columns = ["Fecha", "Actualizacion", "Cadena", "CadenaId", "Indicador", "IndicadorId", "Valor"]
+unique_expectation.columns = ["CadenaId", "IndicadorId", "Fecha"]
+in_set_expectation.columns.cadena_id = { name = "CadenaId", value_set = ['E', 'ACES', 'C', 'A', 'S'] }
+in_set_expectation.columns.indicador_id = { name = "IndicadorId", value_set = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
+in_set_expectation.columns.actualizacion = { name = "Actualizacion", value_set = ['SI', 'NO'] }
+regex_expectation.columns.fecha = { name = "Fecha", pattern = '\d{4}-\d{2}-\d{2}' }
+
+
+# ================================================================================
+# Path Prefixes
+# ================================================================================
+
+[pdn.paths.raw_path_prefix.teradata]
+
+data_folder = """\
+    @format \
+    gs://{this.variables.raw_bucket_name}/\
+    {this.variables.data_folder}/\
+    {this.business_domain}/\
+    {this.origin.teradata}\
+"""
+error_folder = """\
+    @format \
+    gs://{this.variables.raw_bucket_name}/\
+    {this.variables.error_folder}/\
+    {this.business_domain}/\
+    {this.origin.teradata}\
+"""
+
+[pdn.paths.raw_path_prefix.excel]
+
+data_folder = """\
+    @format \
+    gs://{this.variables.raw_bucket_name}/\
+    {this.variables.data_folder}/\
+    {this.business_domain}/\
+    {this.origin.excel}\
+"""
+error_folder = """\
+    @format \
+    gs://{this.variables.raw_bucket_name}/\
+    {this.variables.error_folder}/\
+    {this.business_domain}/\
+    {this.origin.excel}\
+"""
+
+[pdn.paths.trusted_path_prefix.teradata]
+
+data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.business_domain}/{this.origin.teradata}"
+
+[pdn.paths.trusted_path_prefix.excel]
+
+data_folder = "@format gs://{this.variables.trusted_bucket_name}/{this.business_domain}/{this.origin.excel}"
+
+# ================================================================================
+# Flows Paths
+# ================================================================================
+
+[pdn.paths.analytical_model]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.analytical_model}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model}"
+
+[pdn.paths.analytical_model_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.analytical_model_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.analytical_model_backup}"
+
+[pdn.paths.contactabilidad]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.contactabilidad}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad}"
+
+[pdn.paths.contactabilidad_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.contactabilidad_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.contactabilidad_backup}"
+
+[pdn.paths.dim_modelo_segmento]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.dim_modelo_segmento}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento}"
+
+[pdn.paths.dim_modelo_segmento_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.dim_modelo_segmento_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.dim_modelo_segmento_backup}"
+
+[pdn.paths.fact_days]
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_days}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_days}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_days}"
+
+[pdn.paths.fact_months]
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_months}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_months}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_months}"
+
+[pdn.paths.fact_target_days]
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_days}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_days}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_days}"
+
+[pdn.paths.fact_target_months]
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_months}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_months}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_months}"
+
+[pdn.paths.fact_target_years]
+raw_data_path = "@format {this.paths.raw_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_years}"
+error_data_path = "@format {this.paths.raw_path_prefix.excel.error_folder}/{this.paths.entity_names.fact_target_years}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.excel.data_folder}/{this.paths.entity_names.fact_target_years}"
+
+[pdn.paths.model_run]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.model_run}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run}"
+
+[pdn.paths.model_run_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.model_run_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.model_run_backup}"
+
+[pdn.paths.segmentacion]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.segmentacion}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion}"
+
+[pdn.paths.segmentacion_backup]
+raw_data_path = "@format {this.paths.raw_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion_backup}"
+error_data_path = "@format {this.paths.raw_path_prefix.teradata.error_folder}/{this.paths.entity_names.segmentacion_backup}"
+trusted_data_path = "@format {this.paths.trusted_path_prefix.teradata.data_folder}/{this.paths.entity_names.segmentacion_backup}"
+
+# ================================================================================
+# Variables scripts BigQuery
+# ================================================================================
+
+[pdn.bigquery.variables]
+
+procedures_dataset = "#{pdn_procedures_dataset}#" # Variabilizar
+refined_dataset = "#{pdn_refined_dataset}#" # Variabilizar
+views_dataset = "#{pdn_views_dataset}#" # Variabilizar
+dimensional_model.fact_table.DAY = "#{pdn_dimensional_model.fact_table.DAY}#" # Variabilizar
+dimensional_model.fact_table.MONTH = "#{pdn_dimensional_model.fact_table.MONTH}#" # Variabilizar
+dimensional_model.fact_table.YEAR = "#{pdn_dimensional_model.fact_table.YEAR}#" # Variabilizar
+dimensional_model.target_table.DAY = "#{pdn_dimensional_model.target_table.DAY}#" # Variabilizar
+dimensional_model.target_table.MONTH = "#{pdn_dimensional_model.target_table.MONTH}#" # Variabilizar
+dimensional_model.target_table.YEAR = "#{pdn_dimensional_model.target_table.YEAR}#" # Variabilizar
+dimensional_model.dim_cadena_table = "#{pdn_dimensional_model.dim_cadena_table}#" # Variabilizar
+dimensional_model.dim_indicadores_table = "#{pdn_dimensional_model.dim_indicadores_table}#" # Variabilizar
+
+granularity = ["DAY", "MONTH", "YEAR"]
+excluded_sublineaCD = [1, 2, 3, 4, 5, 6, 99, 505]
+included_direccionCD = [10, 20, 30, 40, 50]
+excluded_tipoNegociacion = [2]
+included_CadenaCD = ['E', 'C', 'A', 'S']
+
+delta.start_date = "#{pdn_delta.start_date}#" # Variabilizar
+delta.end_date = "#{pdn_delta.end_date}#" # Variabilizar
+delta.date_to_calculate = "#{pdn_delta.date_to_calculate}#" # Variabilizar
+
+contact_table = "#{pdn_contact_table}#" # Variabilizar
+sales_table = "#{pdn_sales_table}#" # Variabilizar
+segmentacion_table = "#{pdn_segmentacion_table}#" # Variabilizar
+modelo_segmento_table = "#{pdn_modelo_segmento_table}#" # Variabilizar
+segmentacion_table_backup = "#{pdn_segmentacion_table_backup}#" # Variabilizar
+modelo_segmento_table_backup = "#{pdn_modelo_segmento_table_backup}#" # Variabilizar
+cadena_table = "#{pdn_cadena_table}#" # Variabilizar
+source_fact_table.MONTH = "#{pdn_source_fact_table.MONTH}#" # Variabilizar
+source_target_table.DAY = "#{pdn_source_target_table.DAY}#" # Variabilizar
+source_target_table.MONTH = "#{pdn_source_target_table.MONTH}#" # Variabilizar
+source_target_table.YEAR = "#{pdn_source_target_table.YEAR}#" # Variabilizar
+
+dim_indicadores_table = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.dim_indicadores_table}'"
+dim_cadena_table = "@format '{this.variables.project}.{this.bigquery.variables.views_dataset}.{this.bigquery.variables.dimensional_model.dim_cadena_table}'"
+fact_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.DAY}'"
+fact_table.MONTH = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.MONTH}'"
+fact_table.YEAR = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.fact_table.YEAR}'"
+target_table.DAY = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.target_table.DAY}'"
+target_table.MONTH = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.target_table.MONTH}'"
+target_table.YEAR = "@format '{this.variables.project}.{this.bigquery.variables.refined_dataset}.{this.bigquery.variables.dimensional_model.target_table.YEAR}'"
+
+[pdn.bigquery.script_names.clientes_leales]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_clientes_leales = "sp_carga_inicial_clientes_leales"
+sp_delta_clientes_leales = "sp_delta_clientes_leales"
+sp_general_clientes_leales = "sp_general_clientes_leales"
+sp_general_clientes_leales_con_exito = "sp_general_clientes_leales_con_exito"
+sp_general_clientes_leales_sin_exito = "sp_general_clientes_leales_sin_exito"
+
+[pdn.bigquery.script_names.clientes_monitoreados]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_clientes_monitoreados = "sp_carga_inicial_clientes_monitoreados"
+sp_delta_clientes_monitoreados = "sp_delta_clientes_monitoreados"
+sp_general_clientes_monitoreados = "sp_general_clientes_monitoreados"
+
+[pdn.bigquery.script_names.porcentaje_contactabilidad]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_porcentaje_contactabilidad = "sp_carga_inicial_porcentaje_contactabilidad"
+sp_delta_porcentaje_contactabilidad = "sp_delta_porcentaje_contactabilidad"
+sp_general_porcentaje_contactabilidad = "sp_general_porcentaje_contactabilidad"
+
+[pdn.bigquery.script_names.tasa_retencion]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_tasa_retencion = "sp_carga_inicial_tasa_retencion"
+sp_delta_tasa_retencion = "sp_delta_tasa_retencion"
+sp_general_tasa_retencion = "sp_general_tasa_retencion"
+
+[pdn.bigquery.script_names.transacciones_monitoreadas]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_transacciones_monitoreadas = "sp_carga_inicial_transacciones_monitoreadas"
+sp_delta_transacciones_monitoreadas = "sp_delta_transacciones_monitoreadas"
+sp_general_transacciones_monitoreadas = "sp_general_transacciones_monitoreadas"
+
+[pdn.bigquery.script_names.ventas_clientes_leales]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_ventas_clientes_leales = "sp_carga_inicial_ventas_clientes_leales"
+sp_delta_ventas_clientes_leales = "sp_delta_ventas_clientes_leales"
+sp_general_ventas_clientes_leales = "sp_general_ventas_clientes_leales"
+sp_general_ventas_clientes_leales_con_exito = "sp_general_ventas_clientes_leales_con_exito"
+sp_general_ventas_clientes_leales_sin_exito = "sp_general_ventas_clientes_leales_sin_exito"
+
+[pdn.bigquery.script_names.ventas_totales]
+
+endpoint_carga_inicial = "endpoint_carga_inicial"
+endpoint_delta = "endpoint_delta"
+sp_carga_inicial_ventas_totales = "sp_carga_inicial_ventas_totales"
+sp_delta_ventas_totales = "sp_delta_ventas_totales"
+sp_general_ventas_totales = "sp_general_ventas_totales"
+
+[pdn.bigquery.script_names.indicadores_manuales]
+
+sp_merge_indicadores_manuales = "sp_merge_indicadores_manuales"
+endpoint_delta = "endpoint_delta"
+
+[pdn.bigquery.script_names.indicadores_metas]
+
+sp_merge_indicadores_metas = "sp_merge_indicadores_metas"
+endpoint_delta = "endpoint_delta"
+
+[pdn.bigquery.script_names.dim_indicadores]
+
+sp_crear_dim_indicadores = "sp_crear_dim_indicadores"
+endpoint_carga_inicial = "endpoint_carga_inicial"
+
+[pdn.bigquery.script_names.dim_cadena]
+
+sp_crear_dim_cadena = "sp_crear_dim_cadena"
+endpoint_carga_inicial = "endpoint_carga_inicial"
+
+# ================================================================================
+# Procedimiento: Clientes leales
+# ================================================================================
+
+[pdn.bigquery.indicadores.clientes_leales.sp_carga_inicial_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_carga_inicial_clientes_leales}"
+sp_general_clientes_leales = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_leales.sp_general_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_general_clientes_leales}"
+sp_clientes_leales_con_exito = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_con_exito.sp_name}"
+sp_clientes_leales_sin_exito = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_sin_exito.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_leales.sp_delta_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_delta_clientes_leales}"
+sp_general_clientes_leales = "@format {this.bigquery.indicadores.clientes_leales.sp_general_clientes_leales.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_con_exito]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_general_clientes_leales_con_exito}"
+
+[pdn.bigquery.indicadores.clientes_leales.sp_general_clientes_leales_sin_exito]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_leales.sp_general_clientes_leales_sin_exito}"
+
+[pdn.bigquery.indicadores.clientes_leales.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.clientes_leales.sp_carga_inicial_clientes_leales.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_leales.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.clientes_leales.sp_delta_clientes_leales.sp_name}"
+
+# ================================================================================
+# Procedimiento: Clientes monitoreados
+# ================================================================================
+
+[pdn.bigquery.indicadores.clientes_monitoreados.sp_carga_inicial_clientes_monitoreados]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_monitoreados.sp_carga_inicial_clientes_monitoreados}"
+sp_general_clientes_monitoreados = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_general_clientes_monitoreados.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_monitoreados.sp_general_clientes_monitoreados]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_monitoreados.sp_general_clientes_monitoreados}"
+
+[pdn.bigquery.indicadores.clientes_monitoreados.sp_delta_clientes_monitoreados]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.clientes_monitoreados.sp_delta_clientes_monitoreados}"
+sp_general_clientes_monitoreados = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_general_clientes_monitoreados.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_monitoreados.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_carga_inicial_clientes_monitoreados.sp_name}"
+
+[pdn.bigquery.indicadores.clientes_monitoreados.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.clientes_monitoreados.sp_delta_clientes_monitoreados.sp_name}"
+
+# ================================================================================
+# Procedimiento: Porcentaje Contactabilidad
+# ================================================================================
+
+[pdn.bigquery.indicadores.porcentaje_contactabilidad.sp_carga_inicial_porcentaje_contactabilidad]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.porcentaje_contactabilidad.sp_carga_inicial_porcentaje_contactabilidad}"
+sp_general_porcentaje_contactabilidad = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad.sp_name}"
+
+[pdn.bigquery.indicadores.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad}"
+
+[pdn.bigquery.indicadores.porcentaje_contactabilidad.sp_delta_porcentaje_contactabilidad]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.porcentaje_contactabilidad.sp_delta_porcentaje_contactabilidad}"
+sp_general_porcentaje_contactabilidad = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_general_porcentaje_contactabilidad.sp_name}"
+
+[pdn.bigquery.indicadores.porcentaje_contactabilidad.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_carga_inicial_porcentaje_contactabilidad.sp_name}"
+
+[pdn.bigquery.indicadores.porcentaje_contactabilidad.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.porcentaje_contactabilidad.sp_delta_porcentaje_contactabilidad.sp_name}"
+
+# ================================================================================
+# Procedimiento: Tasa Retencion
+# ================================================================================
+
+[pdn.bigquery.indicadores.tasa_retencion.sp_carga_inicial_tasa_retencion]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.tasa_retencion.sp_carga_inicial_tasa_retencion}"
+sp_general_tasa_retencion = "@format {this.bigquery.indicadores.tasa_retencion.sp_general_tasa_retencion.sp_name}"
+
+[pdn.bigquery.indicadores.tasa_retencion.sp_general_tasa_retencion]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.tasa_retencion.sp_general_tasa_retencion}"
+
+[pdn.bigquery.indicadores.tasa_retencion.sp_delta_tasa_retencion]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.tasa_retencion.sp_delta_tasa_retencion}"
+sp_general_tasa_retencion = "@format {this.bigquery.indicadores.tasa_retencion.sp_general_tasa_retencion.sp_name}"
+
+[pdn.bigquery.indicadores.tasa_retencion.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.tasa_retencion.sp_carga_inicial_tasa_retencion.sp_name}"
+
+[pdn.bigquery.indicadores.tasa_retencion.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.tasa_retencion.sp_delta_tasa_retencion.sp_name}"
+
+# ================================================================================
+# Procedimiento: Transacciones Monitoreadas
+# ================================================================================
+
+[pdn.bigquery.indicadores.transacciones_monitoreadas.sp_carga_inicial_transacciones_monitoreadas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.transacciones_monitoreadas.sp_carga_inicial_transacciones_monitoreadas}"
+sp_general_transacciones_monitoreadas = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_general_transacciones_monitoreadas.sp_name}"
+
+[pdn.bigquery.indicadores.transacciones_monitoreadas.sp_general_transacciones_monitoreadas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.transacciones_monitoreadas.sp_general_transacciones_monitoreadas}"
+
+[pdn.bigquery.indicadores.transacciones_monitoreadas.sp_delta_transacciones_monitoreadas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.transacciones_monitoreadas.sp_delta_transacciones_monitoreadas}"
+sp_general_transacciones_monitoreadas = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_general_transacciones_monitoreadas.sp_name}"
+
+[pdn.bigquery.indicadores.transacciones_monitoreadas.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_carga_inicial_transacciones_monitoreadas.sp_name}"
+
+[pdn.bigquery.indicadores.transacciones_monitoreadas.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.transacciones_monitoreadas.sp_delta_transacciones_monitoreadas.sp_name}"
+
+# ================================================================================
+# Procedimiento: Ventas Clientes Leales
+# ================================================================================
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.sp_carga_inicial_ventas_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_carga_inicial_ventas_clientes_leales}"
+sp_general_ventas_clientes_leales = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_general_ventas_clientes_leales}"
+sp_general_ventas_clientes_leales_con_exito = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales_con_exito.sp_name}"
+sp_general_ventas_clientes_leales_sin_exito = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales_sin_exito.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.sp_delta_ventas_clientes_leales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_delta_ventas_clientes_leales}"
+sp_general_ventas_clientes_leales = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales_con_exito]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_general_ventas_clientes_leales_con_exito}"
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.sp_general_ventas_clientes_leales_sin_exito]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_clientes_leales.sp_general_ventas_clientes_leales_sin_exito}"
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_carga_inicial_ventas_clientes_leales.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_clientes_leales.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.ventas_clientes_leales.sp_delta_ventas_clientes_leales.sp_name}"
+
+# ================================================================================
+# Procedimiento: Ventas Totales
+# ================================================================================
+
+[pdn.bigquery.indicadores.ventas_totales.sp_carga_inicial_ventas_totales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_totales.sp_carga_inicial_ventas_totales}"
+sp_general_ventas_totales = "@format {this.bigquery.indicadores.ventas_totales.sp_general_ventas_totales.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_totales.sp_general_ventas_totales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_totales.sp_general_ventas_totales}"
+
+[pdn.bigquery.indicadores.ventas_totales.sp_delta_ventas_totales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.ventas_totales.sp_delta_ventas_totales}"
+sp_general_ventas_totales = "@format {this.bigquery.indicadores.ventas_totales.sp_general_ventas_totales.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_totales.endpoint_carga_inicial]
+
+sp_carga_inicial = "@format {this.bigquery.indicadores.ventas_totales.sp_carga_inicial_ventas_totales.sp_name}"
+
+[pdn.bigquery.indicadores.ventas_totales.endpoint_delta]
+
+sp_delta = "@format {this.bigquery.indicadores.ventas_totales.sp_delta_ventas_totales.sp_name}"
+
+# ================================================================================
+# Procedimiento: Indicadores Manuales
+# ================================================================================
+
+[pdn.bigquery.indicadores.indicadores_manuales.sp_merge_indicadores_manuales]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.indicadores_manuales.sp_merge_indicadores_manuales}"
+
+[pdn.bigquery.indicadores.indicadores_manuales.endpoint_delta]
+
+sp_merge_indicadores_manuales = "@format {this.bigquery.indicadores.indicadores_manuales.sp_merge_indicadores_manuales.sp_name}"
+
+# ================================================================================
+# Procedimiento: Indicadores Metas
+# ================================================================================
+
+[pdn.bigquery.indicadores.indicadores_metas.sp_merge_indicadores_metas]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.indicadores_metas.sp_merge_indicadores_metas}"
+
+[pdn.bigquery.indicadores.indicadores_metas.endpoint_delta]
+
+sp_merge_indicadores_metas = "@format {this.bigquery.indicadores.indicadores_metas.sp_merge_indicadores_metas.sp_name}"
+
+# ================================================================================
+# Procedimiento: Crear Dim Indicadores
+# ================================================================================
+
+[pdn.bigquery.indicadores.dim_indicadores.sp_crear_dim_indicadores]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.dim_indicadores.sp_crear_dim_indicadores}"
+
+[pdn.bigquery.indicadores.dim_indicadores.endpoint_carga_inicial]
+
+sp_crear_dim_indicadores = "@format {this.bigquery.indicadores.dim_indicadores.sp_crear_dim_indicadores.sp_name}"
+
+# ================================================================================
+# Procedimiento: Crear Dim Cadena
+# ================================================================================
+
+[pdn.bigquery.indicadores.dim_cadena.sp_crear_dim_cadena]
+
+sp_name = "@format {this.variables.project}.{this.bigquery.variables.procedures_dataset}.{this.bigquery.script_names.dim_cadena.sp_crear_dim_cadena}"
+
+[pdn.bigquery.indicadores.dim_cadena.endpoint_carga_inicial]
+
+sp_crear_dim_cadena = "@format {this.bigquery.indicadores.dim_cadena.sp_crear_dim_cadena.sp_name}"
