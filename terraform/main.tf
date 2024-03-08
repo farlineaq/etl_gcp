@@ -1,14 +1,14 @@
-// resource "google_storage_bucket" "create_buckets" {
-//   count = length(keys(var.buckets_names))
+resource "google_storage_bucket" "create_buckets" {
+  count = length(keys(var.buckets_names))
 
-//   project       = "${var.buckets_names[keys(var.buckets_names)[count.index]][1]}"
-//   name          = "${var.buckets_names[keys(var.buckets_names)[count.index]][0]}"
+  project       = "${var.buckets_names[keys(var.buckets_names)[count.index]][1]}"
+  name          = "${var.buckets_names[keys(var.buckets_names)[count.index]][0]}"
   
-//   location      = var.location
-//   storage_class = "STANDARD"
-//   force_destroy = true
-//   uniform_bucket_level_access = false
-// }
+  location      = var.location
+  storage_class = "STANDARD"
+  force_destroy = true
+  uniform_bucket_level_access = false
+}
 
 resource "null_resource" "copy_files" {
   provisioner "local-exec" {
@@ -28,9 +28,9 @@ resource "null_resource" "copy_files" {
     always_run = "${timestamp()}"
   }
 
-  // depends_on = [
-  //   google_storage_bucket.create_buckets
-  // ]
+  depends_on = [
+    google_storage_bucket.create_buckets
+  ]
 }
 
 resource "google_dataproc_workflow_template" "create_workflow_template" {
