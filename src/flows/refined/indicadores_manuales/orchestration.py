@@ -87,15 +87,12 @@ class BigQueryStage(IBigQueryStage):
         script_name: str = self.conf.bigquery.script_names.indicadores_manuales.endpoint_delta
         script: SQLScript = list(filter(lambda x: x.name == script_name, self.endpoint_scripts))[0]
 
-        if granularity != "MONTH":
-            raise ValueError("granularity must be 'MONTH'")
-
         self.bq_client.sql(
             script.content,
             query_parameters={
                 "sp_merge_indicadores_manuales": self.conf.bigquery.indicadores.indicadores_manuales.endpoint_delta.sp_merge_indicadores_manuales,
-                "source_table": self.conf.bigquery.variables.source_fact_table[granularity],
-                "target_table": self.conf.bigquery.variables.fact_table[granularity],
+                "source_table": self.conf.bigquery.variables.source_fact_table["MONTH"],
+                "target_table": self.conf.bigquery.variables.fact_table["MONTH"],
             }
         )
 
