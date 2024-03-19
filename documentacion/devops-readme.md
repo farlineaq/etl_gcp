@@ -22,7 +22,7 @@ La solución cuenta con 2 pipelines denominados 'Datos_GCP_Funnel' y 'Datos_GCP_
 # Stages
 
 <div align='justify'>
-Los pipelines consumen 3 stages fundamentales: 'GCP create infra', 'Data initialization' y 'Workflow deployment'. Aunque no difieren en su finalidad respecto a otros proyectos, cada uno se distingue por sus trabajos específicos.
+Los pipelines consumen 3 stages fundamentales: 'Data infrastructure', 'Data initialization' y 'Workflow deployment'. Aunque no difieren en su finalidad respecto a otros proyectos, cada uno se distingue por sus trabajos específicos.
 </div>
 
 ## Data initialization
