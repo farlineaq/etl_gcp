@@ -25,16 +25,6 @@ La solución cuenta con 2 pipelines denominados 'Datos_GCP_Funnel' y 'Datos_GCP_
 Los pipelines consumen 3 stages fundamentales: 'Data infrastructure', 'Data initialization' y 'Workflow deployment'. Aunque no difieren en su finalidad respecto a otros proyectos, cada uno se distingue por sus trabajos específicos.
 </div>
 
-## Data initialization
-
-<div align='justify'>
-
-El stage 'Data initialization' constituye la fase inicial en la gestión de datos, encargada de transferir los datos desde la capa 'raw' hasta la capa 'trusted'.
-
-Igualmente que el stage anterior este stage será invocado por el pipeline 'Datos_GCP_Funnel' cuando el parámetro 'dataStage' sea 'Initial data', y con ello se ejecutarán 3 jobs en el siguiente orden 'GCP run workflow template' el cual ejecutará los 3 workflows de carga inicial (Día, Mes y Año) con el argumento dinámico anteriormente descrito "--refined_flows=false", el siguiente job es 'GCP create infra' este job actualizará la infraestructura creando las tablas externas y actualizando el argumento dinámico a "--trusted_flows=false" dado a que el parámetro 'dataStage' es 'Initial data' dado esto los workflows de carga inicial se actualizarán en GCP, finalmente se ejecuta el job 'GCP re run workflow template' este job volverá a ejecutar los 23 workflows de carga inicial pero en vez de con el argumento '--refined_flows=false' se ejecutarán con el argumento '--trusted_flows=false'.
-
-</div>
-
 
 ## Data infrastructure
 
@@ -44,6 +34,16 @@ El stage 'Data infrastructure' se encarga de crear los recursos necesarios dentr
 Este stage es invocado por el pipeline 'Datos_GCP_Funnel' cuando el parámetro 'dataStage' es 'IaC', y con ello se ejecutará un Job 'GCP create infra', el cual creará la infraestructura inicial del proyecto sin las tablas externas, dado que para ellas ya deben existir datos dentro de los buckets.
 
 Importante al crear los workflows template cada uno de ellos heredará los argumentos que se encuentran en el grupo de variables del proyecto, sin embargo por defecto siempre se añadirá un argumento dinámico que en este caso donde "dataStage" es "IaC" ese argumento será "--refined_flows=false"
+</div>
+
+## Data initialization
+
+<div align='justify'>
+
+El stage 'Data initialization' constituye la fase inicial en la gestión de datos, encargada de transferir los datos desde la capa 'raw' hasta la capa 'trusted'.
+
+Igualmente que el stage anterior este stage será invocado por el pipeline 'Datos_GCP_Funnel' cuando el parámetro 'dataStage' sea 'Initial data', y con ello se ejecutarán 3 jobs en el siguiente orden 'GCP run workflow template' el cual ejecutará los 3 workflows de carga inicial (Día, Mes y Año) con el argumento dinámico anteriormente descrito "--refined_flows=false", el siguiente job es 'GCP create infra' este job actualizará la infraestructura creando las tablas externas y actualizando el argumento dinámico a "--trusted_flows=false" dado a que el parámetro 'dataStage' es 'Initial data' dado esto los workflows de carga inicial se actualizarán en GCP, finalmente se ejecuta el job 'GCP re run workflow template' este job volverá a ejecutar los 23 workflows de carga inicial pero en vez de con el argumento '--refined_flows=false' se ejecutarán con el argumento '--trusted_flows=false'.
+
 </div>
 
 ## Workflow deployment
